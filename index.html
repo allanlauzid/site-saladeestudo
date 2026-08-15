@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala de Estudo - Profª Rubia Lima</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="intro.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/0.6.5/opentype.min.js"></script>
+</head>
+<body>
+    <div id="intro">
+      <script>
+        // Blindagem contra piscar: esconde na mesma hora se já viu a intro
+        if (sessionStorage.getItem('introPlayed')) {
+            document.getElementById('intro').classList.add('skip-intro');
+        }
+      </script>
+      <div class="intro-bg"></div>
+      <div class="stage">
+        <div class="board-plane">
+          <div class="text-wrap">
+            <svg id="handwriting-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+            <svg class="hand-erase" viewBox="0 0 64 64" fill="none">
+              <rect x="14" y="24" width="30" height="20" rx="6" fill="#ffffff" stroke="#ccc" stroke-width="2"/>
+              <circle cx="46" cy="34" r="12" fill="#f2c9a0"/>
+            </svg>
+          </div>
+        </div>
+        <img class="logo-sweep" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTEzLjNtbSIgaGVpZ2h0PSIxOS43bW0iIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDExMy4zIDE5LjciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiA8ZGVmcz4KICA8Y2xpcFBhdGggaWQ9ImEiPgogICA8cmVjdCB4PSI5Ni41NCIgeT0iOC44ODJlLTE2IiB3aWR0aD0iMTEzLjUiIGhlaWdodD0iMTkuNyIgcnk9Ii4xMjQyIiBzdHJva2Utd2lkdGg9Ii4wNzcyNCIvPgogIDwvY2xpcFBhdGg+CiA8L2RlZnM+CiA8cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtOTYuNTQpIiBkPSJtMCAwaDE5NmM0LjYgMy4yODMgOS4yIDYuNTY3IDEzLjggOS44NS00LjYgMy4yODMtOS4yIDYuNTY3LTEzLjggOS44NWgtMTk2di0xOS43eiIgY2xpcC1wYXRoPSJ1cmwoI2EpIiBmaWxsPSIjZjlkMDAyIi8+Cjwvc3ZnPgo=" alt="">
+      </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="navbar-bg"></div>
+        <div class="container nav-container" style="position: relative; z-index: 2;">
+            <div class="brand-logo">
+                <img src="svg/logo-completa.svg" class="logo-svg" alt="Sala de Estudo">
+            </div>
+            <a href="#contato" class="btn btn-nav">Agendar Diagnóstico</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <span class="badge">Presencial, Domiciliar ou Online</span>
+                <h1>A estratégia exata para o sucesso escolar.</h1>
+                <p>Ajude seu filho a recuperar conteúdos, organizar a rotina e estudar com foco. Professores experientes em todas as disciplinas.</p>
+                <a href="#contato" class="btn">Conhecer a Sala de Estudo</a>
+            </div>
+            <div class="hero-visual">
+                <div class="composition">
+                    <img src="svg/mascote-isolado.svg" class="img-mascote" alt="Aluno estudando">
+                    <div class="float-card card-equation">
+                        <strong>Diagnóstico</strong> + <strong>Rotina</strong> = <span class="highlight-text">Confiança</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="bento-section">
+        <div class="container">
+            <div class="bento-grid">
+                <!-- Card 1 (Main) -->
+                <div class="bento-card card-main">
+                    <div class="icon-box" style="background: transparent; border: 2px solid var(--color-yellow); color: var(--color-yellow);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                    </div>
+                    <h2>Reforço em Todas as Disciplinas</h2>
+                    <p style="margin-top: 1rem;">Seja em Exatas, Humanas, ou Linguagens, acompanhamos o aluno para não acumular dúvidas. Formamos turmas com alunos do mesmo ano escolar para um estudo mais dinâmico.</p>
+                </div>
+
+                <!-- Card 2 (Feature) -->
+                <div class="bento-card card-feature">
+                    <div class="icon-box">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <h3>Aulas Flexíveis</h3>
+                    <p style="margin-top: 0.5rem;">Presencial em cabines individuais, Domiciliar ou Online. Você escolhe!</p>
+                </div>
+
+                <div class="bento-card card-small">
+                    <div class="icon-box">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <h3>Preparação SSA & ENEM</h3>
+                </div>
+
+                <div class="bento-card card-small">
+                    <div class="icon-box">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    </div>
+                    <h3>Tira-Dúvidas Pontual</h3>
+                </div>
+
+                <!-- FAQ Matriz ENEM (Abaixo do conjunto) -->
+                <div class="bento-card card-full" style="grid-column: 1 / -1;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="icon-box" style="margin-bottom: 0;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                        </div>
+                        <h3 style="margin-bottom: 0;">Matriz de Disciplinas do ENEM</h3>
+                    </div>
+                    <div class="mini-faq">
+                        <div class="mini-faq-item">
+                            <div class="mini-faq-q" onclick="toggleMiniFaq(this)">Linguagens e suas Tecnologias <span>+</span></div>
+                            <div class="mini-faq-a">Língua Portuguesa, Literatura, Língua Inglesa, Arte e Educação Física.</div>
+                        </div>
+                        <div class="mini-faq-item">
+                            <div class="mini-faq-q" onclick="toggleMiniFaq(this)">Matemática e suas Tecnologias <span>+</span></div>
+                            <div class="mini-faq-a">Focada na Matemática, suas aplicações práticas, lógica e resolução de problemas estruturados.</div>
+                        </div>
+                        <div class="mini-faq-item">
+                            <div class="mini-faq-q" onclick="toggleMiniFaq(this)">Ciências da Natureza e suas Tecnologias <span>+</span></div>
+                            <div class="mini-faq-a">Biologia, Física e Química.</div>
+                        </div>
+                        <div class="mini-faq-item">
+                            <div class="mini-faq-q" onclick="toggleMiniFaq(this)">Ciências Humanas e Sociais Aplicadas <span>+</span></div>
+                            <div class="mini-faq-a">História, Geografia, Filosofia e Sociologia.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about">
+        <div class="container about-grid">
+            <div class="about-title">
+                <h2>A estratégia<br>por trás de<br>um estudo<br>inteligente.</h2>
+            </div>
+            <div class="about-text">
+                <p>Sou a <strong>Profª Rubia Lima</strong>, proprietária e professora responsável pelo Reforço Escolar Sala de Estudo.</p>
+                <p>O sucesso escolar verdadeiro vai muito além de uma única matéria. É por isso que oferecemos suporte especializado e professores experientes em <strong>todas as disciplinas</strong>. Nossa missão é guiar o aluno para que ele compreenda a lógica de cada conteúdo, deixando a decoreba de lado para finalmente aprender a pensar e resolver problemas com segurança.</p>
+                <p>Seja bem-vindo a um ambiente projetado para resultados.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq">
+        <div class="container">
+            <div class="faq-header">
+                <h2>Como funciona?</h2>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item" onclick="this.querySelector('.faq-a').style.display = this.querySelector('.faq-a').style.display === 'block' ? 'none' : 'block'">
+                    <div class="faq-q">O acompanhamento é individual? <span style="color:var(--color-text-muted)">+</span></div>
+                    <div class="faq-a"><p>Sim, focamos nas necessidades específicas de cada aluno, trabalhando seus pontos fracos.</p></div>
+                </div>
+                <div class="faq-item" onclick="this.querySelector('.faq-a').style.display = this.querySelector('.faq-a').style.display === 'block' ? 'none' : 'block'">
+                    <div class="faq-q">Para quais séries é voltado? <span style="color:var(--color-text-muted)">+</span></div>
+                    <div class="faq-a"><p>Atendemos alunos de todos os anos escolares e em todas as disciplinas, formando turmas com estudantes do mesmo ano escolar ou da mesma escola.</p></div>
+                </div>
+                <div class="faq-item" onclick="this.querySelector('.faq-a').style.display = this.querySelector('.faq-a').style.display === 'block' ? 'none' : 'block'">
+                    <div class="faq-q">Onde acontecem as aulas? <span style="color:var(--color-text-muted)">+</span></div>
+                    <div class="faq-a"><p>Temos aulas presenciais em cabines individuais (Rua Antenor Navarro, 81 - Galeria Estação Jaqueira), aulas domiciliares e aulas 100% online.</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="footer-outer" style="overflow: hidden; padding-top: 800px; margin-top: -800px;">
+        <footer id="contato" class="footer">
+            <div class="container">
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <h2>Pronto para ver a diferença?</h2>
+                        <p>Agende uma conversa rápida no WhatsApp para marcarmos as aulas.</p>
+                        <div style="margin: 1.5rem 0;">
+                            <a href="https://wa.me/5581999824123" class="btn" style="background:#25D366; color:#FFF; border-color:#25D366; box-shadow: -4px 4px 0 #128C7E;">Falar no WhatsApp</a>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <p style="margin-bottom: 0.5rem; font-size: 1.1rem;"><strong>Endereço:</strong><br>Rua Antenor Navarro, 81 - Sala 108<br>Galeria Estação Jaqueira, Recife - PE</p>
+                            <p style="font-size: 1.1rem;"><strong>Telefone:</strong> (81) 99982-4123</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-map">
+                        <div class="map-card">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.5562145827363!2d-34.9069151!3d-8.0445585!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7ab18fc3bb576d1%3A0xc49b78c6b29f0f9b!2sR.%20Antenor%20Navarro%2C%2081%20-%20Jaqueira%2C%20Recife%20-%20PE%2C%2052050-120!5e0!3m2!1spt-BR!2sbr!4v1714000000000!5m2!1spt-BR!2sbr" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <span>&copy; 2026 Sala de Estudo - Profª Rubia Lima</span>
+                    <a href="https://instagram.com/reforco_se" class="instagram-link">
+                        <img src="png/icon-instagram-branco.png" alt="Instagram" style="width: 28px; height: auto;">
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function toggleMiniFaq(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('span');
+            if (answer.style.display === 'block') {
+                answer.style.display = 'none';
+                icon.textContent = '+';
+                element.style.color = 'var(--color-blue)';
+            } else {
+                answer.style.display = 'block';
+                icon.textContent = '-';
+                element.style.color = 'var(--color-yellow)';
+            }
+        }
+    </script>
+    <script src="intro.js"></script>
+</body>
+</html>
