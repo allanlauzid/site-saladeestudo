@@ -137,13 +137,21 @@ function watchArrowOverText(){
     // Continua animando enquanto a seta não tiver saído completamente da tela pela direita
     if (arrowRect.left < window.innerWidth) {
         requestAnimationFrame(check);
+    } else {
+        document.body.style.overflow = '';
     }
   }
   requestAnimationFrame(check);
 }
 
 
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+window.scrollTo(0, 0);
+
 if (!sessionStorage.getItem('introPlayed')) {
+    document.body.style.overflow = 'hidden';
     sessionStorage.setItem('introPlayed', 'true');
     initHandwriting();
 }
