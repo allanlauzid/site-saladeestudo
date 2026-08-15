@@ -115,7 +115,13 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
     0%, 100% { transform: translateX(0); }
     50% { transform: translateX(-15px); } /* Anima para a ESQUERDA, fugindo da borda direita */
 }
-.nav-container { display: flex; justify-content: space-between; align-items: center; }
+.nav-container { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    /* A mágica da matemática: mantém o botão alinhado com o site em telas grandes, mas o empurra para a esquerda em telas menores para ele não cair fora da seta (respeitando 13vw da borda da tela) */
+    padding-right: max(2rem, calc(13vw - max(0px, (100vw - 1200px) / 2)));
+}
 .logo-svg { max-height: 80px; width: auto; position: relative; }
 
 /* Navbar Button adjusted for yellow background */
