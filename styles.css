@@ -500,7 +500,7 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
 }
 /* ============ SELO KUPIM DIGITAL ============ */
 #kupim-badge-wrap{
-  position:fixed; /* Mudado para fixed para ficar sempre no canto */
+  position:absolute; /* Mudado para absolute para ficar preso ao rodapé */
   bottom:20px;
   right:0;
   z-index:9999;
