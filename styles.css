@@ -621,8 +621,8 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
 /* Ajustes mobile para o cabeçalho: seta, logo e botão */
 @media (max-width: 768px) {
   .navbar-bg {
-    height: 306%;
-    top: -103%;
+    height: 310%;
+    top: -105%;
   }
   .logo-svg {
     max-height: 54px; /* Diminui a logo */
