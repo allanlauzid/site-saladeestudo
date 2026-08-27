@@ -56,6 +56,26 @@
   .skill-item pre{ white-space:pre-wrap; word-break:break-word; font-family:'Inter',sans-serif; font-size:0.82rem; color:#555; margin:8px 0 0; }
   .new-skill-form{ border-top:2px dashed #e5e0d3; padding-top:14px; margin-top:6px; display:none; }
   .new-skill-form.open{ display:block; }
+  .theme-subblock{ margin-top:10px; }
+  .theme-subblock .subblock-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .edit-mode-toggle{ display:flex; align-items:center; gap:8px; font-size:0.82rem; color:#6b6b6b; cursor:pointer; margin-bottom:1rem; user-select:none; }
+  .edit-mode-toggle input{ width:16px; height:16px; accent-color:var(--color-blue); cursor:pointer; }
+  .skill-item-actions{ display:none; }
+  .skill-list.edit-mode .skill-item-actions{ display:flex; }
+  .theme-toggle{ display:flex; align-items:center; justify-content:space-between; width:100%; background:none; border:none; padding:0; cursor:pointer; text-align:left; gap:10px; }
+  .theme-toggle strong{ color:var(--color-blue); font-size:0.95rem; }
+  .theme-toggle .chev{ font-size:1rem; color:var(--color-blue); transition:transform .2s ease; flex-shrink:0; }
+  .theme-toggle[aria-expanded="true"] .chev{ transform:rotate(180deg); }
+  .theme-body{ overflow:hidden; max-height:0; transition:max-height .25s ease; }
+  .theme-body.open{ max-height:4000px; }
+  .theme-body-inner{ padding-top:10px; }
+  .prompt-actions{ display:flex; gap:6px; flex-shrink:0; }
+  .prompt-actions button{ font-size:0.72rem; padding:3px 9px; border-radius:6px; border:1px solid #d8d3c4; background:#fff; cursor:pointer; white-space:nowrap; }
+  .prompt-actions button.use-prompt{ border-color:var(--color-blue); color:var(--color-blue); font-weight:700; }
+  .theme-origin{ font-size:0.65rem; font-weight:700; text-transform:uppercase; padding:2px 8px; border-radius:20px; background:#eee6d3; color:#6b6b6b; margin-left:6px; }
+  .theme-origin.ia{ background:#e9e0ff; color:#5a3fc0; }
+  .ia-field-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:6px; }
+  .ia-field-head label{ margin:0; }
   .output-box{ margin-top:1rem; border:2px dashed #d8d3c4; border-radius:10px; padding:14px; min-height:60px; }
   .output-box textarea{ width:100%; min-height:140px; border:none; background:transparent; font-family:'Inter',sans-serif; font-size:0.9rem; resize:vertical; }
   .output-box img{ max-width:100%; border-radius:8px; display:block; margin-bottom:10px; }
@@ -73,15 +93,15 @@
   .key-row .key-actions{ display:flex; gap:6px; }
   .add-key-form{ border-top:2px dashed #e5e0d3; padding-top:14px; }
 
-  /* --- accordion (prompts de emergência) --- */
+  /* --- accordion (skills, api keys, prompts de emergência) --- */
   .accordion-toggle{
     display:flex; align-items:center; justify-content:space-between; width:100%;
     background:none; border:none; padding:0; cursor:pointer; text-align:left;
   }
-  .accordion-toggle .chev{ font-size:1.1rem; color:var(--color-blue); transition:transform .2s ease; }
+  .accordion-toggle .chev{ font-size:1.1rem; color:var(--color-blue); transition:transform .2s ease; flex-shrink:0; }
   .accordion-toggle[aria-expanded="true"] .chev{ transform:rotate(180deg); }
   .accordion-body{ overflow:hidden; max-height:0; transition:max-height .25s ease; }
-  .accordion-body.open{ max-height:2000px; }
+  .accordion-body.open{ max-height:4000px; }
   .accordion-body-inner{ padding-top:1.1rem; }
 
   /* --- histórico --- */
@@ -91,6 +111,8 @@
   .storage-bar-fill.warn{ background:#c0392b; }
   .history-list{ display:flex; flex-direction:column; gap:12px; }
   .history-item{ border:2px solid #e5e0d3; border-radius:10px; padding:12px 14px; display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; }
+  .history-item.selected{ border-color:var(--color-blue); background:#f2f6ff; }
+  .history-checkbox{ width:18px; height:18px; margin-top:4px; flex-shrink:0; accent-color:var(--color-blue); cursor:pointer; }
   .history-thumb{ width:72px; height:72px; border-radius:8px; object-fit:cover; flex-shrink:0; background:#f4f1ea; border:1px solid #e5e0d3; }
   .history-thumb.is-text{ display:flex; align-items:center; justify-content:center; font-size:1.4rem; color:var(--color-blue); }
   .history-body{ flex:1; min-width:200px; }
@@ -100,6 +122,8 @@
   .history-body .history-preview{ font-size:0.8rem; color:#6b6b6b; margin-top:4px; white-space:pre-wrap; }
   .history-actions{ display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
   .history-empty{ color:#8a8a8a; font-size:0.85rem; text-align:center; padding:1.5rem 0; }
+  .history-bulk-bar{ display:flex; align-items:center; gap:10px; margin-bottom:1rem; flex-wrap:wrap; }
+  .history-bulk-bar label{ font-size:0.82rem; color:#6b6b6b; display:flex; align-items:center; gap:6px; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -113,11 +137,20 @@
   <!-- GERADOR (primeiro) -->
   <div class="admin-card">
     <h2>Gerador de conteúdo</h2>
-    <p class="admin-desc">Escolha uma skill, descreva o tema do post e gere o texto ou a imagem com o Gemini.</p>
+    <p class="admin-desc">Escolha um tema, o tipo de conteúdo e descreva o assunto do post para gerar com o Gemini.</p>
 
-    <div class="admin-field full">
-      <label for="genSkill">Skill</label>
-      <select id="genSkill"></select>
+    <div class="admin-row">
+      <div class="admin-field" style="flex:2;">
+        <label for="genTheme">Tema</label>
+        <select id="genTheme"></select>
+      </div>
+      <div class="admin-field" style="max-width:150px;">
+        <label for="genType">Gerar</label>
+        <select id="genType">
+          <option value="texto">Texto</option>
+          <option value="imagem">Imagem</option>
+        </select>
+      </div>
     </div>
 
     <div class="admin-row" style="margin-top:12px;">
@@ -132,6 +165,65 @@
     <div class="hint" id="genHint" style="display:none;">
       <div>Sem créditos ou deu erro na API? Use a seção de <strong>Prompts de emergência</strong> abaixo para copiar o prompt e colar direto no Gemini pelo navegador.</div>
       <button class="abtn secondary small" id="btnGoToEmergency" type="button" style="margin-top:10px;">Ir para Prompts de emergência</button>
+    </div>
+  </div>
+
+  <!-- TEMAS E SKILLS (dropdown/accordion, fechado por padrão) -->
+  <div class="admin-card">
+    <button class="accordion-toggle" id="skillsToggle" type="button" aria-expanded="false" aria-controls="skillsBody">
+      <h2 style="margin:0;">Temas e Skills</h2>
+      <span class="chev">&#9662;</span>
+    </button>
+    <div class="accordion-body" id="skillsBody">
+      <div class="accordion-body-inner">
+        <p class="admin-desc">Cada tema reúne uma skill de <strong>texto</strong> e uma de <strong>imagem</strong> sempre juntas. Use <code>{tema}</code> no prompt onde o assunto do post deve entrar. Clique no nome de um tema para ver o conteúdo. Você pode criar um tema do zero, a partir de um já existente, ou gerar os prompts com a IA.</p>
+        <label class="edit-mode-toggle">
+          <input type="checkbox" id="themeEditMode">
+          Habilitar edição (mostrar botões Editar/Excluir)
+        </label>
+        <div class="skill-list" id="themeList"></div>
+        <button class="abtn secondary" id="btnNewSkill" type="button">+ Novo tema</button>
+
+        <div class="new-skill-form" id="newSkillForm">
+          <div class="admin-row">
+            <div class="admin-field">
+              <label for="ntNome">Nome do tema</label>
+              <input type="text" id="ntNome" placeholder="Ex: Aulas de reforço para o SSA-2">
+            </div>
+            <div class="admin-field">
+              <label for="ntBase">Basear-se em (opcional)</label>
+              <select id="ntBase"><option value="">— Nenhum, começar do zero —</option></select>
+            </div>
+          </div>
+
+          <div class="admin-field full" style="margin-top:10px;">
+            <label for="ntIaDescricao">Descrição para gerar com IA (opcional)</label>
+            <textarea id="ntIaDescricao" placeholder="Descreva o tema em poucas frases para a IA montar os prompts. Ex: post sobre preparação para o SSA-2, focado em alunos do 2º ano do médio, tom informativo."></textarea>
+            <div class="admin-status" id="ntIaStatus"></div>
+          </div>
+
+          <div class="admin-field full" style="margin-top:10px;">
+            <div class="ia-field-head">
+              <label for="ntTemplateTexto">Skill de TEXTO — prompt (use {tema})</label>
+              <button class="abtn secondary small" id="btnGerarTextoIA" type="button">Gerar com IA</button>
+            </div>
+            <textarea id="ntTemplateTexto" placeholder="Digite ou cole aqui o prompt de texto pronto..." style="min-height:140px;"></textarea>
+          </div>
+
+          <div class="admin-field full" style="margin-top:10px;">
+            <div class="ia-field-head">
+              <label for="ntTemplateImagem">Skill de IMAGEM — prompt (use {tema})</label>
+              <button class="abtn secondary small" id="btnGerarImagemIA" type="button">Gerar com IA</button>
+            </div>
+            <textarea id="ntTemplateImagem" placeholder="Digite ou cole aqui o prompt de imagem pronto..." style="min-height:140px;"></textarea>
+          </div>
+
+          <div class="admin-row" style="margin-top:10px;">
+            <button class="abtn" id="btnSaveSkill" type="button">Salvar tema</button>
+            <button class="abtn ghost" id="btnCancelSkill" type="button">Cancelar</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -155,103 +247,82 @@
           <option value="todos">Todos os meses</option>
         </select>
       </div>
-      <button class="abtn ghost" id="btnClearHistory" type="button">Limpar histórico</button>
     </div>
 
     <p class="storage-info" id="storageInfo"></p>
 
+    <div class="history-bulk-bar">
+      <label><input type="checkbox" id="histSelectAll"> Selecionar todos</label>
+      <button class="abtn small ghost" id="btnDeleteSelected" type="button" disabled>Excluir selecionados (<span id="histSelectedCount">0</span>)</button>
+    </div>
+
     <div class="history-list" id="historyList"></div>
   </div>
 
-  <!-- SKILLS / PROMPTS -->
+  <!-- API KEY (dropdown/accordion, fechado por padrão) -->
   <div class="admin-card">
-    <h2>Skills / Prompts pré-feitos</h2>
-    <p class="admin-desc">Modelos de prompt no estilo da empresa. Use <code>{tema}</code> no texto onde o assunto do post deve entrar.</p>
-    <div class="skill-list" id="skillList"></div>
-    <button class="abtn secondary" id="btnNewSkill" type="button">+ Nova skill</button>
+    <button class="accordion-toggle" id="keysToggle" type="button" aria-expanded="false" aria-controls="keysBody">
+      <h2 style="margin:0;">API Keys do Gemini</h2>
+      <span class="chev">&#9662;</span>
+    </button>
+    <div class="accordion-body" id="keysBody">
+      <div class="accordion-body-inner">
+        <p class="admin-desc">Ficam salvas só neste navegador (localStorage). Você pode cadastrar várias keys: se a ativa ficar sem créditos, o gerador troca automaticamente para a próxima.</p>
 
-    <div class="new-skill-form" id="newSkillForm">
-      <div class="admin-row">
-        <div class="admin-field">
-          <label for="nsName">Nome da skill</label>
-          <input type="text" id="nsName" placeholder="Ex: Post de dica de estudo">
+        <div class="admin-field full">
+          <label for="keySelect">Key ativa</label>
+          <select id="keySelect"></select>
         </div>
-        <div class="admin-field" style="max-width:160px;">
-          <label for="nsType">Tipo</label>
-          <select id="nsType">
-            <option value="texto">Texto</option>
-            <option value="imagem">Imagem</option>
-          </select>
+
+        <div class="key-list" id="keyList"></div>
+
+        <div class="add-key-form">
+          <div class="admin-row">
+            <div class="admin-field" style="max-width:180px;">
+              <label for="newKeyLabel">Nome (opcional)</label>
+              <input type="text" id="newKeyLabel" placeholder="Ex: Key principal">
+            </div>
+            <div class="admin-field" style="flex:2; min-width:260px;">
+              <label for="newKeyValue">API Key</label>
+              <input type="password" id="newKeyValue" placeholder="Cole a API key do Gemini aqui">
+            </div>
+            <button class="abtn secondary" id="btnAddKey" type="button">+ Adicionar key</button>
+            <button class="abtn ghost" id="btnShowNewKey" type="button">Mostrar</button>
+          </div>
+          <div class="admin-status" id="keyStatus"></div>
         </div>
-      </div>
-      <div class="admin-field" style="margin-top:10px;">
-        <label for="nsTemplate">Prompt (use {tema})</label>
-        <textarea id="nsTemplate" placeholder="Escreva aqui o prompt completo..."></textarea>
-      </div>
-      <div class="admin-row" style="margin-top:10px;">
-        <button class="abtn" id="btnSaveSkill" type="button">Salvar skill</button>
-        <button class="abtn ghost" id="btnCancelSkill" type="button">Cancelar</button>
+
+        <div class="admin-row" style="margin-top:1.5rem;">
+          <div class="admin-field">
+            <label for="fModelText">Modelo (texto)</label>
+            <select id="fModelText">
+              <option value="gemini-3.6-pro">gemini-3.6-pro</option>
+              <option value="gemini-3.6-flash">gemini-3.6-flash</option>
+              <option value="gemini-3.6-flash-lite">gemini-3.6-flash-lite</option>
+              <option value="gemini-2.5-pro">gemini-2.5-pro (descontinuado p/ novos usuários)</option>
+              <option value="gemini-2.5-flash">gemini-2.5-flash (descontinuado p/ novos usuários)</option>
+              <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite (descontinuado p/ novos usuários)</option>
+              <option value="__custom__">Outro (personalizado)</option>
+            </select>
+            <input type="text" id="fModelTextCustom" placeholder="Nome exato do modelo" style="margin-top:8px; display:none;">
+          </div>
+          <div class="admin-field">
+            <label for="fModelImage">Modelo (imagem)</label>
+            <select id="fModelImage">
+              <option value="gemini-2.5-flash-image">gemini-2.5-flash-image</option>
+              <option value="gemini-2.0-flash-preview-image-generation">gemini-2.0-flash-preview-image-generation</option>
+              <option value="imagen-4.0-generate-001">imagen-4.0-generate-001</option>
+              <option value="imagen-4.0-ultra-generate-001">imagen-4.0-ultra-generate-001</option>
+              <option value="imagen-3.0-generate-002">imagen-3.0-generate-002</option>
+              <option value="__custom__">Outro (personalizado)</option>
+            </select>
+            <input type="text" id="fModelImageCustom" placeholder="Nome exato do modelo" style="margin-top:8px; display:none;">
+          </div>
+          <button class="abtn" id="btnSaveModels" type="button">Salvar modelos</button>
+        </div>
+        <div class="admin-status" id="modelStatus"></div>
       </div>
     </div>
-  </div>
-
-  <!-- API KEY -->
-  <div class="admin-card">
-    <h2>API Keys do Gemini</h2>
-    <p class="admin-desc">Ficam salvas só neste navegador (localStorage). Você pode cadastrar várias keys: se a ativa ficar sem créditos, o gerador troca automaticamente para a próxima.</p>
-
-    <div class="admin-field full">
-      <label for="keySelect">Key ativa</label>
-      <select id="keySelect"></select>
-    </div>
-
-    <div class="key-list" id="keyList"></div>
-
-    <div class="add-key-form">
-      <div class="admin-row">
-        <div class="admin-field" style="max-width:180px;">
-          <label for="newKeyLabel">Nome (opcional)</label>
-          <input type="text" id="newKeyLabel" placeholder="Ex: Key principal">
-        </div>
-        <div class="admin-field" style="flex:2; min-width:260px;">
-          <label for="newKeyValue">API Key</label>
-          <input type="password" id="newKeyValue" placeholder="Cole a API key do Gemini aqui">
-        </div>
-        <button class="abtn secondary" id="btnAddKey" type="button">+ Adicionar key</button>
-        <button class="abtn ghost" id="btnShowNewKey" type="button">Mostrar</button>
-      </div>
-      <div class="admin-status" id="keyStatus"></div>
-    </div>
-
-    <div class="admin-row" style="margin-top:1.5rem;">
-      <div class="admin-field">
-        <label for="fModelText">Modelo (texto)</label>
-        <select id="fModelText">
-          <option value="gemini-3.6-pro">gemini-3.6-pro</option>
-          <option value="gemini-3.6-flash">gemini-3.6-flash</option>
-          <option value="gemini-3.6-flash-lite">gemini-3.6-flash-lite</option>
-          <option value="gemini-2.5-pro">gemini-2.5-pro (descontinuado p/ novos usuários)</option>
-          <option value="gemini-2.5-flash">gemini-2.5-flash (descontinuado p/ novos usuários)</option>
-          <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite (descontinuado p/ novos usuários)</option>
-          <option value="__custom__">Outro (personalizado)</option>
-        </select>
-        <input type="text" id="fModelTextCustom" placeholder="Nome exato do modelo" style="margin-top:8px; display:none;">
-      </div>
-      <div class="admin-field">
-        <label for="fModelImage">Modelo (imagem)</label>
-        <select id="fModelImage">
-          <option value="gemini-2.5-flash-image">gemini-2.5-flash-image</option>
-          <option value="gemini-2.0-flash-preview-image-generation">gemini-2.0-flash-preview-image-generation</option>
-          <option value="imagen-4.0-generate-001">imagen-4.0-generate-001</option>
-          <option value="imagen-4.0-ultra-generate-001">imagen-4.0-ultra-generate-001</option>
-          <option value="imagen-3.0-generate-002">imagen-3.0-generate-002</option>
-          <option value="__custom__">Outro (personalizado)</option>
-        </select>
-        <input type="text" id="fModelImageCustom" placeholder="Nome exato do modelo" style="margin-top:8px; display:none;">
-      </div>
-      <button class="abtn" id="btnSaveModels" type="button">Salvar modelos</button>
-    </div>
-    <div class="admin-status" id="modelStatus"></div>
   </div>
 
   <!-- EMERGENCIA (dentro de um dropdown/accordion) -->
@@ -298,36 +369,161 @@ const LS_ACTIVE_KEY_ID = 'se_admin_active_key_id';
 const LS_KEY_LEGACY = 'se_admin_gemini_key'; // versão antiga (key única)
 const LS_MODEL_TEXT = 'se_admin_model_text';
 const LS_MODEL_IMAGE = 'se_admin_model_image';
-const LS_SKILLS = 'se_admin_skills';
+const LS_THEMES = 'se_admin_themes';
+const LS_SKILLS = 'se_admin_skills'; // versão antiga (skills soltas texto/imagem) — usada só para migração
+const LS_THEMES_MIGRATED = 'se_admin_themes_migrated_v1';
 const LS_EMERGENCY_TEXT = 'se_admin_emergency_texto';
 const LS_EMERGENCY_IMAGE = 'se_admin_emergency_imagem';
 
-const DEFAULT_SKILLS = [
+const DEFAULT_THEMES = [
   {
-    id: 's1',
-    name: 'Post motivacional (legenda)',
-    type: 'texto',
-    template: `Você é o social media da Sala de Estudo, uma escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, para todas as disciplinas, ENEM e vestibulares). A marca usa azul (#004EB5) e amarelo (#FFD100), tom acolhedor, confiável e motivador, linguagem simples para pais e responsáveis.
-
-Escreva uma legenda de Instagram sobre: {tema}
-
-Regras:
-- 3 a 6 frases curtas, fáceis de ler no celular.
-- Sem jargão pedagógico.
-- Termine com uma chamada para agendar um diagnóstico gratuito.
-- Sugira de 5 a 8 hashtags em português no final.`
+    id: "p01",
+    nome: "Oferta Geral de Reforço Escolar",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Oferta geral de reforço escolar\nObjetivo de comunicação: informar ou vender\nPúblico principal: pais e alunos do fundamental e médio\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Reconheça a dificuldade real do aluno, apresente a proposta de reforço personalizado (todas as matérias, todos os anos) e mencione a modalidade disponível (presencial, online ou domiciliar).\n\nChamada para ação (CTA): agendar uma aula ou conhecer a metodologia pelo WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Oferta geral de reforço escolar\nPúblico principal: pais e alunos do fundamental e médio\n\nDireção visual: foto de aluno estudando ou elemento gráfico neutro, hierarquia clara entre título e CTA, sem texto denso\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
   },
   {
-    id: 's2',
-    name: 'Post educativo (imagem)',
-    type: 'imagem',
-    template: `Crie uma imagem quadrada para Instagram no estilo da marca Sala de Estudo: paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno, acolhedor, com elementos de estudo (livros, cadernos, lápis, quadro), estilo ilustração flat/vetorial, sem nenhum texto embutido na imagem.
-
-Tema da imagem: {tema}`
+    id: "p02",
+    nome: "Matrículas e Captação de Vagas",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Matrículas e captação de vagas\nObjetivo de comunicação: vender\nPúblico principal: pais decidindo matrícula\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Anuncie a abertura de matrículas ou turma, destaque o benefício de agir agora sem inventar urgência, cite a série e modalidade atendidas.\n\nChamada para ação (CTA): reservar a vaga pelo WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Matrículas e captação de vagas\nPúblico principal: pais decidindo matrícula\n\nDireção visual: bloco de destaque com a cor de CTA da marca, ícone de calendário se houver prazo real, layout limpo com uma mensagem só\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p03",
+    nome: "Promoções e Condições Comerciais",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Promoções e condições comerciais\nObjetivo de comunicação: vender\nPúblico principal: pais avaliando custo-benefício\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Apresente a condição comercial, para quem ela vale, a validade e como aproveitar — apenas com dados reais e confirmados.\n\nChamada para ação (CTA): falar no WhatsApp para confirmar a condição\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Promoções e condições comerciais\nPúblico principal: pais avaliando custo-benefício\n\nDireção visual: selo de condição especial, destaque tipográfico para o valor/benefício, alto contraste sem poluir a peça\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p04",
+    nome: "Preparação para Provas e Recuperação",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Preparação para provas e recuperação\nObjetivo de comunicação: informar ou vender\nPúblico principal: alunos em período de avaliação e pais\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Reconheça a pressão do momento de provas e ofereça apoio concreto (revisão, tira-dúvidas), citando a disciplina se houver.\n\nChamada para ação (CTA): agendar uma revisão ou tirar dúvidas pelo WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Preparação para provas e recuperação\nPúblico principal: alunos em período de avaliação e pais\n\nDireção visual: elementos de estudo sem clichê exagerado, tom visual sóbrio e acolhedor\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p05",
+    nome: "ENEM, SSA e Vestibulares",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: ENEM, SSA e vestibulares\nObjetivo de comunicação: informar ou vender\nPúblico principal: alunos do médio se preparando para ENEM, SSA ou vestibular\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Contextualize o exame/etapa, explique o que a turma ou aula oferece (disciplinas, formato) e reforce a preparação especializada.\n\nChamada para ação (CTA): garantir vaga na turma ou saber mais pelo WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: ENEM, SSA e vestibulares\nPúblico principal: alunos do médio se preparando para ENEM, SSA ou vestibular\n\nDireção visual: elementos que remetam ao exame sem copiar identidade oficial, tipografia técnica, hierarquia clara\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p06",
+    nome: "Disciplinas e Conteúdos Escolares",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Disciplinas e conteúdos escolares\nObjetivo de comunicação: informar\nPúblico principal: alunos e pais com dificuldade numa matéria específica\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Nomeie dificuldades comuns da disciplina em questão e explique como a Sala de Estudo apoia o aluno nela.\n\nChamada para ação (CTA): agendar aula da disciplina ou mandar dúvida pelo WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Disciplinas e conteúdos escolares\nPúblico principal: alunos e pais com dificuldade numa matéria específica\n\nDireção visual: ícone ou cor associada à disciplina dentro da paleta da marca, imagem de material didático genérico\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p07",
+    nome: "Resultados, Feedbacks e Aprovação",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Resultados, feedbacks e aprovação\nObjetivo de comunicação: provar resultado ou celebrar\nPúblico principal: pais buscando validação antes de matricular\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Conte o caso real (com autorização), a evolução relatada e agradeça a confiança da família, sem inventar números ou nomes.\n\nChamada para ação (CTA): conhecer a Sala de Estudo (CTA suave, não é o foco do post)\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Resultados, feedbacks e aprovação\nPúblico principal: pais buscando validação antes de matricular\n\nDireção visual: formato de citação/aspas, foto real se autorizada ou fundo neutro da marca, tom humano e não comercial\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p08",
+    nome: "Motivação e Coaching do Estudante",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Motivação e coaching do estudante\nObjetivo de comunicação: motivar\nPúblico principal: estudantes de todas as idades\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Crie uma frase motivacional original conectada à rotina de estudos, sem tom comercial forte e sem culpabilizar quem tem dificuldade.\n\nChamada para ação (CTA): nenhum CTA comercial obrigatório\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Motivação e coaching do estudante\nPúblico principal: estudantes de todas as idades\n\nDireção visual: tipografia como protagonista, composição limpa, paleta da marca em tom mais suave\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p09",
+    nome: "Educação e Valorização do Estudo",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Educação e valorização do estudo\nObjetivo de comunicação: informar ou motivar\nPúblico principal: pais e alunos em geral\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Reforce o valor da educação e do conhecimento, conectando com uma dica prática ou reflexão real sobre rotina de estudos.\n\nChamada para ação (CTA): acompanhar a página ou conhecer o trabalho da Sala de Estudo\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Educação e valorização do estudo\nPúblico principal: pais e alunos em geral\n\nDireção visual: visual institucional mais sóbrio, elementos como livro, caderno ou ambiente de estudo\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p10",
+    nome: "Datas Comemorativas e Saudações",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Datas comemorativas e saudações\nObjetivo de comunicação: celebrar ou motivar\nPúblico principal: toda a base de seguidores\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Escreva uma saudação original para a data comemorativa, conectando com o universo escolar, sem repetir frases de anos anteriores.\n\nChamada para ação (CTA): nenhum CTA comercial obrigatório\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Datas comemorativas e saudações\nPúblico principal: toda a base de seguidores\n\nDireção visual: elementos visuais sazonais combinados à identidade da marca, sem clichês genéricos de banco de imagens\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p11",
+    nome: "Equipe, Professores e Cultura Interna",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Equipe, professores e cultura interna\nObjetivo de comunicação: celebrar ou informar\nPúblico principal: comunidade em geral e pais\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Apresente o contexto do profissional ou da equipe (com autorização), destacando uma qualidade real e específica, com tom acolhedor.\n\nChamada para ação (CTA): nenhum CTA comercial obrigatório\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Equipe, professores e cultura interna\nPúblico principal: comunidade em geral e pais\n\nDireção visual: foto real do ambiente/equipe com autorização, tom caloroso e autêntico, evitando estúdio genérico\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p12",
+    nome: "Institucional, Endereço e Contato",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Institucional, endereço e contato\nObjetivo de comunicação: informar ou vender\nPúblico principal: pais e alunos da região da Jaqueira, Recife\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Reforce a localização e facilidade de acesso, convide para conhecer o espaço presencialmente e informe os canais de contato reais.\n\nChamada para ação (CTA): agendar visita ou chamar no WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Institucional, endereço e contato\nPúblico principal: pais e alunos da região da Jaqueira, Recife\n\nDireção visual: foto real do espaço físico quando disponível, ícone de localização, paleta institucional\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p13",
+    nome: "Horários, Feriados e Funcionamento",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Horários, feriados e funcionamento\nObjetivo de comunicação: informar\nPúblico principal: alunos e pais que precisam saber sobre disponibilidade de atendimento\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Anuncie com clareza a mudança de funcionamento, o período exato e o que muda na prática, em tom objetivo e não promocional.\n\nChamada para ação (CTA): falar no WhatsApp em caso de dúvidas sobre o horário\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Horários, feriados e funcionamento\nPúblico principal: alunos e pais que precisam saber sobre disponibilidade de atendimento\n\nDireção visual: layout de aviso/comunicado, ícone de relógio ou calendário, tipografia objetiva e legível\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p14",
+    nome: "Modalidades e Formatos de Aula",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Modalidades e formatos de aula\nObjetivo de comunicação: informar ou vender\nPúblico principal: pais e alunos avaliando o formato de aula ideal\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Explique como funciona a modalidade (presencial, online, domiciliar, individual, em grupo), para quem é mais indicada e o benefício prático.\n\nChamada para ação (CTA): saber mais sobre a modalidade pelo WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Modalidades e formatos de aula\nPúblico principal: pais e alunos avaliando o formato de aula ideal\n\nDireção visual: ícones representando cada modalidade dentro da paleta da marca\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p15",
+    nome: "Orientação Vocacional e Carreira",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Orientação vocacional e carreira\nObjetivo de comunicação: informar ou motivar\nPúblico principal: estudantes do médio em fase de decisão profissional\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Levante a dúvida comum sobre escolha profissional e ofereça uma reflexão ou dica prática, em tom reflexivo, não prescritivo.\n\nChamada para ação (CTA): conversar sobre o assunto com a equipe (CTA leve)\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Orientação vocacional e carreira\nPúblico principal: estudantes do médio em fase de decisão profissional\n\nDireção visual: elementos que remetam a caminhos e decisão de forma sutil, paleta institucional\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p16",
+    nome: "Infância, Alfabetização e Ensino Fundamental I",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Infância, alfabetização e ensino fundamental\nObjetivo de comunicação: informar ou vender\nPúblico principal: pais de crianças em fase de alfabetização ou fundamental I\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Reconheça a importância dessa fase inicial e apresente o suporte oferecido (apoio a tarefas, alfabetização), em tom acolhedor.\n\nChamada para ação (CTA): saber mais pelo WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Infância, alfabetização e ensino fundamental\nPúblico principal: pais de crianças em fase de alfabetização ou fundamental I\n\nDireção visual: cores mais lúdicas dentro da paleta da marca, imagem de criança estudando com autorização ou ilustração amigável\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p17",
+    nome: "Formato: Carrossel Educativo",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Transversal — combine com qualquer pilar estruturável em etapas\nObjetivo de comunicação: informar, motivar ou vender\nPúblico principal: varia conforme o pilar combinado\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Estruture o conteúdo em slides: capa com gancho, um ponto por slide intermediário, e um slide final com síntese e CTA.\n\nChamada para ação (CTA): depende do pilar combinado — salvar, compartilhar, agendar aula ou saber mais\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Transversal — combine com qualquer pilar estruturável em etapas\nPúblico principal: varia conforme o pilar combinado\n\nDireção visual: estrutura visual consistente entre slides, mesma grade e paleta, capa com maior contraste para parar o scroll\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p18",
+    nome: "Formato: Reel de Engajamento",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Transversal — combine com qualquer pilar adaptável a vídeo\nObjetivo de comunicação: motivar, informar ou vender\nPúblico principal: varia conforme o pilar combinado\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Descreva um roteiro curto de reel: gancho nos 2 primeiros segundos, 2 a 3 cenas de desenvolvimento, texto na tela reforçando pontos-chave e CTA final.\n\nChamada para ação (CTA): depende do pilar combinado — agendar aula, seguir a página, comentar ou compartilhar\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Transversal — combine com qualquer pilar adaptável a vídeo\nPúblico principal: varia conforme o pilar combinado\n\nDireção visual: enquadramento vertical, boa iluminação, texto legível mesmo sem áudio, fechamento com logo/contato\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "legado_texto",
+    nome: "Post motivacional (legenda)",
+    templateTexto: "Você é o social media da Sala de Estudo, uma escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, para todas as disciplinas, ENEM e vestibulares). A marca usa azul (#004EB5) e amarelo (#FFD100), tom acolhedor, confiável e motivador, linguagem simples para pais e responsáveis.\n\nEscreva uma legenda de Instagram sobre: {tema}\n\nRegras:\n- 3 a 6 frases curtas, fáceis de ler no celular.\n- Sem jargão pedagógico.\n- Termine com uma chamada para agendar um diagnóstico gratuito.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "",
+    origem: "padrao"
+  },
+  {
+    id: "legado_imagem",
+    nome: "Post educativo (imagem)",
+    templateTexto: "",
+    templateImagem: "Crie uma imagem quadrada para Instagram no estilo da marca Sala de Estudo: paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno, acolhedor, com elementos de estudo (livros, cadernos, lápis, quadro), estilo ilustração flat/vetorial, sem nenhum texto embutido na imagem.\n\nTema da imagem: {tema}",
+    origem: "padrao"
   }
 ];
 
-const DEFAULT_EMERGENCY_TEXT = `Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, para todas as disciplinas, ENEM e vestibulares). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, confiável e motivador.
+// conteúdo original das duas skills padrão (usado pela migração para não duplicar
+// quando o navegador já tinha essas duas skills antigas, sem edição do usuário)
+const LEGACY_DEFAULT_TEXTO = DEFAULT_THEMES.find(function(t){ return t.id === 'legado_texto'; }).templateTexto;
+const LEGACY_DEFAULT_IMAGEM = DEFAULT_THEMES.find(function(t){ return t.id === 'legado_imagem'; }).templateImagem;
+
+const DEFAULT_EMERGENCY_TEXT =`Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, para todas as disciplinas, ENEM e vestibulares). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, confiável e motivador.
 
 Escreva uma legenda de Instagram sobre: [COLOQUE O TEMA AQUI]
 
@@ -341,16 +537,83 @@ const DEFAULT_EMERGENCY_IMAGE = `Crie uma imagem quadrada para Instagram no esti
 
 Tema da imagem: [COLOQUE O TEMA AQUI]`;
 
-// ---------- SKILLS ----------
-function getSkills(){
+// ---------- ACCORDIONS (skills, keys, emergência) ----------
+function setupAccordion(toggleId, bodyId){
+  const toggle = document.getElementById(toggleId);
+  const body = document.getElementById(bodyId);
+  const card = toggle.closest('.admin-card');
+  toggle.addEventListener('click', function(){
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    body.classList.toggle('open', !expanded);
+  });
+  // com o dropdown fechado, clicar em qualquer parte do card (não só no texto/seta
+  // do cabeçalho) também abre — maior área de clique, mais fácil de acertar.
+  if(card){
+    card.addEventListener('click', function(e){
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      if(isOpen) return; // já aberto: não interfere em cliques dentro do conteúdo
+      if(e.target === toggle || toggle.contains(e.target)) return; // o próprio botão já cuida do clique
+      toggle.click();
+    });
+  }
+  return {
+    open: function(){
+      toggle.setAttribute('aria-expanded', 'true');
+      body.classList.add('open');
+    }
+  };
+}
+
+// ---------- TEMAS E SKILLS ----------
+let editingThemeId = null;
+
+function getThemes(){
   try{
-    const raw = localStorage.getItem(LS_SKILLS);
+    const raw = localStorage.getItem(LS_THEMES);
     if(raw) return JSON.parse(raw);
   }catch(e){}
-  localStorage.setItem(LS_SKILLS, JSON.stringify(DEFAULT_SKILLS));
-  return DEFAULT_SKILLS.slice();
+  localStorage.setItem(LS_THEMES, JSON.stringify(DEFAULT_THEMES));
+  return DEFAULT_THEMES.slice();
 }
-function saveSkills(list){ localStorage.setItem(LS_SKILLS, JSON.stringify(list)); }
+function saveThemes(list){ localStorage.setItem(LS_THEMES, JSON.stringify(list)); }
+
+// migra as skills soltas do formato antigo (texto/imagem separadas, sem vínculo)
+// para o novo modelo de temas (texto + imagem sempre juntos). Roda só uma vez.
+function migrateOldSkillsToThemes(){
+  if(localStorage.getItem(LS_THEMES_MIGRATED)) return;
+  try{
+    const raw = localStorage.getItem(LS_SKILLS);
+    if(raw){
+      const oldSkills = JSON.parse(raw);
+      if(Array.isArray(oldSkills) && oldSkills.length){
+        const current = getThemes();
+        oldSkills.forEach(function(s){
+          // as duas skills padrão originais (sem edição do usuário) já existem
+          // como temas "Post motivacional (legenda)" e "Post educativo (imagem)" —
+          // só migra aqui se o conteúdo tiver sido alterado ou for uma skill extra.
+          const isUntouchedDefaultTexto = s.type === 'texto' && s.template === LEGACY_DEFAULT_TEXTO;
+          const isUntouchedDefaultImagem = s.type === 'imagem' && s.template === LEGACY_DEFAULT_IMAGEM;
+          if(isUntouchedDefaultTexto || isUntouchedDefaultImagem) return;
+          // evita nome duplicado/confuso quando a skill editada tinha o mesmo nome de um tema padrão
+          let nome = s.name;
+          if(current.some(function(t){ return t.nome === nome; })){
+            nome = nome + ' (versão salva anteriormente)';
+          }
+          current.push({
+            id: 'migrado_' + s.id,
+            nome: nome,
+            templateTexto: s.type === 'texto' ? s.template : '',
+            templateImagem: s.type === 'imagem' ? s.template : '',
+            origem: 'personalizado'
+          });
+        });
+        saveThemes(current);
+      }
+    }
+  }catch(e){ console.error('Falha ao migrar skills antigas para temas:', e); }
+  localStorage.setItem(LS_THEMES_MIGRATED, '1');
+}
 
 function escapeHtml(str){
   return String(str).replace(/[&<>"']/g, function(c){
@@ -358,70 +621,197 @@ function escapeHtml(str){
   });
 }
 
-function renderSkillList(){
-  const list = getSkills();
-  const el = document.getElementById('skillList');
-  const genSelect = document.getElementById('genSkill');
+function renderThemeList(){
+  const list = getThemes();
+  const el = document.getElementById('themeList');
+  const genSelect = document.getElementById('genTheme');
+  const baseSelect = document.getElementById('ntBase');
   const prevGenValue = genSelect.value;
+  const prevBaseValue = baseSelect.value;
+  const editMode = document.getElementById('themeEditMode').checked;
   el.innerHTML = '';
+  el.classList.toggle('edit-mode', editMode);
   genSelect.innerHTML = '';
-  list.forEach(function(skill){
+  baseSelect.innerHTML = '<option value="">— Nenhum, começar do zero —</option>';
+
+  list.forEach(function(theme){
     const item = document.createElement('div');
     item.className = 'skill-item';
+    const origemTag = theme.origem === 'ia' ? '<span class="theme-origin ia">gerado por ia</span>' : (theme.origem === 'personalizado' ? '<span class="theme-origin">personalizado</span>' : '');
+    const themeToggleId = 'themeToggle_' + theme.id;
+    const themeBodyId = 'themeBody_' + theme.id;
     item.innerHTML =
       '<div class="skill-item-head">' +
-        '<div><strong>' + escapeHtml(skill.name) + '</strong> ' +
-        '<span class="skill-tag ' + skill.type + '">' + skill.type + '</span></div>' +
+        '<button class="theme-toggle" id="' + themeToggleId + '" type="button" aria-expanded="false" aria-controls="' + themeBodyId + '">' +
+          '<span><strong>' + escapeHtml(theme.nome) + '</strong>' + origemTag + '</span>' +
+          '<span class="chev">&#9662;</span>' +
+        '</button>' +
         '<div class="skill-item-actions">' +
-          '<button data-del="' + skill.id + '">Excluir</button>' +
+          '<button data-edit="' + theme.id + '">Editar</button>' +
+          '<button data-del="' + theme.id + '">Excluir</button>' +
         '</div>' +
       '</div>' +
-      '<pre>' + escapeHtml(skill.template) + '</pre>';
+      '<div class="theme-body" id="' + themeBodyId + '">' +
+        '<div class="theme-body-inner">' +
+          '<div class="theme-subblock">' +
+            '<div class="subblock-head">' +
+              '<span class="skill-tag texto">texto</span>' +
+              '<div class="prompt-actions">' +
+                '<button type="button" data-copy-prompt="' + theme.id + '" data-prompt-field="templateTexto"' + (theme.templateTexto ? '' : ' disabled') + '>Copiar</button>' +
+                '<button type="button" class="use-prompt" data-use-prompt="' + theme.id + '" data-use-type="texto"' + (theme.templateTexto ? '' : ' disabled') + '>+ Usar</button>' +
+              '</div>' +
+            '</div>' +
+            '<pre>' + (theme.templateTexto ? escapeHtml(theme.templateTexto) : '(sem prompt de texto configurado)') + '</pre>' +
+          '</div>' +
+          '<div class="theme-subblock">' +
+            '<div class="subblock-head">' +
+              '<span class="skill-tag imagem">imagem</span>' +
+              '<div class="prompt-actions">' +
+                '<button type="button" data-copy-prompt="' + theme.id + '" data-prompt-field="templateImagem"' + (theme.templateImagem ? '' : ' disabled') + '>Copiar</button>' +
+                '<button type="button" class="use-prompt" data-use-prompt="' + theme.id + '" data-use-type="imagem"' + (theme.templateImagem ? '' : ' disabled') + '>+ Usar</button>' +
+              '</div>' +
+            '</div>' +
+            '<pre>' + (theme.templateImagem ? escapeHtml(theme.templateImagem) : '(sem prompt de imagem configurado)') + '</pre>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
     el.appendChild(item);
 
     const opt = document.createElement('option');
-    opt.value = skill.id;
-    opt.textContent = skill.name + ' (' + skill.type + ')';
+    opt.value = theme.id;
+    opt.textContent = theme.nome;
     genSelect.appendChild(opt);
+
+    const baseOpt = document.createElement('option');
+    baseOpt.value = theme.id;
+    baseOpt.textContent = theme.nome;
+    baseSelect.appendChild(baseOpt);
   });
-  if(prevGenValue && list.some(function(s){ return s.id === prevGenValue; })){
+
+  if(prevGenValue && list.some(function(t){ return t.id === prevGenValue; })){
     genSelect.value = prevGenValue;
   }
+  if(prevBaseValue && list.some(function(t){ return t.id === prevBaseValue; })){
+    baseSelect.value = prevBaseValue;
+  }
+
+  // dropdown individual de cada tema (fechado por padrão, clique no título abre/fecha)
+  el.querySelectorAll('.theme-toggle').forEach(function(toggle){
+    const body = document.getElementById(toggle.getAttribute('aria-controls'));
+    toggle.addEventListener('click', function(){
+      const expanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!expanded));
+      body.classList.toggle('open', !expanded);
+    });
+  });
 
   el.querySelectorAll('[data-del]').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      if(!confirm('Excluir esta skill?')) return;
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(!confirm('Excluir este tema (skill de texto e de imagem)?')) return;
       const id = btn.getAttribute('data-del');
-      const newList = getSkills().filter(function(s){ return s.id !== id; });
-      saveSkills(newList);
-      renderSkillList();
+      const newList = getThemes().filter(function(t){ return t.id !== id; });
+      saveThemes(newList);
+      if(editingThemeId === id) closeThemeForm();
+      renderThemeList();
+    });
+  });
+
+  el.querySelectorAll('[data-edit]').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const id = btn.getAttribute('data-edit');
+      const theme = getThemes().find(function(t){ return t.id === id; });
+      if(!theme) return;
+      openThemeForm(theme);
+    });
+  });
+
+  el.querySelectorAll('[data-copy-prompt]').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const id = btn.getAttribute('data-copy-prompt');
+      const field = btn.getAttribute('data-prompt-field');
+      const theme = getThemes().find(function(t){ return t.id === id; });
+      if(!theme || !theme[field]) return;
+      copyText(theme[field]);
+      const original = btn.textContent;
+      btn.textContent = 'Copiado!';
+      setTimeout(function(){ btn.textContent = original; }, 1500);
+    });
+  });
+
+  el.querySelectorAll('[data-use-prompt]').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const id = btn.getAttribute('data-use-prompt');
+      const type = btn.getAttribute('data-use-type');
+      useThemeInGenerator(id, type);
     });
   });
 
   renderEmergencySkillSelects();
 }
 
+// seleciona o tema/tipo no Gerador de conteúdo e rola a tela até lá
+function useThemeInGenerator(themeId, type){
+  const genSelect = document.getElementById('genTheme');
+  const genTypeSelect = document.getElementById('genType');
+  genSelect.value = themeId;
+  genTypeSelect.value = type;
+  const genCard = document.getElementById('genTheme').closest('.admin-card');
+  genCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const tema = document.getElementById('genTema');
+  if(tema) tema.focus();
+}
+
+function openThemeForm(theme){
+  editingThemeId = theme ? theme.id : null;
+  document.getElementById('ntNome').value = theme ? theme.nome : '';
+  document.getElementById('ntTemplateTexto').value = theme ? (theme.templateTexto || '') : '';
+  document.getElementById('ntTemplateImagem').value = theme ? (theme.templateImagem || '') : '';
+  document.getElementById('ntIaDescricao').value = '';
+  document.getElementById('ntBase').value = '';
+  document.getElementById('ntIaStatus').textContent = '';
+  document.getElementById('btnSaveSkill').textContent = theme ? 'Salvar alterações' : 'Salvar tema';
+  const form = document.getElementById('newSkillForm');
+  form.classList.add('open');
+  form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeThemeForm(){
+  editingThemeId = null;
+  document.getElementById('newSkillForm').classList.remove('open');
+  document.getElementById('ntNome').value = '';
+  document.getElementById('ntTemplateTexto').value = '';
+  document.getElementById('ntTemplateImagem').value = '';
+  document.getElementById('ntIaDescricao').value = '';
+  document.getElementById('ntBase').value = '';
+  document.getElementById('ntIaStatus').textContent = '';
+  document.getElementById('btnSaveSkill').textContent = 'Salvar tema';
+}
+
 function renderEmergencySkillSelects(){
-  const list = getSkills();
-  [['emTextoSkillSelect','texto'], ['emImagemSkillSelect','imagem']].forEach(function(pair){
+  const list = getThemes();
+  [['emTextoSkillSelect','templateTexto'], ['emImagemSkillSelect','templateImagem']].forEach(function(pair){
     const selectEl = document.getElementById(pair[0]);
     if(!selectEl) return;
-    const filtered = list.filter(function(s){ return s.type === pair[1]; });
+    const filtered = list.filter(function(t){ return t[pair[1]]; });
     const prev = selectEl.value;
     selectEl.innerHTML = '';
     if(!filtered.length){
-      selectEl.innerHTML = '<option value="">Nenhuma skill de ' + pair[1] + ' salva</option>';
+      selectEl.innerHTML = '<option value="">Nenhum tema com esse tipo de prompt salvo</option>';
       selectEl.disabled = true;
       return;
     }
     selectEl.disabled = false;
-    filtered.forEach(function(skill){
+    filtered.forEach(function(theme){
       const opt = document.createElement('option');
-      opt.value = skill.id;
-      opt.textContent = skill.name;
+      opt.value = theme.id;
+      opt.textContent = theme.nome;
       selectEl.appendChild(opt);
     });
-    if(prev && filtered.some(function(s){ return s.id === prev; })) selectEl.value = prev;
+    if(prev && filtered.some(function(t){ return t.id === prev; })) selectEl.value = prev;
   });
 }
 
@@ -431,11 +821,13 @@ function setupEmergencySkillInsert(){
     btn.addEventListener('click', function(){
       const targetId = btn.getAttribute('data-insert-skill');
       const selectId = btn.getAttribute('data-skill-select');
-      const skillId = document.getElementById(selectId).value;
-      const skill = getSkills().find(function(s){ return s.id === skillId; });
-      if(!skill){ return; }
+      const themeId = document.getElementById(selectId).value;
+      const theme = getThemes().find(function(t){ return t.id === themeId; });
+      if(!theme){ return; }
+      const field = targetId === 'emTexto' ? 'templateTexto' : 'templateImagem';
+      const template = theme[field] || '';
       const textarea = document.getElementById(targetId);
-      const filled = skill.template.replace(/\{tema\}/gi, '[COLOQUE O TEMA AQUI]');
+      const filled = template.replace(/\{tema\}/gi, '[COLOQUE O TEMA AQUI]');
       textarea.value = filled;
       const storageKey = targetId === 'emTexto' ? LS_EMERGENCY_TEXT : LS_EMERGENCY_IMAGE;
       localStorage.setItem(storageKey, filled);
@@ -447,26 +839,102 @@ function setupEmergencySkillInsert(){
 }
 
 document.getElementById('btnNewSkill').addEventListener('click', function(){
-  document.getElementById('newSkillForm').classList.add('open');
+  openThemeForm(null);
 });
 document.getElementById('btnCancelSkill').addEventListener('click', function(){
-  document.getElementById('newSkillForm').classList.remove('open');
-  document.getElementById('nsName').value = '';
-  document.getElementById('nsTemplate').value = '';
+  closeThemeForm();
 });
 document.getElementById('btnSaveSkill').addEventListener('click', function(){
-  const name = document.getElementById('nsName').value.trim();
-  const type = document.getElementById('nsType').value;
-  const template = document.getElementById('nsTemplate').value.trim();
-  if(!name || !template){ alert('Preencha nome e prompt.'); return; }
-  const list = getSkills();
-  list.push({ id: 's' + Date.now(), name: name, type: type, template: template });
-  saveSkills(list);
-  document.getElementById('newSkillForm').classList.remove('open');
-  document.getElementById('nsName').value = '';
-  document.getElementById('nsTemplate').value = '';
-  renderSkillList();
+  const nome = document.getElementById('ntNome').value.trim();
+  const templateTexto = document.getElementById('ntTemplateTexto').value.trim();
+  const templateImagem = document.getElementById('ntTemplateImagem').value.trim();
+  if(!nome){ alert('Dê um nome ao tema.'); return; }
+  if(!templateTexto && !templateImagem){ alert('Preencha ao menos o prompt de texto ou o de imagem.'); return; }
+  const list = getThemes();
+  if(editingThemeId){
+    const idx = list.findIndex(function(t){ return t.id === editingThemeId; });
+    if(idx >= 0){
+      list[idx] = Object.assign({}, list[idx], { nome: nome, templateTexto: templateTexto, templateImagem: templateImagem });
+    }
+  } else {
+    list.push({ id: 't' + Date.now(), nome: nome, templateTexto: templateTexto, templateImagem: templateImagem, origem: 'personalizado' });
+  }
+  saveThemes(list);
+  closeThemeForm();
+  renderThemeList();
 });
+
+document.getElementById('ntBase').addEventListener('change', function(){
+  const id = this.value;
+  if(!id) return;
+  const base = getThemes().find(function(t){ return t.id === id; });
+  if(!base) return;
+  if(!editingThemeId && !document.getElementById('ntNome').value.trim()){
+    document.getElementById('ntNome').value = base.nome + ' (cópia)';
+  }
+  document.getElementById('ntTemplateTexto').value = base.templateTexto || '';
+  document.getElementById('ntTemplateImagem').value = base.templateImagem || '';
+});
+
+// ---------- GERAÇÃO DE TEMA/SKILL COM IA ----------
+function buildThemeMetaPrompt(kind, description, baseTemplate){
+  const brand = 'Marca: Sala de Estudo, reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Paleta azul (#004EB5) e amarelo (#FFD100). Tom acolhedor, direto, educativo e local, sem promessas de aprovação ou nota garantida.';
+  const refBlock = baseTemplate ? ('Use como referência de padrão/estrutura este template de outro tema (não copie o conteúdo, apenas o padrão de estrutura):\n"""\n' + baseTemplate + '\n"""\n') : '';
+  if(kind === 'texto'){
+    return 'Você é um especialista em criar templates de prompt reutilizáveis para gerar legendas de Instagram.\n' + brand + '\n\n' +
+      'Crie um TEMPLATE DE PROMPT (não escreva o post em si) para o seguinte tema de post: "' + description + '"\n' + refBlock +
+      '\nO template final deve:\n' +
+      '- Explicar o papel do social media e o contexto da marca.\n' +
+      '- Instruir a escrever a legenda sobre o assunto indicado, usando exatamente o texto literal {tema} no lugar do assunto do post (não substitua {tema} por nada).\n' +
+      '- Trazer regras: não inventar preço, data, telefone, horário, vaga ou resultado; não prometer aprovação ou nota; sugerir de 5 a 8 hashtags em português no final.\n\n' +
+      'Responda apenas com o texto final do template, sem explicações, comentários ou marcações extras — e mantenha {tema} literal no texto.';
+  }
+  return 'Você é um especialista em criar templates de prompt reutilizáveis para gerar imagens de Instagram com IA generativa.\n' + brand + '\n\n' +
+    'Crie um TEMPLATE DE PROMPT DE IMAGEM (não descreva uma imagem específica, crie um molde reutilizável) para o seguinte tema de post: "' + description + '"\n' + refBlock +
+    '\nO template final deve:\n' +
+    '- Descrever a composição, paleta (azul #004EB5 e amarelo #FFD100), estilo visual e elementos, de forma genérica o suficiente para ser reutilizado.\n' +
+    '- Usar exatamente o texto literal {tema} no lugar do assunto específico da imagem (não substitua {tema} por nada).\n' +
+    '- Evitar clichês genéricos de banco de imagens e não copiar composições de posts já publicados.\n\n' +
+    'Responda apenas com o texto final do template, sem explicações, comentários ou marcações extras — e mantenha {tema} literal no texto.';
+}
+
+function setupThemeAIGeneration(kind, buttonId, textareaId){
+  document.getElementById(buttonId).addEventListener('click', async function(){
+    const btn = this;
+    const statusEl = document.getElementById('ntIaStatus');
+    const description = document.getElementById('ntIaDescricao').value.trim();
+    if(!description){
+      statusEl.textContent = 'Descreva o tema desejado no campo acima antes de gerar com IA.';
+      statusEl.className = 'admin-status err';
+      return;
+    }
+    if(!getKeys().length){
+      statusEl.textContent = 'Cadastre sua API key do Gemini primeiro (seção API Keys do Gemini).';
+      statusEl.className = 'admin-status err';
+      return;
+    }
+    const baseId = document.getElementById('ntBase').value;
+    const baseTheme = baseId ? getThemes().find(function(t){ return t.id === baseId; }) : null;
+    const baseTemplate = baseTheme ? (kind === 'texto' ? baseTheme.templateTexto : baseTheme.templateImagem) : '';
+    const metaPrompt = buildThemeMetaPrompt(kind, description, baseTemplate);
+
+    btn.disabled = true;
+    statusEl.textContent = 'Gerando prompt de ' + kind + ' com IA...';
+    statusEl.className = 'admin-status';
+    try{
+      const model = localStorage.getItem(LS_MODEL_TEXT) || 'gemini-3.6-flash';
+      const result = await generateWithFailover('texto', model, metaPrompt, statusEl);
+      document.getElementById(textareaId).value = result.trim();
+      statusEl.textContent = 'Prompt de ' + kind + ' gerado. Revise antes de salvar o tema.';
+      statusEl.className = 'admin-status ok';
+    }catch(err){
+      statusEl.textContent = 'Erro ao gerar com IA: ' + err.message;
+      statusEl.className = 'admin-status err';
+    }finally{
+      btn.disabled = false;
+    }
+  });
+}
 
 // ---------- API KEYS (múltiplas) ----------
 function getKeys(){
@@ -650,6 +1118,7 @@ const HIST_DB_NAME = 'se_admin_history_db';
 const HIST_DB_VERSION = 1;
 const HIST_STORE = 'items';
 const STORAGE_PRUNE_THRESHOLD = 0.8; // 80%
+let historySelectedIds = new Set();
 
 function openHistoryDB(){
   return new Promise(function(resolve, reject){
@@ -708,20 +1177,6 @@ async function deleteHistoryItem(id){
     });
   }catch(e){
     console.error('Não foi possível excluir o item do histórico:', e);
-  }
-}
-
-async function clearAllHistoryItems(){
-  try{
-    const db = await openHistoryDB();
-    await new Promise(function(resolve, reject){
-      const tx = db.transaction(HIST_STORE, 'readwrite');
-      tx.objectStore(HIST_STORE).clear();
-      tx.oncomplete = resolve;
-      tx.onerror = function(e){ reject(e.target.error); };
-    });
-  }catch(e){
-    console.error('Não foi possível limpar o histórico:', e);
   }
 }
 
@@ -800,6 +1255,18 @@ function historyDateLabel(ts){
   return d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 }
 
+function updateBulkDeleteBar(visibleIds){
+  const countEl = document.getElementById('histSelectedCount');
+  const btn = document.getElementById('btnDeleteSelected');
+  const selectAll = document.getElementById('histSelectAll');
+  // remove da seleção qualquer id que não esteja mais visível na lista atual
+  historySelectedIds = new Set(Array.from(historySelectedIds).filter(function(id){ return visibleIds.indexOf(id) >= 0; }));
+  countEl.textContent = String(historySelectedIds.size);
+  btn.disabled = historySelectedIds.size === 0;
+  selectAll.checked = visibleIds.length > 0 && historySelectedIds.size === visibleIds.length;
+  selectAll.indeterminate = historySelectedIds.size > 0 && historySelectedIds.size < visibleIds.length;
+}
+
 async function renderHistory(){
   const listEl = document.getElementById('historyList');
   const typeFilter = document.getElementById('histTypeFilter').value;
@@ -816,6 +1283,8 @@ async function renderHistory(){
   }
 
   listEl.innerHTML = '';
+  updateBulkDeleteBar(items.map(function(it){ return it.id; }));
+
   if(!items.length){
     listEl.innerHTML = '<div class="history-empty">Nenhum conteúdo gerado ainda com esses filtros.</div>';
     return;
@@ -823,7 +1292,19 @@ async function renderHistory(){
 
   items.forEach(function(it){
     const row = document.createElement('div');
-    row.className = 'history-item';
+    row.className = 'history-item' + (historySelectedIds.has(it.id) ? ' selected' : '');
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'history-checkbox';
+    checkbox.checked = historySelectedIds.has(it.id);
+    checkbox.addEventListener('change', function(){
+      if(checkbox.checked) historySelectedIds.add(it.id);
+      else historySelectedIds.delete(it.id);
+      row.classList.toggle('selected', checkbox.checked);
+      updateBulkDeleteBar(items.map(function(x){ return x.id; }));
+    });
+    row.appendChild(checkbox);
 
     const thumb = document.createElement(it.type === 'imagem' ? 'img' : 'div');
     thumb.className = 'history-thumb' + (it.type === 'texto' ? ' is-text' : '');
@@ -871,6 +1352,7 @@ async function renderHistory(){
     delBtn.textContent = 'Excluir';
     delBtn.addEventListener('click', async function(){
       if(!confirm('Excluir este item do histórico?')) return;
+      historySelectedIds.delete(it.id);
       await deleteHistoryItem(it.id);
       await renderMonthFilterOptions();
       await renderHistory();
@@ -902,9 +1384,31 @@ async function saveToHistory(type, content, tema, skillName){
 
 document.getElementById('histTypeFilter').addEventListener('change', renderHistory);
 document.getElementById('histMonthFilter').addEventListener('change', renderHistory);
-document.getElementById('btnClearHistory').addEventListener('click', async function(){
-  if(!confirm('Tem certeza que deseja apagar TODO o histórico de textos e imagens gerados? Essa ação não pode ser desfeita.')) return;
-  await clearAllHistoryItems();
+
+document.getElementById('histSelectAll').addEventListener('change', async function(){
+  const checked = this.checked;
+  const visibleItems = await getAllHistoryItems();
+  const typeFilter = document.getElementById('histTypeFilter').value;
+  const monthFilter = document.getElementById('histMonthFilter').value;
+  let filtered = visibleItems;
+  if(typeFilter !== 'todos') filtered = filtered.filter(function(it){ return it.type === typeFilter; });
+  if(monthFilter !== 'todos') filtered = filtered.filter(function(it){ return historyMonthKey(it.createdAt) === monthFilter; });
+  if(checked){
+    filtered.forEach(function(it){ historySelectedIds.add(it.id); });
+  } else {
+    filtered.forEach(function(it){ historySelectedIds.delete(it.id); });
+  }
+  await renderHistory();
+});
+
+document.getElementById('btnDeleteSelected').addEventListener('click', async function(){
+  if(!historySelectedIds.size) return;
+  if(!confirm('Excluir os ' + historySelectedIds.size + ' itens selecionados do histórico?')) return;
+  const ids = Array.from(historySelectedIds);
+  for(const id of ids){
+    await deleteHistoryItem(id);
+  }
+  historySelectedIds.clear();
   await renderMonthFilterOptions();
   await renderHistory();
   await renderStorageInfo();
@@ -977,28 +1481,35 @@ async function generateWithFailover(type, model, prompt, statusEl){
 
 document.getElementById('btnGenerate').addEventListener('click', async function(){
   const btn = this;
-  const skillId = document.getElementById('genSkill').value;
+  const themeId = document.getElementById('genTheme').value;
+  const genType = document.getElementById('genType').value; // 'texto' ou 'imagem'
   const tema = document.getElementById('genTema').value.trim();
   const statusEl = document.getElementById('genStatus');
   const outEl = document.getElementById('genOutput');
   const hintEl = document.getElementById('genHint');
-  const skill = getSkills().find(function(s){ return s.id === skillId; });
+  const theme = getThemes().find(function(t){ return t.id === themeId; });
 
   outEl.style.display = 'none';
   hintEl.style.display = 'none';
   statusEl.className = 'admin-status';
   statusEl.textContent = '';
 
-  if(!skill){ statusEl.textContent = 'Selecione uma skill.'; statusEl.className = 'admin-status err'; return; }
+  if(!theme){ statusEl.textContent = 'Selecione um tema.'; statusEl.className = 'admin-status err'; return; }
+  const template = genType === 'texto' ? theme.templateTexto : theme.templateImagem;
+  if(!template){
+    statusEl.textContent = 'Este tema não tem um prompt de ' + genType + ' configurado. Edite o tema em "Temas e Skills".';
+    statusEl.className = 'admin-status err';
+    return;
+  }
   if(!tema){ statusEl.textContent = 'Descreva o tema do post.'; statusEl.className = 'admin-status err'; return; }
   if(!getKeys().length){ statusEl.textContent = 'Cadastre sua API key do Gemini primeiro.'; statusEl.className = 'admin-status err'; return; }
 
-  const prompt = skill.template.replace(/\{tema\}/gi, tema);
+  const prompt = template.replace(/\{tema\}/gi, tema);
 
   btn.disabled = true;
   statusEl.textContent = 'Gerando...';
   try{
-    if(skill.type === 'texto'){
+    if(genType === 'texto'){
       const model = localStorage.getItem(LS_MODEL_TEXT) || 'gemini-3.6-flash';
       const text = await generateWithFailover('texto', model, prompt, statusEl);
       outEl.style.display = 'block';
@@ -1013,7 +1524,7 @@ document.getElementById('btnGenerate').addEventListener('click', async function(
       copyBtn.textContent = 'Copiar texto';
       copyBtn.addEventListener('click', function(){ copyText(ta.value); });
       outEl.appendChild(copyBtn);
-      await saveToHistory('texto', text, tema, skill.name);
+      await saveToHistory('texto', text, tema, theme.nome);
     } else {
       const model = localStorage.getItem(LS_MODEL_IMAGE) || 'gemini-2.5-flash-image';
       const dataUrl = await generateWithFailover('imagem', model, prompt, statusEl);
@@ -1028,7 +1539,7 @@ document.getElementById('btnGenerate').addEventListener('click', async function(
       dlBtn.href = dataUrl;
       dlBtn.download = 'post-sala-de-estudo.png';
       outEl.appendChild(dlBtn);
-      await saveToHistory('imagem', dataUrl, tema, skill.name);
+      await saveToHistory('imagem', dataUrl, tema, theme.nome);
     }
     statusEl.textContent = 'Conteúdo gerado com sucesso.';
     statusEl.className = 'admin-status ok';
@@ -1041,7 +1552,7 @@ document.getElementById('btnGenerate').addEventListener('click', async function(
   }
 });
 
-// ---------- EMERGÊNCIA (accordion) ----------
+// ---------- EMERGÊNCIA ----------
 function loadEmergencyFields(){
   document.getElementById('emTexto').value = localStorage.getItem(LS_EMERGENCY_TEXT) || DEFAULT_EMERGENCY_TEXT;
   document.getElementById('emImagem').value = localStorage.getItem(LS_EMERGENCY_IMAGE) || DEFAULT_EMERGENCY_IMAGE;
@@ -1053,18 +1564,13 @@ document.getElementById('emImagem').addEventListener('input', function(){
   localStorage.setItem(LS_EMERGENCY_IMAGE, this.value);
 });
 
-const emergencyToggle = document.getElementById('emergencyToggle');
-const emergencyBody = document.getElementById('emergencyBody');
-emergencyToggle.addEventListener('click', function(){
-  const expanded = emergencyToggle.getAttribute('aria-expanded') === 'true';
-  emergencyToggle.setAttribute('aria-expanded', String(!expanded));
-  emergencyBody.classList.toggle('open', !expanded);
-});
+const skillsAccordion = setupAccordion('skillsToggle', 'skillsBody');
+const keysAccordion = setupAccordion('keysToggle', 'keysBody');
+const emergencyAccordion = setupAccordion('emergencyToggle', 'emergencyBody');
 
 function goToEmergencySection(){
-  emergencyToggle.setAttribute('aria-expanded', 'true');
-  emergencyBody.classList.add('open');
-  emergencyToggle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  emergencyAccordion.open();
+  document.getElementById('emergencyToggle').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 const btnGoToEmergency = document.getElementById('btnGoToEmergency');
 if(btnGoToEmergency){
@@ -1096,12 +1602,16 @@ document.querySelectorAll('[data-copy]').forEach(function(btn){
 
 // ---------- init ----------
 migrateDeprecatedTextModel();
-renderSkillList();
+migrateOldSkillsToThemes();
+renderThemeList();
+document.getElementById('themeEditMode').addEventListener('change', renderThemeList);
 renderKeys();
 setupModelDropdown('fModelText', 'fModelTextCustom', LS_MODEL_TEXT, 'gemini-3.6-flash');
 setupModelDropdown('fModelImage', 'fModelImageCustom', LS_MODEL_IMAGE, 'gemini-2.5-flash-image');
 loadEmergencyFields();
 setupEmergencySkillInsert();
+setupThemeAIGeneration('texto', 'btnGerarTextoIA', 'ntTemplateTexto');
+setupThemeAIGeneration('imagem', 'btnGerarImagemIA', 'ntTemplateImagem');
 renderMonthFilterOptions().then(renderHistory);
 renderStorageInfo();
 </script>
