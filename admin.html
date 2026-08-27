@@ -433,6 +433,7 @@ const SESSION_TTL_MS = 2 * 60 * 60 * 1000;
 const LS_LOGIN_AT = 'se_admin_login_at';
 const LS_LOGIN_NOME = 'se_admin_login_nome';
 let panelCountdownInterval = null;
+let currentUserNome = null;
 const LS_THEMES = 'se_admin_themes'; // legacy key, read-only, used for one-time migration
 const LS_EMERGENCY_TEXT = 'se_admin_emergency_texto';
 const LS_EMERGENCY_IMAGE = 'se_admin_emergency_imagem';
@@ -1292,6 +1293,7 @@ async function renderHistory(){
       '<div class="history-top">' +
         '<span class="skill-tag ' + it.type + '">' + it.type + '</span>' +
         '<span class="history-date">' + historyDateLabel(it.created_at) + '</span>' +
+        (it.gerado_por ? '<span class="history-date">gerado por ' + escapeHtml(it.gerado_por) + '</span>' : '') +
       '</div>' +
       '<div class="history-tema">' + escapeHtml(it.tema || '(sem tema)') + '</div>' +
       (it.skill_name ? '<div class="history-preview">Skill: ' + escapeHtml(it.skill_name) + '</div>' : '') +
@@ -1367,8 +1369,13 @@ async function saveToHistory(type, content, tema, skillName, themeId){
     dbContent = path;
   }
 
+  let geradoPor = currentUserNome;
+  if(!geradoPor){
+    try{ geradoPor = localStorage.getItem(LS_LOGIN_NOME) || 'desconhecido'; }catch(e){ geradoPor = 'desconhecido'; }
+  }
+
   const { error } = await sb.from('history').insert({
-    id: id, type: type, content: dbContent, tema: tema, skill_name: skillName, theme_id: themeId || null
+    id: id, type: type, content: dbContent, tema: tema, skill_name: skillName, theme_id: themeId || null, gerado_por: geradoPor
   });
   if(error) console.error('Erro ao salvar no histórico:', error);
 
@@ -1729,6 +1736,7 @@ function renderFactorPickerPanel(factors){
 }
 
 async function onAal2Reached(nome){
+  currentUserNome = nome;
   await logAccess(nome);
   try{
     localStorage.setItem(LS_LOGIN_AT, String(Date.now()));
@@ -1829,6 +1837,7 @@ function renderResumeGatePanel(remainingMs, nome){
   document.getElementById('btnResumeLogin').addEventListener('click', async function(){
     if(gateInterval){ clearInterval(gateInterval); gateInterval = null; }
     const usedNome = nome || 'desconhecido';
+    currentUserNome = usedNome;
     try{
       await sb.from('access_logs').insert({ nome: usedNome, event: 'resume', user_agent: navigator.userAgent });
     }catch(e){ console.error('Erro ao registrar acesso (resume):', e); }
