@@ -441,6 +441,31 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
     font-size: 0.875rem;
     color: var(--color-yellow);
 }
+.footer-bottom-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+.footer-bottom-left .admin-link {
+    display: inline-block;
+    color: var(--color-blue);
+    background: var(--color-blue);
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 2px 7px;
+    border-radius: 4px;
+    line-height: 1.6;
+    user-select: none;
+    transition: color 0.15s ease;
+}
+.footer-bottom-left .admin-link:hover,
+.footer-bottom-left .admin-link:focus-visible {
+    color: var(--color-yellow);
+}
 .footer-bottom a { color: var(--color-yellow); text-decoration: none; font-family: var(--font-display); font-weight: 700;}
 
 .instagram-link {
@@ -500,7 +525,7 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
 }
 /* ============ SELO KUPIM DIGITAL ============ */
 #kupim-badge-wrap{
-  position:absolute; /* Mudado para absolute para ficar preso ao rodapé */
+  position:fixed; /* Mudado para fixed para ficar sempre no canto */
   bottom:20px;
   right:0;
   z-index:9999;
@@ -621,8 +646,8 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
 /* Ajustes mobile para o cabeçalho: seta, logo e botão */
 @media (max-width: 768px) {
   .navbar-bg {
-    height: 310%;
-    top: -105%;
+    height: 300%; /* Deixa a seta amarela mais grossa na proporção */
+    top: -100%;
   }
   .logo-svg {
     max-height: 54px; /* Diminui a logo */

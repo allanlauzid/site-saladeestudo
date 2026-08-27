@@ -76,8 +76,8 @@ async function initHandwriting(){
     const viewBottom = LINES[LINES.length - 1].yBaseline - descent;
     svg.setAttribute('viewBox', `0 ${viewTop} ${maxRight} ${viewBottom - viewTop}`);
 
-    const SPEED = 1500;
-    const MIN_DUR = 90;
+    const SPEED = 1500 / 1.1; // duração total da abertura aumentada em 10%
+    const MIN_DUR = 90 * 1.1;
     const OVERLAP = 0.55;
 
     let cumulativeDelay = 0;
@@ -123,6 +123,7 @@ function watchArrowOverText(){
   if(!arrow || !textWrap) return;
 
   function check(){
+    applyIntroFastForward();
     const arrowRect = arrow.getBoundingClientRect();
     
     // Atualiza a máscara de recorte para seguir a traseira da seta amarela
@@ -145,6 +146,39 @@ function watchArrowOverText(){
 }
 
 
+/*
+  Clique/toque durante a abertura: NÃO deve fazer a seta amarela sumir
+  (isso era causado pelo navegador iniciar um "drag fantasma" da imagem —
+  corrigido via CSS com pointer-events/user-drag/user-select em intro.css).
+  Em vez disso, o clique acelera a animação toda para ela terminar mais rápido,
+  em vez de pular direto pro final (o que ficaria abrupto).
+*/
+let introFastForward = false;
+const INTRO_FAST_RATE = 6;
+
+function applyIntroFastForward(){
+  if(!introFastForward) return;
+  document.getAnimations().forEach(anim => {
+    if (anim.playbackRate !== INTRO_FAST_RATE) {
+      anim.playbackRate = INTRO_FAST_RATE;
+    }
+  });
+}
+
+function setupIntroFastForwardOnClick(){
+  const introEl = document.getElementById('intro');
+  if(!introEl) return;
+  introEl.addEventListener('click', function(e){
+    e.preventDefault();
+    introFastForward = true;
+    applyIntroFastForward();
+  });
+  introEl.addEventListener('touchstart', function(){
+    introFastForward = true;
+    applyIntroFastForward();
+  }, { passive: true });
+}
+
 if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual';
 }
@@ -153,5 +187,6 @@ window.scrollTo(0, 0);
 if (!sessionStorage.getItem('introPlayed')) {
     document.body.style.overflow = 'hidden';
     sessionStorage.setItem('introPlayed', 'true');
+    setupIntroFastForwardOnClick();
     initHandwriting();
 }

@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Admin - Sala de Estudo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body{ background:#f4f1ea; min-height:100vh; }
+  .admin-wrap{ max-width:980px; margin:0 auto; padding:2.5rem 1.5rem 5rem; }
+  .admin-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem; flex-wrap:wrap; gap:12px; }
+  .admin-top h1{ font-family:var(--font-display); font-size:1.6rem; color:var(--color-blue); margin:0; }
+  .admin-back{ color:var(--color-blue); font-weight:600; text-decoration:none; font-size:0.9rem; }
+  .admin-back:hover{ text-decoration:underline; }
+  .admin-card{ background:#fff; border:2px solid var(--color-blue); border-radius:14px; padding:1.75rem; margin-bottom:1.75rem; box-shadow:-6px 6px 0 rgba(0,78,181,0.12); }
+  .admin-card h2{ font-family:var(--font-display); font-size:1.1rem; color:var(--color-blue); margin:0 0 0.35rem; }
+  .admin-card .admin-desc{ color:#6b6b6b; font-size:0.85rem; margin:0 0 1.1rem; }
+  .admin-row{ display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; }
+  .admin-field{ flex:1; min-width:220px; }
+  .admin-field.full{ flex:1 1 100%; }
+  .admin-field label{ display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--color-blue); margin-bottom:5px; }
+  .admin-field input[type="text"],
+  .admin-field input[type="password"],
+  .admin-field select,
+  .admin-field textarea{
+    width:100%; padding:10px 12px; border:2px solid #d8d3c4; border-radius:8px;
+    font-family:'Inter',sans-serif; font-size:0.9rem; color:#2b2b2b; background:#fdfdfb;
+  }
+  .admin-field select{ cursor:pointer; }
+  .admin-field textarea{ resize:vertical; min-height:90px; }
+  .admin-field input:focus, .admin-field select:focus, .admin-field textarea:focus{
+    outline:none; border-color:var(--color-blue); box-shadow:0 0 0 3px rgba(0,78,181,0.12);
+  }
+  .abtn{ display:inline-flex; align-items:center; gap:6px; padding:10px 18px; border-radius:8px; border:2px solid var(--color-blue);
+    background:var(--color-yellow); color:var(--color-blue); font-weight:700; font-size:0.85rem; cursor:pointer; transition:all .15s; white-space:nowrap; }
+  .abtn:hover{ transform:translate(-2px,-2px); box-shadow:-3px 3px 0 var(--color-blue); }
+  .abtn.secondary{ background:#fff; }
+  .abtn.ghost{ background:transparent; border-color:#d8d3c4; color:#6b6b6b; }
+  .abtn.small{ padding:6px 12px; font-size:0.75rem; }
+  .abtn:disabled{ opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+  .admin-status{ font-size:0.8rem; margin-top:8px; }
+  .admin-status.ok{ color:#0a8a3f; }
+  .admin-status.err{ color:#c0392b; }
+  .skill-list{ display:flex; flex-direction:column; gap:12px; margin-bottom:1.25rem; }
+  .skill-item{ border:2px solid #e5e0d3; border-radius:10px; padding:12px 14px; }
+  .skill-item-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+  .skill-item-head strong{ color:var(--color-blue); }
+  .skill-tag{ font-size:0.7rem; font-weight:700; text-transform:uppercase; padding:2px 8px; border-radius:20px; }
+  .skill-tag.texto{ background:#e3edff; color:var(--color-blue); }
+  .skill-tag.imagem{ background:#fff4cc; color:#8a6d00; }
+  .skill-item-actions{ display:flex; gap:6px; }
+  .skill-item-actions button{ font-size:0.75rem; padding:4px 10px; border-radius:6px; border:1px solid #d8d3c4; background:#fff; cursor:pointer; }
+  .skill-item pre{ white-space:pre-wrap; word-break:break-word; font-family:'Inter',sans-serif; font-size:0.82rem; color:#555; margin:8px 0 0; }
+  .new-skill-form{ border-top:2px dashed #e5e0d3; padding-top:14px; margin-top:6px; display:none; }
+  .new-skill-form.open{ display:block; }
+  .output-box{ margin-top:1rem; border:2px dashed #d8d3c4; border-radius:10px; padding:14px; min-height:60px; }
+  .output-box textarea{ width:100%; min-height:140px; border:none; background:transparent; font-family:'Inter',sans-serif; font-size:0.9rem; resize:vertical; }
+  .output-box img{ max-width:100%; border-radius:8px; display:block; margin-bottom:10px; }
+  .hint{ font-size:0.78rem; color:#8a6d00; background:#fff8e1; border:1px solid #ffe28a; border-radius:8px; padding:10px 12px; margin-top:10px; }
+  .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+  @media (max-width:760px){ .grid-2{ grid-template-columns:1fr; } }
+
+  /* --- key manager --- */
+  .key-list{ display:flex; flex-direction:column; gap:8px; margin:12px 0 16px; }
+  .key-row{ display:flex; align-items:center; gap:10px; border:2px solid #e5e0d3; border-radius:8px; padding:8px 12px; flex-wrap:wrap; }
+  .key-row.active{ border-color:var(--color-blue); background:#f2f6ff; }
+  .key-row .key-label{ font-weight:700; color:var(--color-blue); font-size:0.85rem; min-width:80px; }
+  .key-row .key-masked{ font-family:monospace; font-size:0.82rem; color:#6b6b6b; flex:1; min-width:120px; }
+  .key-row .key-active-pill{ font-size:0.65rem; font-weight:700; text-transform:uppercase; background:var(--color-yellow); color:var(--color-blue); padding:2px 8px; border-radius:20px; }
+  .key-row .key-actions{ display:flex; gap:6px; }
+  .add-key-form{ border-top:2px dashed #e5e0d3; padding-top:14px; }
+
+  /* --- accordion (prompts de emergência) --- */
+  .accordion-toggle{
+    display:flex; align-items:center; justify-content:space-between; width:100%;
+    background:none; border:none; padding:0; cursor:pointer; text-align:left;
+  }
+  .accordion-toggle .chev{ font-size:1.1rem; color:var(--color-blue); transition:transform .2s ease; }
+  .accordion-toggle[aria-expanded="true"] .chev{ transform:rotate(180deg); }
+  .accordion-body{ overflow:hidden; max-height:0; transition:max-height .25s ease; }
+  .accordion-body.open{ max-height:2000px; }
+  .accordion-body-inner{ padding-top:1.1rem; }
+
+  /* --- histórico --- */
+  .storage-info{ font-size:0.78rem; color:#6b6b6b; margin:0 0 1rem; }
+  .storage-bar{ width:100%; height:6px; border-radius:4px; background:#eee6d3; overflow:hidden; margin-top:4px; }
+  .storage-bar-fill{ height:100%; background:var(--color-blue); border-radius:4px; transition:width .3s ease; }
+  .storage-bar-fill.warn{ background:#c0392b; }
+  .history-list{ display:flex; flex-direction:column; gap:12px; }
+  .history-item{ border:2px solid #e5e0d3; border-radius:10px; padding:12px 14px; display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; }
+  .history-thumb{ width:72px; height:72px; border-radius:8px; object-fit:cover; flex-shrink:0; background:#f4f1ea; border:1px solid #e5e0d3; }
+  .history-thumb.is-text{ display:flex; align-items:center; justify-content:center; font-size:1.4rem; color:var(--color-blue); }
+  .history-body{ flex:1; min-width:200px; }
+  .history-body .history-top{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px; }
+  .history-body .history-date{ font-size:0.75rem; color:#8a8a8a; }
+  .history-body .history-tema{ font-size:0.85rem; color:#2b2b2b; font-weight:600; }
+  .history-body .history-preview{ font-size:0.8rem; color:#6b6b6b; margin-top:4px; white-space:pre-wrap; }
+  .history-actions{ display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+  .history-empty{ color:#8a8a8a; font-size:0.85rem; text-align:center; padding:1.5rem 0; }
+</style>
+</head>
+<body>
+<div class="admin-wrap">
+
+  <div class="admin-top">
+    <h1>Painel Admin &middot; Sala de Estudo</h1>
+    <a href="index.html" class="admin-back">&larr; Voltar ao site</a>
+  </div>
+
+  <!-- GERADOR (primeiro) -->
+  <div class="admin-card">
+    <h2>Gerador de conteúdo</h2>
+    <p class="admin-desc">Escolha uma skill, descreva o tema do post e gere o texto ou a imagem com o Gemini.</p>
+
+    <div class="admin-field full">
+      <label for="genSkill">Skill</label>
+      <select id="genSkill"></select>
+    </div>
+
+    <div class="admin-row" style="margin-top:12px;">
+      <div class="admin-field" style="flex:2;">
+        <label for="genTema">Tema / assunto do post</label>
+        <input type="text" id="genTema" placeholder="Ex: importância da rotina de estudos no ENEM">
+      </div>
+      <button class="abtn" id="btnGenerate" type="button">Gerar</button>
+    </div>
+    <div class="admin-status" id="genStatus"></div>
+    <div class="output-box" id="genOutput" style="display:none;"></div>
+    <div class="hint" id="genHint" style="display:none;">
+      <div>Sem créditos ou deu erro na API? Use a seção de <strong>Prompts de emergência</strong> abaixo para copiar o prompt e colar direto no Gemini pelo navegador.</div>
+      <button class="abtn secondary small" id="btnGoToEmergency" type="button" style="margin-top:10px;">Ir para Prompts de emergência</button>
+    </div>
+  </div>
+
+  <!-- HISTÓRICO -->
+  <div class="admin-card">
+    <h2>Histórico de gerações</h2>
+    <p class="admin-desc">Todo texto e imagem gerados aqui ficam salvos automaticamente neste navegador, do mais recente para o mais antigo. Quando o armazenamento local chegar perto do limite, os itens mais antigos são apagados sozinhos aos poucos para abrir espaço.</p>
+
+    <div class="admin-row" style="margin-bottom:1rem;">
+      <div class="admin-field" style="max-width:180px;">
+        <label for="histTypeFilter">Tipo</label>
+        <select id="histTypeFilter">
+          <option value="todos">Todos</option>
+          <option value="texto">Texto</option>
+          <option value="imagem">Imagem</option>
+        </select>
+      </div>
+      <div class="admin-field" style="max-width:220px;">
+        <label for="histMonthFilter">Mês</label>
+        <select id="histMonthFilter">
+          <option value="todos">Todos os meses</option>
+        </select>
+      </div>
+      <button class="abtn ghost" id="btnClearHistory" type="button">Limpar histórico</button>
+    </div>
+
+    <p class="storage-info" id="storageInfo"></p>
+
+    <div class="history-list" id="historyList"></div>
+  </div>
+
+  <!-- SKILLS / PROMPTS -->
+  <div class="admin-card">
+    <h2>Skills / Prompts pré-feitos</h2>
+    <p class="admin-desc">Modelos de prompt no estilo da empresa. Use <code>{tema}</code> no texto onde o assunto do post deve entrar.</p>
+    <div class="skill-list" id="skillList"></div>
+    <button class="abtn secondary" id="btnNewSkill" type="button">+ Nova skill</button>
+
+    <div class="new-skill-form" id="newSkillForm">
+      <div class="admin-row">
+        <div class="admin-field">
+          <label for="nsName">Nome da skill</label>
+          <input type="text" id="nsName" placeholder="Ex: Post de dica de estudo">
+        </div>
+        <div class="admin-field" style="max-width:160px;">
+          <label for="nsType">Tipo</label>
+          <select id="nsType">
+            <option value="texto">Texto</option>
+            <option value="imagem">Imagem</option>
+          </select>
+        </div>
+      </div>
+      <div class="admin-field" style="margin-top:10px;">
+        <label for="nsTemplate">Prompt (use {tema})</label>
+        <textarea id="nsTemplate" placeholder="Escreva aqui o prompt completo..."></textarea>
+      </div>
+      <div class="admin-row" style="margin-top:10px;">
+        <button class="abtn" id="btnSaveSkill" type="button">Salvar skill</button>
+        <button class="abtn ghost" id="btnCancelSkill" type="button">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- API KEY -->
+  <div class="admin-card">
+    <h2>API Keys do Gemini</h2>
+    <p class="admin-desc">Ficam salvas só neste navegador (localStorage). Você pode cadastrar várias keys: se a ativa ficar sem créditos, o gerador troca automaticamente para a próxima.</p>
+
+    <div class="admin-field full">
+      <label for="keySelect">Key ativa</label>
+      <select id="keySelect"></select>
+    </div>
+
+    <div class="key-list" id="keyList"></div>
+
+    <div class="add-key-form">
+      <div class="admin-row">
+        <div class="admin-field" style="max-width:180px;">
+          <label for="newKeyLabel">Nome (opcional)</label>
+          <input type="text" id="newKeyLabel" placeholder="Ex: Key principal">
+        </div>
+        <div class="admin-field" style="flex:2; min-width:260px;">
+          <label for="newKeyValue">API Key</label>
+          <input type="password" id="newKeyValue" placeholder="Cole a API key do Gemini aqui">
+        </div>
+        <button class="abtn secondary" id="btnAddKey" type="button">+ Adicionar key</button>
+        <button class="abtn ghost" id="btnShowNewKey" type="button">Mostrar</button>
+      </div>
+      <div class="admin-status" id="keyStatus"></div>
+    </div>
+
+    <div class="admin-row" style="margin-top:1.5rem;">
+      <div class="admin-field">
+        <label for="fModelText">Modelo (texto)</label>
+        <select id="fModelText">
+          <option value="gemini-3.6-pro">gemini-3.6-pro</option>
+          <option value="gemini-3.6-flash">gemini-3.6-flash</option>
+          <option value="gemini-3.6-flash-lite">gemini-3.6-flash-lite</option>
+          <option value="gemini-2.5-pro">gemini-2.5-pro (descontinuado p/ novos usuários)</option>
+          <option value="gemini-2.5-flash">gemini-2.5-flash (descontinuado p/ novos usuários)</option>
+          <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite (descontinuado p/ novos usuários)</option>
+          <option value="__custom__">Outro (personalizado)</option>
+        </select>
+        <input type="text" id="fModelTextCustom" placeholder="Nome exato do modelo" style="margin-top:8px; display:none;">
+      </div>
+      <div class="admin-field">
+        <label for="fModelImage">Modelo (imagem)</label>
+        <select id="fModelImage">
+          <option value="gemini-2.5-flash-image">gemini-2.5-flash-image</option>
+          <option value="gemini-2.0-flash-preview-image-generation">gemini-2.0-flash-preview-image-generation</option>
+          <option value="imagen-4.0-generate-001">imagen-4.0-generate-001</option>
+          <option value="imagen-4.0-ultra-generate-001">imagen-4.0-ultra-generate-001</option>
+          <option value="imagen-3.0-generate-002">imagen-3.0-generate-002</option>
+          <option value="__custom__">Outro (personalizado)</option>
+        </select>
+        <input type="text" id="fModelImageCustom" placeholder="Nome exato do modelo" style="margin-top:8px; display:none;">
+      </div>
+      <button class="abtn" id="btnSaveModels" type="button">Salvar modelos</button>
+    </div>
+    <div class="admin-status" id="modelStatus"></div>
+  </div>
+
+  <!-- EMERGENCIA (dentro de um dropdown/accordion) -->
+  <div class="admin-card">
+    <button class="accordion-toggle" id="emergencyToggle" type="button" aria-expanded="false" aria-controls="emergencyBody">
+      <h2 style="margin:0;">Prompts de emergência</h2>
+      <span class="chev">&#9662;</span>
+    </button>
+    <div class="accordion-body" id="emergencyBody">
+      <div class="accordion-body-inner">
+        <p class="admin-desc">Se a API key ficar sem créditos, copie o prompt e cole direto no Gemini no navegador. Use "Inserir da skill" para carregar o prompt de uma das skills salvas (o placeholder <code>{tema}</code> vira <code>[COLOQUE O TEMA AQUI]</code> para você preencher na mão).</p>
+        <div class="admin-row" style="margin-bottom:1rem;">
+          <a class="abtn secondary" href="https://gemini.google.com/" target="_blank" rel="noopener">Abrir Gemini no navegador ↗</a>
+        </div>
+        <div class="grid-2">
+          <div class="admin-field">
+            <label for="emTexto">Prompt de emergência — Texto</label>
+            <div class="admin-row" style="margin-bottom:8px;">
+              <select id="emTextoSkillSelect" style="flex:1; min-width:0;"></select>
+              <button class="abtn secondary small" data-insert-skill="emTexto" data-skill-select="emTextoSkillSelect" type="button">Inserir da skill</button>
+            </div>
+            <textarea id="emTexto" style="min-height:180px;"></textarea>
+            <button class="abtn ghost" style="margin-top:8px;" data-copy="emTexto" type="button">Copiar</button>
+          </div>
+          <div class="admin-field">
+            <label for="emImagem">Prompt de emergência — Imagem</label>
+            <div class="admin-row" style="margin-bottom:8px;">
+              <select id="emImagemSkillSelect" style="flex:1; min-width:0;"></select>
+              <button class="abtn secondary small" data-insert-skill="emImagem" data-skill-select="emImagemSkillSelect" type="button">Inserir da skill</button>
+            </div>
+            <textarea id="emImagem" style="min-height:180px;"></textarea>
+            <button class="abtn ghost" style="margin-top:8px;" data-copy="emImagem" type="button">Copiar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const LS_KEYS = 'se_admin_gemini_keys';
+const LS_ACTIVE_KEY_ID = 'se_admin_active_key_id';
+const LS_KEY_LEGACY = 'se_admin_gemini_key'; // versão antiga (key única)
+const LS_MODEL_TEXT = 'se_admin_model_text';
+const LS_MODEL_IMAGE = 'se_admin_model_image';
+const LS_SKILLS = 'se_admin_skills';
+const LS_EMERGENCY_TEXT = 'se_admin_emergency_texto';
+const LS_EMERGENCY_IMAGE = 'se_admin_emergency_imagem';
+
+const DEFAULT_SKILLS = [
+  {
+    id: 's1',
+    name: 'Post motivacional (legenda)',
+    type: 'texto',
+    template: `Você é o social media da Sala de Estudo, uma escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, para todas as disciplinas, ENEM e vestibulares). A marca usa azul (#004EB5) e amarelo (#FFD100), tom acolhedor, confiável e motivador, linguagem simples para pais e responsáveis.
+
+Escreva uma legenda de Instagram sobre: {tema}
+
+Regras:
+- 3 a 6 frases curtas, fáceis de ler no celular.
+- Sem jargão pedagógico.
+- Termine com uma chamada para agendar um diagnóstico gratuito.
+- Sugira de 5 a 8 hashtags em português no final.`
+  },
+  {
+    id: 's2',
+    name: 'Post educativo (imagem)',
+    type: 'imagem',
+    template: `Crie uma imagem quadrada para Instagram no estilo da marca Sala de Estudo: paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno, acolhedor, com elementos de estudo (livros, cadernos, lápis, quadro), estilo ilustração flat/vetorial, sem nenhum texto embutido na imagem.
+
+Tema da imagem: {tema}`
+  }
+];
+
+const DEFAULT_EMERGENCY_TEXT = `Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, para todas as disciplinas, ENEM e vestibulares). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, confiável e motivador.
+
+Escreva uma legenda de Instagram sobre: [COLOQUE O TEMA AQUI]
+
+Regras:
+- 3 a 6 frases curtas, fáceis de ler no celular.
+- Sem jargão pedagógico.
+- Termine com uma chamada para agendar um diagnóstico gratuito.
+- Sugira de 5 a 8 hashtags em português no final.`;
+
+const DEFAULT_EMERGENCY_IMAGE = `Crie uma imagem quadrada para Instagram no estilo da marca Sala de Estudo: paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno, acolhedor, com elementos de estudo (livros, cadernos, lápis, quadro), estilo ilustração flat/vetorial, sem nenhum texto embutido na imagem.
+
+Tema da imagem: [COLOQUE O TEMA AQUI]`;
+
+// ---------- SKILLS ----------
+function getSkills(){
+  try{
+    const raw = localStorage.getItem(LS_SKILLS);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  localStorage.setItem(LS_SKILLS, JSON.stringify(DEFAULT_SKILLS));
+  return DEFAULT_SKILLS.slice();
+}
+function saveSkills(list){ localStorage.setItem(LS_SKILLS, JSON.stringify(list)); }
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function renderSkillList(){
+  const list = getSkills();
+  const el = document.getElementById('skillList');
+  const genSelect = document.getElementById('genSkill');
+  const prevGenValue = genSelect.value;
+  el.innerHTML = '';
+  genSelect.innerHTML = '';
+  list.forEach(function(skill){
+    const item = document.createElement('div');
+    item.className = 'skill-item';
+    item.innerHTML =
+      '<div class="skill-item-head">' +
+        '<div><strong>' + escapeHtml(skill.name) + '</strong> ' +
+        '<span class="skill-tag ' + skill.type + '">' + skill.type + '</span></div>' +
+        '<div class="skill-item-actions">' +
+          '<button data-del="' + skill.id + '">Excluir</button>' +
+        '</div>' +
+      '</div>' +
+      '<pre>' + escapeHtml(skill.template) + '</pre>';
+    el.appendChild(item);
+
+    const opt = document.createElement('option');
+    opt.value = skill.id;
+    opt.textContent = skill.name + ' (' + skill.type + ')';
+    genSelect.appendChild(opt);
+  });
+  if(prevGenValue && list.some(function(s){ return s.id === prevGenValue; })){
+    genSelect.value = prevGenValue;
+  }
+
+  el.querySelectorAll('[data-del]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(!confirm('Excluir esta skill?')) return;
+      const id = btn.getAttribute('data-del');
+      const newList = getSkills().filter(function(s){ return s.id !== id; });
+      saveSkills(newList);
+      renderSkillList();
+    });
+  });
+
+  renderEmergencySkillSelects();
+}
+
+function renderEmergencySkillSelects(){
+  const list = getSkills();
+  [['emTextoSkillSelect','texto'], ['emImagemSkillSelect','imagem']].forEach(function(pair){
+    const selectEl = document.getElementById(pair[0]);
+    if(!selectEl) return;
+    const filtered = list.filter(function(s){ return s.type === pair[1]; });
+    const prev = selectEl.value;
+    selectEl.innerHTML = '';
+    if(!filtered.length){
+      selectEl.innerHTML = '<option value="">Nenhuma skill de ' + pair[1] + ' salva</option>';
+      selectEl.disabled = true;
+      return;
+    }
+    selectEl.disabled = false;
+    filtered.forEach(function(skill){
+      const opt = document.createElement('option');
+      opt.value = skill.id;
+      opt.textContent = skill.name;
+      selectEl.appendChild(opt);
+    });
+    if(prev && filtered.some(function(s){ return s.id === prev; })) selectEl.value = prev;
+  });
+}
+
+function setupEmergencySkillInsert(){
+  renderEmergencySkillSelects();
+  document.querySelectorAll('[data-insert-skill]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const targetId = btn.getAttribute('data-insert-skill');
+      const selectId = btn.getAttribute('data-skill-select');
+      const skillId = document.getElementById(selectId).value;
+      const skill = getSkills().find(function(s){ return s.id === skillId; });
+      if(!skill){ return; }
+      const textarea = document.getElementById(targetId);
+      const filled = skill.template.replace(/\{tema\}/gi, '[COLOQUE O TEMA AQUI]');
+      textarea.value = filled;
+      const storageKey = targetId === 'emTexto' ? LS_EMERGENCY_TEXT : LS_EMERGENCY_IMAGE;
+      localStorage.setItem(storageKey, filled);
+      const original = btn.textContent;
+      btn.textContent = 'Inserido!';
+      setTimeout(function(){ btn.textContent = original; }, 1500);
+    });
+  });
+}
+
+document.getElementById('btnNewSkill').addEventListener('click', function(){
+  document.getElementById('newSkillForm').classList.add('open');
+});
+document.getElementById('btnCancelSkill').addEventListener('click', function(){
+  document.getElementById('newSkillForm').classList.remove('open');
+  document.getElementById('nsName').value = '';
+  document.getElementById('nsTemplate').value = '';
+});
+document.getElementById('btnSaveSkill').addEventListener('click', function(){
+  const name = document.getElementById('nsName').value.trim();
+  const type = document.getElementById('nsType').value;
+  const template = document.getElementById('nsTemplate').value.trim();
+  if(!name || !template){ alert('Preencha nome e prompt.'); return; }
+  const list = getSkills();
+  list.push({ id: 's' + Date.now(), name: name, type: type, template: template });
+  saveSkills(list);
+  document.getElementById('newSkillForm').classList.remove('open');
+  document.getElementById('nsName').value = '';
+  document.getElementById('nsTemplate').value = '';
+  renderSkillList();
+});
+
+// ---------- API KEYS (múltiplas) ----------
+function getKeys(){
+  try{
+    const raw = localStorage.getItem(LS_KEYS);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(Array.isArray(parsed)) return parsed;
+    }
+  }catch(e){}
+  // migração da versão antiga (key única)
+  const legacy = localStorage.getItem(LS_KEY_LEGACY);
+  if(legacy){
+    const migrated = [{ id: 'k' + Date.now(), label: 'Key 1', key: legacy }];
+    localStorage.setItem(LS_KEYS, JSON.stringify(migrated));
+    localStorage.removeItem(LS_KEY_LEGACY);
+    return migrated;
+  }
+  return [];
+}
+function saveKeys(list){ localStorage.setItem(LS_KEYS, JSON.stringify(list)); }
+function getActiveKeyId(){ return localStorage.getItem(LS_ACTIVE_KEY_ID) || ''; }
+function setActiveKeyId(id){ localStorage.setItem(LS_ACTIVE_KEY_ID, id); }
+
+function getActiveKeyValue(){
+  const keys = getKeys();
+  if(!keys.length) return null;
+  let id = getActiveKeyId();
+  let found = keys.find(function(k){ return k.id === id; });
+  if(!found){ found = keys[0]; setActiveKeyId(found.id); }
+  return found;
+}
+
+function maskKey(k){
+  if(!k || k.length < 8) return '••••••••';
+  return k.slice(0,4) + '••••••••' + k.slice(-4);
+}
+
+function renderKeys(){
+  const keys = getKeys();
+  const activeId = getActiveKeyId() || (keys[0] && keys[0].id) || '';
+  if(keys.length && !getActiveKeyId()) setActiveKeyId(activeId);
+
+  const sel = document.getElementById('keySelect');
+  const listEl = document.getElementById('keyList');
+  sel.innerHTML = '';
+  listEl.innerHTML = '';
+
+  if(!keys.length){
+    sel.innerHTML = '<option value="">Nenhuma key cadastrada</option>';
+    listEl.innerHTML = '<p class="admin-desc" style="margin:0;">Nenhuma API key cadastrada ainda. Adicione uma abaixo.</p>';
+    return;
+  }
+
+  keys.forEach(function(k){
+    const opt = document.createElement('option');
+    opt.value = k.id;
+    opt.textContent = k.label + '  (' + maskKey(k.key) + ')';
+    if(k.id === activeId) opt.selected = true;
+    sel.appendChild(opt);
+
+    const row = document.createElement('div');
+    row.className = 'key-row' + (k.id === activeId ? ' active' : '');
+    row.innerHTML =
+      '<span class="key-label">' + escapeHtml(k.label) + '</span>' +
+      '<span class="key-masked">' + escapeHtml(maskKey(k.key)) + '</span>' +
+      (k.id === activeId ? '<span class="key-active-pill">Ativa</span>' : '') +
+      '<span class="key-actions">' +
+        (k.id !== activeId ? '<button class="abtn small secondary" data-use="' + k.id + '" type="button">Usar esta</button>' : '') +
+        '<button class="abtn small ghost" data-remove-key="' + k.id + '" type="button">Remover</button>' +
+      '</span>';
+    listEl.appendChild(row);
+  });
+
+  listEl.querySelectorAll('[data-use]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      setActiveKeyId(btn.getAttribute('data-use'));
+      renderKeys();
+    });
+  });
+  listEl.querySelectorAll('[data-remove-key]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const id = btn.getAttribute('data-remove-key');
+      if(!confirm('Remover esta API key?')) return;
+      let list = getKeys().filter(function(k){ return k.id !== id; });
+      saveKeys(list);
+      if(getActiveKeyId() === id){
+        setActiveKeyId(list.length ? list[0].id : '');
+      }
+      renderKeys();
+    });
+  });
+}
+
+document.getElementById('keySelect').addEventListener('change', function(){
+  setActiveKeyId(this.value);
+  renderKeys();
+});
+
+document.getElementById('btnShowNewKey').addEventListener('click', function(){
+  const f = document.getElementById('newKeyValue');
+  const showing = f.type === 'text';
+  f.type = showing ? 'password' : 'text';
+  this.textContent = showing ? 'Mostrar' : 'Ocultar';
+});
+
+document.getElementById('btnAddKey').addEventListener('click', function(){
+  const labelInput = document.getElementById('newKeyLabel');
+  const valueInput = document.getElementById('newKeyValue');
+  const value = valueInput.value.trim();
+  const statusEl = document.getElementById('keyStatus');
+  if(!value){
+    statusEl.textContent = 'Cole uma API key antes de adicionar.';
+    statusEl.className = 'admin-status err';
+    return;
+  }
+  const keys = getKeys();
+  const label = labelInput.value.trim() || ('Key ' + (keys.length + 1));
+  const newKey = { id: 'k' + Date.now(), label: label, key: value };
+  keys.push(newKey);
+  saveKeys(keys);
+  if(keys.length === 1) setActiveKeyId(newKey.id);
+  labelInput.value = '';
+  valueInput.value = '';
+  statusEl.textContent = 'Key "' + label + '" adicionada.';
+  statusEl.className = 'admin-status ok';
+  renderKeys();
+});
+
+// ---------- MODELOS ----------
+function setupModelDropdown(selectId, customId, storageKey, fallback){
+  const select = document.getElementById(selectId);
+  const custom = document.getElementById(customId);
+  const saved = localStorage.getItem(storageKey) || fallback;
+  const knownValues = Array.from(select.options).map(function(o){ return o.value; }).filter(function(v){ return v !== '__custom__'; });
+  if(knownValues.indexOf(saved) >= 0){
+    select.value = saved;
+    custom.style.display = 'none';
+  } else {
+    select.value = '__custom__';
+    custom.style.display = 'block';
+    custom.value = saved;
+  }
+  select.addEventListener('change', function(){
+    custom.style.display = (select.value === '__custom__') ? 'block' : 'none';
+  });
+}
+function getModelValue(selectId, customId){
+  const select = document.getElementById(selectId);
+  const custom = document.getElementById(customId);
+  return select.value === '__custom__' ? custom.value.trim() : select.value;
+}
+
+const DEPRECATED_TEXT_MODELS = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.5-flash-lite', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro', 'gemini-1.5-flash'];
+
+function migrateDeprecatedTextModel(){
+  const saved = localStorage.getItem(LS_MODEL_TEXT);
+  if(saved && DEPRECATED_TEXT_MODELS.indexOf(saved) >= 0 && !localStorage.getItem(LS_MODEL_TEXT + '_kept_legacy')){
+    localStorage.setItem(LS_MODEL_TEXT, 'gemini-3.6-flash');
+  }
+}
+
+document.getElementById('btnSaveModels').addEventListener('click', function(){
+  const textModel = getModelValue('fModelText', 'fModelTextCustom') || 'gemini-3.6-flash';
+  const imageModel = getModelValue('fModelImage', 'fModelImageCustom') || 'gemini-2.5-flash-image';
+  // se o usuário escolher manualmente um modelo antigo, respeita a escolha dele
+  if(DEPRECATED_TEXT_MODELS.indexOf(textModel) >= 0){
+    localStorage.setItem(LS_MODEL_TEXT + '_kept_legacy', '1');
+  } else {
+    localStorage.removeItem(LS_MODEL_TEXT + '_kept_legacy');
+  }
+  localStorage.setItem(LS_MODEL_TEXT, textModel);
+  localStorage.setItem(LS_MODEL_IMAGE, imageModel);
+  const st = document.getElementById('modelStatus');
+  st.textContent = 'Modelos salvos.';
+  st.className = 'admin-status ok';
+});
+
+// ---------- HISTÓRICO (IndexedDB) ----------
+const HIST_DB_NAME = 'se_admin_history_db';
+const HIST_DB_VERSION = 1;
+const HIST_STORE = 'items';
+const STORAGE_PRUNE_THRESHOLD = 0.8; // 80%
+
+function openHistoryDB(){
+  return new Promise(function(resolve, reject){
+    if(!window.indexedDB){ reject(new Error('IndexedDB não suportado neste navegador.')); return; }
+    const req = indexedDB.open(HIST_DB_NAME, HIST_DB_VERSION);
+    req.onupgradeneeded = function(e){
+      const db = e.target.result;
+      if(!db.objectStoreNames.contains(HIST_STORE)){
+        const store = db.createObjectStore(HIST_STORE, { keyPath: 'id' });
+        store.createIndex('createdAt', 'createdAt', { unique: false });
+        store.createIndex('type', 'type', { unique: false });
+      }
+    };
+    req.onsuccess = function(e){ resolve(e.target.result); };
+    req.onerror = function(e){ reject(e.target.error || new Error('Erro ao abrir o banco de dados local.')); };
+  });
+}
+
+async function addHistoryItem(item){
+  try{
+    const db = await openHistoryDB();
+    await new Promise(function(resolve, reject){
+      const tx = db.transaction(HIST_STORE, 'readwrite');
+      tx.objectStore(HIST_STORE).add(item);
+      tx.oncomplete = resolve;
+      tx.onerror = function(e){ reject(e.target.error); };
+    });
+  }catch(e){
+    console.error('Não foi possível salvar no histórico:', e);
+  }
+}
+
+async function getAllHistoryItems(){
+  try{
+    const db = await openHistoryDB();
+    return await new Promise(function(resolve, reject){
+      const tx = db.transaction(HIST_STORE, 'readonly');
+      const req = tx.objectStore(HIST_STORE).getAll();
+      req.onsuccess = function(){ resolve(req.result || []); };
+      req.onerror = function(e){ reject(e.target.error); };
+    });
+  }catch(e){
+    console.error('Não foi possível ler o histórico:', e);
+    return [];
+  }
+}
+
+async function deleteHistoryItem(id){
+  try{
+    const db = await openHistoryDB();
+    await new Promise(function(resolve, reject){
+      const tx = db.transaction(HIST_STORE, 'readwrite');
+      tx.objectStore(HIST_STORE).delete(id);
+      tx.oncomplete = resolve;
+      tx.onerror = function(e){ reject(e.target.error); };
+    });
+  }catch(e){
+    console.error('Não foi possível excluir o item do histórico:', e);
+  }
+}
+
+async function clearAllHistoryItems(){
+  try{
+    const db = await openHistoryDB();
+    await new Promise(function(resolve, reject){
+      const tx = db.transaction(HIST_STORE, 'readwrite');
+      tx.objectStore(HIST_STORE).clear();
+      tx.oncomplete = resolve;
+      tx.onerror = function(e){ reject(e.target.error); };
+    });
+  }catch(e){
+    console.error('Não foi possível limpar o histórico:', e);
+  }
+}
+
+// Apaga os itens mais antigos, aos poucos, enquanto o uso de armazenamento
+// estiver acima de 80% da cota disponível no navegador.
+async function enforceStorageQuota(){
+  if(!navigator.storage || !navigator.storage.estimate) return;
+  try{
+    let estimate = await navigator.storage.estimate();
+    if(!estimate.quota) return;
+    let ratio = estimate.usage / estimate.quota;
+    let guard = 0;
+    while(ratio >= STORAGE_PRUNE_THRESHOLD && guard < 200){
+      guard++;
+      const items = await getAllHistoryItems();
+      if(!items.length) break;
+      items.sort(function(a, b){ return a.createdAt - b.createdAt; }); // mais antigo primeiro
+      await deleteHistoryItem(items[0].id);
+      estimate = await navigator.storage.estimate();
+      ratio = estimate.quota ? estimate.usage / estimate.quota : 0;
+    }
+  }catch(e){
+    console.error('Não foi possível checar a cota de armazenamento:', e);
+  }
+}
+
+async function renderStorageInfo(){
+  const el = document.getElementById('storageInfo');
+  if(!el) return;
+  if(!navigator.storage || !navigator.storage.estimate){
+    el.textContent = '';
+    return;
+  }
+  try{
+    const estimate = await navigator.storage.estimate();
+    if(!estimate.quota){ el.textContent = ''; return; }
+    const pct = Math.min(100, Math.round((estimate.usage / estimate.quota) * 100));
+    const warn = pct >= 80;
+    el.innerHTML = 'Armazenamento local usado: ' + pct + '%' +
+      (warn ? ' — itens antigos serão apagados automaticamente para liberar espaço.' : '') +
+      '<span class="storage-bar"><span class="storage-bar-fill' + (warn ? ' warn' : '') + '" style="width:' + pct + '%;"></span></span>';
+  }catch(e){
+    el.textContent = '';
+  }
+}
+
+function historyMonthKey(ts){
+  const d = new Date(ts);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+}
+const HISTORY_MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+function historyMonthLabel(monthKey){
+  const parts = monthKey.split('-');
+  const monthIdx = parseInt(parts[1], 10) - 1;
+  return HISTORY_MONTH_NAMES[monthIdx] + ' de ' + parts[0];
+}
+
+async function renderMonthFilterOptions(){
+  const select = document.getElementById('histMonthFilter');
+  const items = await getAllHistoryItems();
+  const months = Array.from(new Set(items.map(function(it){ return historyMonthKey(it.createdAt); })));
+  months.sort().reverse();
+  const prev = select.value;
+  select.innerHTML = '<option value="todos">Todos os meses</option>';
+  months.forEach(function(m){
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = historyMonthLabel(m);
+    select.appendChild(opt);
+  });
+  if(months.indexOf(prev) >= 0) select.value = prev;
+}
+
+function historyDateLabel(ts){
+  const d = new Date(ts);
+  return d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+async function renderHistory(){
+  const listEl = document.getElementById('historyList');
+  const typeFilter = document.getElementById('histTypeFilter').value;
+  const monthFilter = document.getElementById('histMonthFilter').value;
+
+  let items = await getAllHistoryItems();
+  items.sort(function(a, b){ return b.createdAt - a.createdAt; }); // mais recente primeiro
+
+  if(typeFilter !== 'todos'){
+    items = items.filter(function(it){ return it.type === typeFilter; });
+  }
+  if(monthFilter !== 'todos'){
+    items = items.filter(function(it){ return historyMonthKey(it.createdAt) === monthFilter; });
+  }
+
+  listEl.innerHTML = '';
+  if(!items.length){
+    listEl.innerHTML = '<div class="history-empty">Nenhum conteúdo gerado ainda com esses filtros.</div>';
+    return;
+  }
+
+  items.forEach(function(it){
+    const row = document.createElement('div');
+    row.className = 'history-item';
+
+    const thumb = document.createElement(it.type === 'imagem' ? 'img' : 'div');
+    thumb.className = 'history-thumb' + (it.type === 'texto' ? ' is-text' : '');
+    if(it.type === 'imagem'){
+      thumb.src = it.content;
+      thumb.alt = it.tema || 'Imagem gerada';
+    } else {
+      thumb.textContent = 'T';
+    }
+    row.appendChild(thumb);
+
+    const body = document.createElement('div');
+    body.className = 'history-body';
+    body.innerHTML =
+      '<div class="history-top">' +
+        '<span class="skill-tag ' + it.type + '">' + it.type + '</span>' +
+        '<span class="history-date">' + historyDateLabel(it.createdAt) + '</span>' +
+      '</div>' +
+      '<div class="history-tema">' + escapeHtml(it.tema || '(sem tema)') + '</div>' +
+      (it.skillName ? '<div class="history-preview">Skill: ' + escapeHtml(it.skillName) + '</div>' : '') +
+      (it.type === 'texto' ? '<div class="history-preview">' + escapeHtml((it.content || '').slice(0, 220)) + ((it.content || '').length > 220 ? '…' : '') + '</div>' : '');
+
+    const actions = document.createElement('div');
+    actions.className = 'history-actions';
+
+    if(it.type === 'texto'){
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'abtn small secondary';
+      copyBtn.type = 'button';
+      copyBtn.textContent = 'Copiar';
+      copyBtn.addEventListener('click', function(){ copyText(it.content); });
+      actions.appendChild(copyBtn);
+    } else {
+      const dlBtn = document.createElement('a');
+      dlBtn.className = 'abtn small secondary';
+      dlBtn.textContent = 'Baixar';
+      dlBtn.href = it.content;
+      dlBtn.download = 'post-sala-de-estudo-' + it.id + '.png';
+      actions.appendChild(dlBtn);
+    }
+
+    const delBtn = document.createElement('button');
+    delBtn.className = 'abtn small ghost';
+    delBtn.type = 'button';
+    delBtn.textContent = 'Excluir';
+    delBtn.addEventListener('click', async function(){
+      if(!confirm('Excluir este item do histórico?')) return;
+      await deleteHistoryItem(it.id);
+      await renderMonthFilterOptions();
+      await renderHistory();
+      await renderStorageInfo();
+    });
+    actions.appendChild(delBtn);
+
+    body.appendChild(actions);
+    row.appendChild(body);
+    listEl.appendChild(row);
+  });
+}
+
+async function saveToHistory(type, content, tema, skillName){
+  const item = {
+    id: 'h' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+    type: type,
+    content: content,
+    tema: tema,
+    skillName: skillName,
+    createdAt: Date.now()
+  };
+  await addHistoryItem(item);
+  await enforceStorageQuota();
+  await renderMonthFilterOptions();
+  await renderHistory();
+  await renderStorageInfo();
+}
+
+document.getElementById('histTypeFilter').addEventListener('change', renderHistory);
+document.getElementById('histMonthFilter').addEventListener('change', renderHistory);
+document.getElementById('btnClearHistory').addEventListener('click', async function(){
+  if(!confirm('Tem certeza que deseja apagar TODO o histórico de textos e imagens gerados? Essa ação não pode ser desfeita.')) return;
+  await clearAllHistoryItems();
+  await renderMonthFilterOptions();
+  await renderHistory();
+  await renderStorageInfo();
+});
+
+// ---------- GERAÇÃO (com troca automática de key) ----------
+function isQuotaError(message){
+  const m = (message || '').toLowerCase();
+  return m.indexOf('quota') >= 0 || m.indexOf('resource_exhausted') >= 0 ||
+         m.indexOf('429') >= 0 || m.indexOf('rate limit') >= 0 || m.indexOf('billing') >= 0;
+}
+
+async function callGeminiText(apiKey, model, prompt){
+  const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + encodeURIComponent(apiKey), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+  });
+  const data = await res.json();
+  if(!res.ok){ const err = new Error((data && data.error && data.error.message) || ('Erro HTTP ' + res.status)); err.status = res.status; throw err; }
+  const parts = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts;
+  const text = parts ? parts.map(function(p){ return p.text || ''; }).join('\n').trim() : '';
+  if(!text) throw new Error('A API não retornou texto.');
+  return text;
+}
+
+async function callGeminiImage(apiKey, model, prompt){
+  const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + encodeURIComponent(apiKey), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { responseModalities: ['IMAGE', 'TEXT'] }
+    })
+  });
+  const data = await res.json();
+  if(!res.ok){ const err = new Error((data && data.error && data.error.message) || ('Erro HTTP ' + res.status)); err.status = res.status; throw err; }
+  const parts = (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
+  const imgPart = parts.find(function(p){ return p.inlineData; });
+  if(!imgPart) throw new Error('A API não retornou nenhuma imagem.');
+  return 'data:' + imgPart.inlineData.mimeType + ';base64,' + imgPart.inlineData.data;
+}
+
+// tenta a key ativa; se der erro de cota, tenta as próximas keys da lista em ordem
+async function generateWithFailover(type, model, prompt, statusEl){
+  const keys = getKeys();
+  if(!keys.length) throw new Error('Cadastre pelo menos uma API key do Gemini primeiro.');
+
+  const activeId = getActiveKeyId() || keys[0].id;
+  const startIndex = Math.max(0, keys.findIndex(function(k){ return k.id === activeId; }));
+  const order = keys.slice(startIndex).concat(keys.slice(0, startIndex));
+
+  let lastError = null;
+  for(let i = 0; i < order.length; i++){
+    const k = order[i];
+    try{
+      if(i > 0 && statusEl) statusEl.textContent = 'Tentando com "' + k.label + '"...';
+      const result = type === 'texto'
+        ? await callGeminiText(k.key, model, prompt)
+        : await callGeminiImage(k.key, model, prompt);
+      if(getActiveKeyId() !== k.id){ setActiveKeyId(k.id); renderKeys(); }
+      return result;
+    }catch(err){
+      lastError = err;
+      if(!isQuotaError(err.message)) throw err; // erro que não é de cota: não adianta trocar de key
+    }
+  }
+  throw lastError || new Error('Todas as keys cadastradas falharam.');
+}
+
+document.getElementById('btnGenerate').addEventListener('click', async function(){
+  const btn = this;
+  const skillId = document.getElementById('genSkill').value;
+  const tema = document.getElementById('genTema').value.trim();
+  const statusEl = document.getElementById('genStatus');
+  const outEl = document.getElementById('genOutput');
+  const hintEl = document.getElementById('genHint');
+  const skill = getSkills().find(function(s){ return s.id === skillId; });
+
+  outEl.style.display = 'none';
+  hintEl.style.display = 'none';
+  statusEl.className = 'admin-status';
+  statusEl.textContent = '';
+
+  if(!skill){ statusEl.textContent = 'Selecione uma skill.'; statusEl.className = 'admin-status err'; return; }
+  if(!tema){ statusEl.textContent = 'Descreva o tema do post.'; statusEl.className = 'admin-status err'; return; }
+  if(!getKeys().length){ statusEl.textContent = 'Cadastre sua API key do Gemini primeiro.'; statusEl.className = 'admin-status err'; return; }
+
+  const prompt = skill.template.replace(/\{tema\}/gi, tema);
+
+  btn.disabled = true;
+  statusEl.textContent = 'Gerando...';
+  try{
+    if(skill.type === 'texto'){
+      const model = localStorage.getItem(LS_MODEL_TEXT) || 'gemini-3.6-flash';
+      const text = await generateWithFailover('texto', model, prompt, statusEl);
+      outEl.style.display = 'block';
+      outEl.innerHTML = '';
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      outEl.appendChild(ta);
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'abtn secondary';
+      copyBtn.type = 'button';
+      copyBtn.style.marginTop = '8px';
+      copyBtn.textContent = 'Copiar texto';
+      copyBtn.addEventListener('click', function(){ copyText(ta.value); });
+      outEl.appendChild(copyBtn);
+      await saveToHistory('texto', text, tema, skill.name);
+    } else {
+      const model = localStorage.getItem(LS_MODEL_IMAGE) || 'gemini-2.5-flash-image';
+      const dataUrl = await generateWithFailover('imagem', model, prompt, statusEl);
+      outEl.style.display = 'block';
+      outEl.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = dataUrl;
+      outEl.appendChild(img);
+      const dlBtn = document.createElement('a');
+      dlBtn.className = 'abtn secondary';
+      dlBtn.textContent = 'Baixar imagem';
+      dlBtn.href = dataUrl;
+      dlBtn.download = 'post-sala-de-estudo.png';
+      outEl.appendChild(dlBtn);
+      await saveToHistory('imagem', dataUrl, tema, skill.name);
+    }
+    statusEl.textContent = 'Conteúdo gerado com sucesso.';
+    statusEl.className = 'admin-status ok';
+  }catch(err){
+    statusEl.textContent = 'Erro: ' + err.message;
+    statusEl.className = 'admin-status err';
+    hintEl.style.display = 'block';
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+// ---------- EMERGÊNCIA (accordion) ----------
+function loadEmergencyFields(){
+  document.getElementById('emTexto').value = localStorage.getItem(LS_EMERGENCY_TEXT) || DEFAULT_EMERGENCY_TEXT;
+  document.getElementById('emImagem').value = localStorage.getItem(LS_EMERGENCY_IMAGE) || DEFAULT_EMERGENCY_IMAGE;
+}
+document.getElementById('emTexto').addEventListener('input', function(){
+  localStorage.setItem(LS_EMERGENCY_TEXT, this.value);
+});
+document.getElementById('emImagem').addEventListener('input', function(){
+  localStorage.setItem(LS_EMERGENCY_IMAGE, this.value);
+});
+
+const emergencyToggle = document.getElementById('emergencyToggle');
+const emergencyBody = document.getElementById('emergencyBody');
+emergencyToggle.addEventListener('click', function(){
+  const expanded = emergencyToggle.getAttribute('aria-expanded') === 'true';
+  emergencyToggle.setAttribute('aria-expanded', String(!expanded));
+  emergencyBody.classList.toggle('open', !expanded);
+});
+
+function goToEmergencySection(){
+  emergencyToggle.setAttribute('aria-expanded', 'true');
+  emergencyBody.classList.add('open');
+  emergencyToggle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+const btnGoToEmergency = document.getElementById('btnGoToEmergency');
+if(btnGoToEmergency){
+  btnGoToEmergency.addEventListener('click', goToEmergencySection);
+}
+
+function copyText(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text);
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+}
+document.querySelectorAll('[data-copy]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    const id = btn.getAttribute('data-copy');
+    const val = document.getElementById(id).value;
+    copyText(val);
+    const original = btn.textContent;
+    btn.textContent = 'Copiado!';
+    setTimeout(function(){ btn.textContent = original; }, 1500);
+  });
+});
+
+// ---------- init ----------
+migrateDeprecatedTextModel();
+renderSkillList();
+renderKeys();
+setupModelDropdown('fModelText', 'fModelTextCustom', LS_MODEL_TEXT, 'gemini-3.6-flash');
+setupModelDropdown('fModelImage', 'fModelImageCustom', LS_MODEL_IMAGE, 'gemini-2.5-flash-image');
+loadEmergencyFields();
+setupEmergencySkillInsert();
+renderMonthFilterOptions().then(renderHistory);
+renderStorageInfo();
+</script>
+</body>
+</html>

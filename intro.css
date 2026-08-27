@@ -4,10 +4,10 @@
     --logo-bg:#1c1c1c;
     --logo-fg:#fdfdfb;
     --dur-write:2.4s;   /* recalculado via JS a partir do comprimento real dos traços */
-    --dur-hold:0.1s;
+    --dur-hold:0.11s;
     --dur-erase:1.3s;
     --dur-text-fade:0.25s; /* texto desaparece RÁPIDO assim que a seta chega nele */
-    --dur-logo:2.5s;       /* seta demora mais para atravessar/desaparecer da tela */
+    --dur-logo:2.75s;      /* seta demora mais para atravessar/desaparecer da tela (+10%) */
   }
   *{box-sizing:border-box;}
 
@@ -25,6 +25,13 @@
     display:flex;align-items:center;justify-content:center;
     z-index:100;
     visibility:visible;
+    cursor:pointer;
+    -webkit-user-select:none;
+    user-select:none;
+  }
+  #intro *{
+    -webkit-user-drag:none;
+    user-drag:none;
   }
   #intro.skip-intro {
     display: none !important;
@@ -127,6 +134,13 @@
     width:auto;     /* largura calculada automaticamente a partir do viewBox do SVG (mantém 5,75:1) */
     display:block;
     transform:translateX(-100%);
+    /* Evita que um clique/arraste sobre a imagem dispare o "fantasma" nativo
+       de drag do navegador (o que fazia a seta sumir ao clicar na tela) */
+    pointer-events:none;
+    -webkit-user-drag:none;
+    user-drag:none;
+    user-select:none;
+    -webkit-user-select:none;
   }
   #intro.ready .logo-sweep{
     animation: sweepLogo var(--dur-logo) cubic-bezier(.4,0,.2,1) forwards;
