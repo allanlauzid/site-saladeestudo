@@ -164,25 +164,16 @@
   <div class="login-card" id="enrollCard"></div>
 </div>
 
-<!-- HISTÓRICO DE ACESSOS (modal) -->
-<div class="modal-overlay" id="accessLogModal" hidden>
-  <div class="login-card" id="accessLogCard" style="max-width:520px;">
-    <div class="admin-top" style="margin-bottom:1rem;">
-      <h1 style="margin:0;">Histórico de acessos</h1>
-      <button class="abtn ghost small" id="btnCloseAccessLog" type="button">Fechar</button>
-    </div>
-    <div class="history-list" id="accessLogList" style="max-height:60vh; overflow-y:auto;"></div>
-  </div>
+<!-- CONFIGURAÇÕES (modal: ver logs de acesso / configurar acesso) -->
+<div class="modal-overlay" id="settingsModal" hidden>
+  <div class="login-card" id="settingsCard" style="max-width:520px;"></div>
 </div>
-
-<button class="abtn small fixed-bottom-btn" id="btnOpenAccessLog" type="button" style="display:none;">Histórico de acessos</button>
 
 <div class="admin-wrap" id="adminRoot" style="display:none;">
 
   <div class="admin-top">
     <h1>Painel Admin &middot; Sala de Estudo</h1>
     <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-      <button class="abtn secondary small" id="btnOpenEnroll" type="button">+ Cadastrar novo acesso</button>
       <a href="index.html" class="admin-back">&larr; Voltar ao site</a>
     </div>
   </div>
@@ -434,6 +425,15 @@ const LS_LOGIN_AT = 'se_admin_login_at';
 const LS_LOGIN_NOME = 'se_admin_login_nome';
 let panelCountdownInterval = null;
 let currentUserNome = null;
+
+// Whether the TOTP login gate is enforced. Off by default (absence of the key = false)
+// so the panel works while TOTP enrollment is broken on Supabase's dashboard.
+const LS_REQUIRE_LOGIN = 'se_admin_require_login';
+function isLoginRequired(){ return localStorage.getItem(LS_REQUIRE_LOGIN) === 'true'; }
+
+const ICON_LOGOUT_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
+const ICON_GEAR_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009.6 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9.6a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>';
+
 const LS_THEMES = 'se_admin_themes'; // legacy key, read-only, used for one-time migration
 const LS_EMERGENCY_TEXT = 'se_admin_emergency_texto';
 const LS_EMERGENCY_IMAGE = 'se_admin_emergency_imagem';
@@ -1692,47 +1692,51 @@ function renderFactorPickerPanel(factors){
   const card = document.getElementById('loginCard');
   card.innerHTML =
     '<h1>Entrar no painel</h1>' +
-    '<p class="admin-desc">Escolha seu nome e digite o código do seu autenticador.</p>' +
+    '<p class="admin-desc">Digite o código do seu autenticador.</p>' +
     '<div class="admin-field full">' +
-      '<label for="loginFactorSelect">Seu nome</label>' +
-      '<select id="loginFactorSelect"></select>' +
-    '</div>' +
-    '<div class="admin-field full" style="margin-top:10px;">' +
       '<label for="loginCode2">Código de 6 dígitos</label>' +
       '<input type="text" id="loginCode2" class="login-code-input" maxlength="6" inputmode="numeric" placeholder="000000">' +
     '</div>' +
     '<button class="abtn" id="btnEntrar" type="button" style="margin-top:12px; width:100%; justify-content:center;">Entrar</button>' +
     '<div class="admin-status" id="loginStatus"></div>';
 
-  const select = document.getElementById('loginFactorSelect');
-  factors.forEach(function(f){
-    const opt = document.createElement('option');
-    opt.value = f.id;
-    opt.textContent = f.friendly_name || f.friendlyName || '(sem nome)';
-    select.appendChild(opt);
-  });
-
   document.getElementById('btnEntrar').addEventListener('click', async function(){
-    const factorId = select.value;
-    const friendlyName = select.options[select.selectedIndex].textContent;
     const code = document.getElementById('loginCode2').value.trim();
     const statusEl = document.getElementById('loginStatus');
     if(!/^\d{6}$/.test(code)){ statusEl.textContent = 'Digite o código de 6 dígitos.'; statusEl.className = 'admin-status err'; return; }
     this.disabled = true;
     statusEl.textContent = 'Verificando...';
     statusEl.className = 'admin-status';
-    try{
-      const { data: chData, error: chErr } = await sb.auth.mfa.challenge({ factorId: factorId });
-      if(chErr) throw chErr;
-      const { error: vErr } = await sb.auth.mfa.verify({ factorId: factorId, challengeId: chData.id, code: code });
-      if(vErr) throw vErr;
-      await onAal2Reached(friendlyName);
-    }catch(err){
+
+    let matchedName = null;
+    for(let i = 0; i < factors.length; i++){
+      const f = factors[i];
+      try{
+        const { data: chData, error: chErr } = await sb.auth.mfa.challenge({ factorId: f.id });
+        if(chErr) continue;
+        const { error: vErr } = await sb.auth.mfa.verify({ factorId: f.id, challengeId: chData.id, code: code });
+        if(vErr) continue;
+        matchedName = f.friendly_name || f.friendlyName || '(sem nome)';
+        break;
+      }catch(e){ /* tenta o próximo fator */ }
+    }
+
+    if(!matchedName){
       statusEl.textContent = 'Código inválido, tente novamente.';
       statusEl.className = 'admin-status err';
       this.disabled = false;
+      return;
     }
+    renderWelcomeThenEnter(matchedName);
   });
+}
+
+function renderWelcomeThenEnter(nome){
+  const card = document.getElementById('loginCard');
+  card.innerHTML = '<h1 style="text-align:center;">Bem-vindo(a), ' + escapeHtml(nome) + '!</h1>';
+  setTimeout(async function(){
+    await onAal2Reached(nome);
+  }, 1500);
 }
 
 async function onAal2Reached(nome){
@@ -1744,7 +1748,6 @@ async function onAal2Reached(nome){
   }catch(e){ console.error('Erro ao salvar sessão local:', e); }
   document.getElementById('loginOverlay').style.display = 'none';
   document.getElementById('adminRoot').style.display = '';
-  document.getElementById('btnOpenAccessLog').style.display = '';
   startPanelCountdown();
   await initAdminApp();
 }
@@ -1765,31 +1768,46 @@ async function forceLogoutToLoginFlow(){
     localStorage.removeItem(LS_LOGIN_NOME);
   }catch(e){}
   document.getElementById('adminRoot').style.display = 'none';
-  document.getElementById('btnOpenAccessLog').style.display = 'none';
+  hideSessionCountdownWidget();
   document.getElementById('loginOverlay').style.display = 'flex';
   await runNormalLoginDecision();
 }
 
-// ---------- top-right in-panel countdown + logout (shown while inside #adminRoot) ----------
-function ensurePanelCountdownWidget(){
-  let el = document.getElementById('panelSessionWidget');
+// ---------- top-right widget: settings gear (always, while #adminRoot is visible) +
+// session countdown/logout icon (only while a TOTP session with a TTL is being tracked) ----------
+function ensureTopRightWidget(){
+  let el = document.getElementById('panelTopWidget');
   if(el) return el;
   el = document.createElement('div');
-  el.id = 'panelSessionWidget';
+  el.id = 'panelTopWidget';
   el.style.cssText = 'position:fixed; top:16px; right:16px; z-index:50; display:flex; align-items:center; gap:10px; background:#fff; border:2px solid var(--color-blue); border-radius:10px; padding:6px 10px; box-shadow:-4px 4px 0 rgba(0,78,181,0.12);';
   el.innerHTML =
-    '<span id="panelSessionCountdown" style="font-family:monospace; font-weight:700; color:var(--color-blue); font-size:0.85rem;"></span>' +
-    '<button class="abtn small" id="btnPanelLogout" type="button">Logout</button>';
+    '<span id="panelSessionCountdown" style="font-family:monospace; font-weight:700; color:var(--color-blue); font-size:0.85rem; display:none;"></span>' +
+    '<button class="abtn small" id="btnPanelLogout" type="button" title="Sair" style="display:none; padding:6px 8px;">' + ICON_LOGOUT_SVG + '</button>' +
+    '<button class="abtn small" id="btnPanelSettings" type="button" title="Configurações" style="padding:6px 8px;">' + ICON_GEAR_SVG + '</button>';
   document.body.appendChild(el);
   document.getElementById('btnPanelLogout').addEventListener('click', function(){
     forceLogoutToLoginFlow();
   });
+  document.getElementById('btnPanelSettings').addEventListener('click', function(){
+    renderSettingsHome();
+    document.getElementById('settingsModal').hidden = false;
+  });
   return el;
+}
+
+function hideSessionCountdownWidget(){
+  const countdownEl = document.getElementById('panelSessionCountdown');
+  const logoutBtn = document.getElementById('btnPanelLogout');
+  if(countdownEl) countdownEl.style.display = 'none';
+  if(logoutBtn) logoutBtn.style.display = 'none';
 }
 
 function startPanelCountdown(){
   if(panelCountdownInterval){ clearInterval(panelCountdownInterval); panelCountdownInterval = null; }
-  ensurePanelCountdownWidget();
+  ensureTopRightWidget();
+  document.getElementById('panelSessionCountdown').style.display = '';
+  document.getElementById('btnPanelLogout').style.display = '';
   const loginAt = Number(localStorage.getItem(LS_LOGIN_AT)) || Date.now();
   function tick(){
     const remaining = SESSION_TTL_MS - (Date.now() - loginAt);
@@ -1843,7 +1861,6 @@ function renderResumeGatePanel(remainingMs, nome){
     }catch(e){ console.error('Erro ao registrar acesso (resume):', e); }
     document.getElementById('loginOverlay').style.display = 'none';
     document.getElementById('adminRoot').style.display = '';
-    document.getElementById('btnOpenAccessLog').style.display = '';
     startPanelCountdown();
     await initAdminApp();
   });
@@ -1871,9 +1888,23 @@ async function runNormalLoginDecision(){
   }
 }
 
+async function enterAdminWithoutLogin(){
+  document.getElementById('loginOverlay').style.display = 'none';
+  document.getElementById('adminRoot').style.display = '';
+  ensureTopRightWidget();
+  hideSessionCountdownWidget();
+  await initAdminApp();
+}
+
 async function runLoginFlow(){
   renderLoginLoading('Verificando sessão...');
   await ensureSharedSession();
+
+  if(!isLoginRequired()){
+    await enterAdminWithoutLogin();
+    return;
+  }
+
   const { data: sessionData } = await sb.auth.getSession();
   const { data: aalData } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
   let loginAt = 0;
@@ -1900,17 +1931,17 @@ async function runLoginFlow(){
   await runNormalLoginDecision();
 }
 
-// ---------- Cadastrar novo acesso (modal, requer já estar aal2) ----------
+// ---------- Cadastrar novo acesso (modal, aberto a partir de Configurações) ----------
 function setupEnrollModal(){
   const overlay = document.getElementById('enrollModal');
-  const openBtn = document.getElementById('btnOpenEnroll');
-  openBtn.addEventListener('click', function(){
-    renderEnrollModalContent();
-    overlay.hidden = false;
-  });
   overlay.addEventListener('click', function(e){
     if(e.target === overlay) overlay.hidden = true;
   });
+}
+
+function openEnrollModal(){
+  renderEnrollModalContent();
+  document.getElementById('enrollModal').hidden = false;
 }
 
 function renderEnrollModalContent(){
@@ -1982,23 +2013,46 @@ function renderEnrollModalContent(){
   });
 }
 
-// ---------- Histórico de acessos (modal, read-only) ----------
-function setupAccessLogModal(){
-  const overlay = document.getElementById('accessLogModal');
-  document.getElementById('btnOpenAccessLog').addEventListener('click', async function(){
-    overlay.hidden = false;
-    await renderAccessLog();
-  });
-  document.getElementById('btnCloseAccessLog').addEventListener('click', function(){
-    overlay.hidden = true;
-  });
+// ---------- Configurações (modal com "Ver logs de acesso" / "Configurar acesso") ----------
+function setupSettingsModal(){
+  const overlay = document.getElementById('settingsModal');
   overlay.addEventListener('click', function(e){
     if(e.target === overlay) overlay.hidden = true;
   });
 }
 
-async function renderAccessLog(){
-  const listEl = document.getElementById('accessLogList');
+function renderSettingsHome(){
+  const card = document.getElementById('settingsCard');
+  card.innerHTML =
+    '<div class="admin-top" style="margin-bottom:1rem;">' +
+      '<h1 style="margin:0;">Configurações</h1>' +
+      '<button class="abtn ghost small" id="btnCloseSettings" type="button">Fechar</button>' +
+    '</div>' +
+    '<div class="admin-row" style="margin-bottom:1rem;">' +
+      '<button class="abtn secondary" id="btnSettingsAccessLog" type="button" style="flex:1; justify-content:center;">Ver logs de acesso</button>' +
+      '<button class="abtn secondary" id="btnSettingsConfigAccess" type="button" style="flex:1; justify-content:center;">Configurar acesso</button>' +
+    '</div>' +
+    '<div id="settingsBody"></div>';
+
+  document.getElementById('btnCloseSettings').addEventListener('click', function(){
+    document.getElementById('settingsModal').hidden = true;
+  });
+  document.getElementById('btnSettingsAccessLog').addEventListener('click', renderSettingsAccessLogView);
+  document.getElementById('btnSettingsConfigAccess').addEventListener('click', renderSettingsConfigAccessView);
+}
+
+function renderSettingsAccessLogView(){
+  const body = document.getElementById('settingsBody');
+  body.innerHTML =
+    '<button class="abtn ghost small" id="btnSettingsBackFromLog" type="button" style="margin-bottom:12px;">&larr; Voltar</button>' +
+    '<div class="history-list" id="settingsAccessLogList" style="max-height:50vh; overflow-y:auto;"></div>';
+  document.getElementById('btnSettingsBackFromLog').addEventListener('click', renderSettingsHome);
+  renderAccessLog('settingsAccessLogList');
+}
+
+async function renderAccessLog(containerId){
+  const listEl = document.getElementById(containerId);
+  if(!listEl) return;
   listEl.innerHTML = '<div class="history-empty">Carregando...</div>';
   const { data, error } = await sb.from('access_logs').select('*').order('created_at', { ascending: false }).limit(200);
   if(error){
@@ -2024,6 +2078,115 @@ async function renderAccessLog(){
   });
 }
 
+function renderSettingsConfigAccessView(){
+  const body = document.getElementById('settingsBody');
+  const required = isLoginRequired();
+  body.innerHTML =
+    '<button class="abtn ghost small" id="btnSettingsBackFromConfig" type="button" style="margin-bottom:12px;">&larr; Voltar</button>' +
+    '<label class="edit-mode-toggle">' +
+      '<input type="checkbox" id="requireLoginToggle"' + (required ? ' checked' : '') + '>' +
+      'Solicitar login' +
+    '</label>' +
+    '<div class="admin-status" id="requireLoginStatus"></div>' +
+    '<div id="requireLoginEnrollArea"></div>' +
+    '<hr style="border:none; border-top:2px dashed #e5e0d3; margin:16px 0;">' +
+    '<button class="abtn secondary" id="btnSettingsOpenEnroll" type="button">+ Cadastrar novo acesso</button>';
+
+  document.getElementById('btnSettingsBackFromConfig').addEventListener('click', renderSettingsHome);
+  document.getElementById('btnSettingsOpenEnroll').addEventListener('click', function(){
+    openEnrollModal();
+  });
+
+  const toggle = document.getElementById('requireLoginToggle');
+  const statusEl = document.getElementById('requireLoginStatus');
+  const enrollArea = document.getElementById('requireLoginEnrollArea');
+
+  toggle.addEventListener('change', function(){
+    if(toggle.checked){
+      statusEl.textContent = '';
+      statusEl.className = 'admin-status';
+      renderInlineEnrollForToggle(enrollArea, toggle, statusEl);
+    } else {
+      try{ localStorage.setItem(LS_REQUIRE_LOGIN, 'false'); }catch(e){}
+      enrollArea.innerHTML = '';
+      statusEl.textContent = 'Login não será mais solicitado.';
+      statusEl.className = 'admin-status ok';
+    }
+  });
+}
+
+// Reuses the same enroll (QR + confirm) flow used elsewhere, but inline inside the
+// "Configurar acesso" view, and only flips LS_REQUIRE_LOGIN to 'true' on success.
+function renderInlineEnrollForToggle(container, toggleCheckbox, outerStatusEl){
+  container.innerHTML =
+    '<div class="admin-card" style="margin-top:12px; box-shadow:none;">' +
+      '<h2 style="font-size:1rem;">Cadastre seu autenticador antes de ativar</h2>' +
+      '<div class="admin-field full">' +
+        '<label for="reqLoginNome">Seu nome</label>' +
+        '<input type="text" id="reqLoginNome" placeholder="Ex: Maria">' +
+      '</div>' +
+      '<div class="admin-row" style="margin-top:10px;">' +
+        '<button class="abtn" id="btnReqLoginQr" type="button">Gerar QR Code</button>' +
+        '<button class="abtn ghost" id="btnReqLoginCancel" type="button">Cancelar</button>' +
+      '</div>' +
+      '<div id="reqLoginEnrollArea"></div>' +
+      '<div class="admin-status" id="reqLoginStatus"></div>' +
+    '</div>';
+
+  document.getElementById('btnReqLoginCancel').addEventListener('click', function(){
+    toggleCheckbox.checked = false;
+    container.innerHTML = '';
+  });
+
+  document.getElementById('btnReqLoginQr').addEventListener('click', async function(){
+    const nome = document.getElementById('reqLoginNome').value.trim();
+    const statusEl = document.getElementById('reqLoginStatus');
+    if(!nome){ statusEl.textContent = 'Digite seu nome.'; statusEl.className = 'admin-status err'; return; }
+    this.disabled = true;
+    statusEl.textContent = 'Gerando QR Code...';
+    statusEl.className = 'admin-status';
+    try{
+      const { data, error } = await sb.auth.mfa.enroll({ factorType: 'totp', friendlyName: nome });
+      if(error) throw error;
+      const factorId = data.id;
+      const area = document.getElementById('reqLoginEnrollArea');
+      area.innerHTML =
+        '<div class="login-qr-box">' + data.totp.qr_code + '</div>' +
+        '<p class="admin-desc">Não conseguiu escanear? Digite manualmente este código no seu app autenticador:</p>' +
+        '<code class="login-secret">' + escapeHtml(data.totp.secret) + '</code>' +
+        '<div class="admin-field full">' +
+          '<label for="reqLoginCode">Código de 6 dígitos</label>' +
+          '<input type="text" id="reqLoginCode" class="login-code-input" maxlength="6" inputmode="numeric" placeholder="000000">' +
+        '</div>' +
+        '<button class="abtn" id="btnReqLoginConfirmar" type="button" style="margin-top:10px; width:100%; justify-content:center;">Confirmar</button>';
+      statusEl.textContent = '';
+      document.getElementById('btnReqLoginConfirmar').addEventListener('click', async function(){
+        const code = document.getElementById('reqLoginCode').value.trim();
+        if(!/^\d{6}$/.test(code)){ statusEl.textContent = 'Digite o código de 6 dígitos.'; statusEl.className = 'admin-status err'; return; }
+        this.disabled = true;
+        statusEl.textContent = 'Verificando...';
+        statusEl.className = 'admin-status';
+        try{
+          const { data: chData, error: chErr } = await sb.auth.mfa.challenge({ factorId: factorId });
+          if(chErr) throw chErr;
+          const { error: vErr } = await sb.auth.mfa.verify({ factorId: factorId, challengeId: chData.id, code: code });
+          if(vErr) throw vErr;
+          try{ localStorage.setItem(LS_REQUIRE_LOGIN, 'true'); }catch(e){}
+          container.innerHTML = '<div class="admin-status ok">Login será solicitado a partir de agora.</div>';
+        }catch(err){
+          statusEl.textContent = 'Código inválido, tente novamente.';
+          statusEl.className = 'admin-status err';
+          this.disabled = false;
+        }
+      });
+    }catch(err){
+      statusEl.textContent = 'Erro ao gerar QR Code: ' + err.message;
+      statusEl.className = 'admin-status err';
+      this.disabled = false;
+    }
+  });
+}
+
 // ---------- init do painel (após aal2) ----------
 async function initAdminApp(){
   await seedThemesIfEmpty();
@@ -2046,7 +2209,7 @@ async function initAdminApp(){
 }
 
 setupEnrollModal();
-setupAccessLogModal();
+setupSettingsModal();
 runLoginFlow();
 </script>
 </body>
