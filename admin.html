@@ -124,14 +124,67 @@
   .history-empty{ color:#8a8a8a; font-size:0.85rem; text-align:center; padding:1.5rem 0; }
   .history-bulk-bar{ display:flex; align-items:center; gap:10px; margin-bottom:1rem; flex-wrap:wrap; }
   .history-bulk-bar label{ font-size:0.82rem; color:#6b6b6b; display:flex; align-items:center; gap:6px; cursor:pointer; }
+
+  /* --- login / MFA gate --- */
+  #loginOverlay{
+    position:fixed; inset:0; z-index:9999; background:#f4f1ea;
+    display:flex; align-items:center; justify-content:center; padding:1.5rem;
+  }
+  .login-card{
+    background:#fff; border:2px solid var(--color-blue); border-radius:14px; padding:2rem;
+    box-shadow:-6px 6px 0 rgba(0,78,181,0.12); max-width:420px; width:100%;
+  }
+  .login-card h1{ font-family:var(--font-display); font-size:1.3rem; color:var(--color-blue); margin:0 0 0.4rem; }
+  .login-card p.admin-desc{ margin-bottom:1.2rem; }
+  .login-qr-box{ display:flex; justify-content:center; margin:14px 0; background:#fdfdfb; border:2px dashed #d8d3c4; border-radius:10px; padding:14px; }
+  .login-qr-box svg{ max-width:200px; width:100%; height:auto; }
+  .login-secret{ font-family:monospace; font-size:0.85rem; word-break:break-all; background:#f4f1ea; border-radius:8px; padding:8px 10px; user-select:all; margin-bottom:12px; display:block; }
+  .login-code-input{ letter-spacing:0.3em; text-align:center; font-size:1.1rem; }
+  #histLogPanel .history-empty{ padding:0.5rem 0; }
+  .modal-overlay{
+    position:fixed; inset:0; z-index:9998; background:rgba(20,20,20,0.45);
+    display:flex; align-items:center; justify-content:center; padding:1.5rem;
+  }
+  .modal-overlay[hidden]{ display:none; }
+  .fixed-bottom-btn{ position:fixed; bottom:20px; right:20px; z-index:500; }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div class="admin-wrap">
+
+<!-- LOGIN / MFA GATE -->
+<div id="loginOverlay">
+  <div class="login-card" id="loginCard">
+    <p>Carregando...</p>
+  </div>
+</div>
+
+<!-- CADASTRAR NOVO ACESSO (modal) -->
+<div class="modal-overlay" id="enrollModal" hidden>
+  <div class="login-card" id="enrollCard"></div>
+</div>
+
+<!-- HISTÓRICO DE ACESSOS (modal) -->
+<div class="modal-overlay" id="accessLogModal" hidden>
+  <div class="login-card" id="accessLogCard" style="max-width:520px;">
+    <div class="admin-top" style="margin-bottom:1rem;">
+      <h1 style="margin:0;">Histórico de acessos</h1>
+      <button class="abtn ghost small" id="btnCloseAccessLog" type="button">Fechar</button>
+    </div>
+    <div class="history-list" id="accessLogList" style="max-height:60vh; overflow-y:auto;"></div>
+  </div>
+</div>
+
+<button class="abtn small fixed-bottom-btn" id="btnOpenAccessLog" type="button" style="display:none;">Histórico de acessos</button>
+
+<div class="admin-wrap" id="adminRoot" style="display:none;">
 
   <div class="admin-top">
     <h1>Painel Admin &middot; Sala de Estudo</h1>
-    <a href="index.html" class="admin-back">&larr; Voltar ao site</a>
+    <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+      <button class="abtn secondary small" id="btnOpenEnroll" type="button">+ Cadastrar novo acesso</button>
+      <a href="index.html" class="admin-back">&larr; Voltar ao site</a>
+    </div>
   </div>
 
   <!-- GERADOR (primeiro) -->
@@ -249,8 +302,6 @@
       </div>
     </div>
 
-    <p class="storage-info" id="storageInfo"></p>
-
     <div class="history-bulk-bar">
       <label><input type="checkbox" id="histSelectAll"> Selecionar todos</label>
       <button class="abtn small ghost" id="btnDeleteSelected" type="button" disabled>Excluir selecionados (<span id="histSelectedCount">0</span>)</button>
@@ -364,14 +415,25 @@
 </div>
 
 <script>
-const LS_KEYS = 'se_admin_gemini_keys';
-const LS_ACTIVE_KEY_ID = 'se_admin_active_key_id';
-const LS_KEY_LEGACY = 'se_admin_gemini_key'; // versão antiga (key única)
-const LS_MODEL_TEXT = 'se_admin_model_text';
+// ================= SUPABASE CONFIG =================
+const SUPABASE_URL = 'https://fesejrbindspzafiyssm.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_mGEU6ouQVdIt1G97ENAq_w_tX8uknCK';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Shared technical account used as the underlying identity for everyone.
+// Not a secret in itself — the real security boundary is each person's TOTP factor.
+const SHARED_EMAIL = 'kupimdigital@gmail.com';
+const SHARED_PASSWORD = 'Supabase91!';
+
+const LS_MODEL_TEXT = 'se_admin_model_text'; // kept for in-memory fallback labels only
 const LS_MODEL_IMAGE = 'se_admin_model_image';
-const LS_THEMES = 'se_admin_themes';
-const LS_SKILLS = 'se_admin_skills'; // versão antiga (skills soltas texto/imagem) — usada só para migração
-const LS_THEMES_MIGRATED = 'se_admin_themes_migrated_v1';
+
+// ================= SESSION PERSISTENCE =================
+const SESSION_TTL_MS = 2 * 60 * 60 * 1000;
+const LS_LOGIN_AT = 'se_admin_login_at';
+const LS_LOGIN_NOME = 'se_admin_login_nome';
+let panelCountdownInterval = null;
+const LS_THEMES = 'se_admin_themes'; // legacy key, read-only, used for one-time migration
 const LS_EMERGENCY_TEXT = 'se_admin_emergency_texto';
 const LS_EMERGENCY_IMAGE = 'se_admin_emergency_imagem';
 
@@ -518,11 +580,6 @@ const DEFAULT_THEMES = [
   }
 ];
 
-// conteúdo original das duas skills padrão (usado pela migração para não duplicar
-// quando o navegador já tinha essas duas skills antigas, sem edição do usuário)
-const LEGACY_DEFAULT_TEXTO = DEFAULT_THEMES.find(function(t){ return t.id === 'legado_texto'; }).templateTexto;
-const LEGACY_DEFAULT_IMAGEM = DEFAULT_THEMES.find(function(t){ return t.id === 'legado_imagem'; }).templateImagem;
-
 const DEFAULT_EMERGENCY_TEXT =`Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, para todas as disciplinas, ENEM e vestibulares). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, confiável e motivador.
 
 Escreva uma legenda de Instagram sobre: [COLOQUE O TEMA AQUI]
@@ -537,6 +594,9 @@ const DEFAULT_EMERGENCY_IMAGE = `Crie uma imagem quadrada para Instagram no esti
 
 Tema da imagem: [COLOQUE O TEMA AQUI]`;
 
+// in-memory settings row cache (single row, id=true)
+let SETTINGS = null;
+
 // ---------- ACCORDIONS (skills, keys, emergência) ----------
 function setupAccordion(toggleId, bodyId){
   const toggle = document.getElementById(toggleId);
@@ -547,13 +607,11 @@ function setupAccordion(toggleId, bodyId){
     toggle.setAttribute('aria-expanded', String(!expanded));
     body.classList.toggle('open', !expanded);
   });
-  // com o dropdown fechado, clicar em qualquer parte do card (não só no texto/seta
-  // do cabeçalho) também abre — maior área de clique, mais fácil de acertar.
   if(card){
     card.addEventListener('click', function(e){
       const isOpen = toggle.getAttribute('aria-expanded') === 'true';
-      if(isOpen) return; // já aberto: não interfere em cliques dentro do conteúdo
-      if(e.target === toggle || toggle.contains(e.target)) return; // o próprio botão já cuida do clique
+      if(isOpen) return;
+      if(e.target === toggle || toggle.contains(e.target)) return;
       toggle.click();
     });
   }
@@ -565,54 +623,52 @@ function setupAccordion(toggleId, bodyId){
   };
 }
 
-// ---------- TEMAS E SKILLS ----------
+// ---------- TEMAS E SKILLS (Supabase) ----------
 let editingThemeId = null;
+let THEMES_CACHE = [];
 
-function getThemes(){
+function mapThemeRow(row){
+  return {
+    id: row.id,
+    nome: row.nome,
+    templateTexto: row.template_texto || '',
+    templateImagem: row.template_imagem || '',
+    origem: row.origem || 'personalizado'
+  };
+}
+
+async function getThemes(){
+  const { data, error } = await sb.from('themes').select('*').order('created_at');
+  if(error){ console.error('Erro ao buscar temas:', error); return []; }
+  THEMES_CACHE = (data || []).map(mapThemeRow);
+  return THEMES_CACHE;
+}
+
+async function seedThemesIfEmpty(){
+  const { count, error } = await sb.from('themes').select('id', { count: 'exact', head: true });
+  if(error){ console.error('Erro ao checar temas existentes:', error); return; }
+  if(count && count > 0) return;
+
+  let source = DEFAULT_THEMES;
   try{
     const raw = localStorage.getItem(LS_THEMES);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  localStorage.setItem(LS_THEMES, JSON.stringify(DEFAULT_THEMES));
-  return DEFAULT_THEMES.slice();
-}
-function saveThemes(list){ localStorage.setItem(LS_THEMES, JSON.stringify(list)); }
-
-// migra as skills soltas do formato antigo (texto/imagem separadas, sem vínculo)
-// para o novo modelo de temas (texto + imagem sempre juntos). Roda só uma vez.
-function migrateOldSkillsToThemes(){
-  if(localStorage.getItem(LS_THEMES_MIGRATED)) return;
-  try{
-    const raw = localStorage.getItem(LS_SKILLS);
     if(raw){
-      const oldSkills = JSON.parse(raw);
-      if(Array.isArray(oldSkills) && oldSkills.length){
-        const current = getThemes();
-        oldSkills.forEach(function(s){
-          // as duas skills padrão originais (sem edição do usuário) já existem
-          // como temas "Post motivacional (legenda)" e "Post educativo (imagem)" —
-          // só migra aqui se o conteúdo tiver sido alterado ou for uma skill extra.
-          const isUntouchedDefaultTexto = s.type === 'texto' && s.template === LEGACY_DEFAULT_TEXTO;
-          const isUntouchedDefaultImagem = s.type === 'imagem' && s.template === LEGACY_DEFAULT_IMAGEM;
-          if(isUntouchedDefaultTexto || isUntouchedDefaultImagem) return;
-          // evita nome duplicado/confuso quando a skill editada tinha o mesmo nome de um tema padrão
-          let nome = s.name;
-          if(current.some(function(t){ return t.nome === nome; })){
-            nome = nome + ' (versão salva anteriormente)';
-          }
-          current.push({
-            id: 'migrado_' + s.id,
-            nome: nome,
-            templateTexto: s.type === 'texto' ? s.template : '',
-            templateImagem: s.type === 'imagem' ? s.template : '',
-            origem: 'personalizado'
-          });
-        });
-        saveThemes(current);
-      }
+      const parsed = JSON.parse(raw);
+      if(Array.isArray(parsed) && parsed.length) source = parsed;
     }
-  }catch(e){ console.error('Falha ao migrar skills antigas para temas:', e); }
-  localStorage.setItem(LS_THEMES_MIGRATED, '1');
+  }catch(e){}
+
+  const rows = source.map(function(t){
+    return {
+      id: t.id,
+      nome: t.nome,
+      template_texto: t.templateTexto || '',
+      template_imagem: t.templateImagem || '',
+      origem: t.origem || 'personalizado'
+    };
+  });
+  const { error: insErr } = await sb.from('themes').insert(rows);
+  if(insErr) console.error('Erro ao semear temas iniciais:', insErr);
 }
 
 function escapeHtml(str){
@@ -621,8 +677,8 @@ function escapeHtml(str){
   });
 }
 
-function renderThemeList(){
-  const list = getThemes();
+async function renderThemeList(){
+  const list = await getThemes();
   const el = document.getElementById('themeList');
   const genSelect = document.getElementById('genTheme');
   const baseSelect = document.getElementById('ntBase');
@@ -695,7 +751,6 @@ function renderThemeList(){
     baseSelect.value = prevBaseValue;
   }
 
-  // dropdown individual de cada tema (fechado por padrão, clique no título abre/fecha)
   el.querySelectorAll('.theme-toggle').forEach(function(toggle){
     const body = document.getElementById(toggle.getAttribute('aria-controls'));
     toggle.addEventListener('click', function(){
@@ -706,33 +761,33 @@ function renderThemeList(){
   });
 
   el.querySelectorAll('[data-del]').forEach(function(btn){
-    btn.addEventListener('click', function(e){
+    btn.addEventListener('click', async function(e){
       e.stopPropagation();
       if(!confirm('Excluir este tema (skill de texto e de imagem)?')) return;
       const id = btn.getAttribute('data-del');
-      const newList = getThemes().filter(function(t){ return t.id !== id; });
-      saveThemes(newList);
+      const { error } = await sb.from('themes').delete().eq('id', id);
+      if(error){ alert('Erro ao excluir tema: ' + error.message); return; }
       if(editingThemeId === id) closeThemeForm();
-      renderThemeList();
+      await renderThemeList();
     });
   });
 
   el.querySelectorAll('[data-edit]').forEach(function(btn){
-    btn.addEventListener('click', function(e){
+    btn.addEventListener('click', async function(e){
       e.stopPropagation();
       const id = btn.getAttribute('data-edit');
-      const theme = getThemes().find(function(t){ return t.id === id; });
+      const theme = (await getThemes()).find(function(t){ return t.id === id; });
       if(!theme) return;
       openThemeForm(theme);
     });
   });
 
   el.querySelectorAll('[data-copy-prompt]').forEach(function(btn){
-    btn.addEventListener('click', function(e){
+    btn.addEventListener('click', async function(e){
       e.stopPropagation();
       const id = btn.getAttribute('data-copy-prompt');
       const field = btn.getAttribute('data-prompt-field');
-      const theme = getThemes().find(function(t){ return t.id === id; });
+      const theme = (await getThemes()).find(function(t){ return t.id === id; });
       if(!theme || !theme[field]) return;
       copyText(theme[field]);
       const original = btn.textContent;
@@ -750,10 +805,9 @@ function renderThemeList(){
     });
   });
 
-  renderEmergencySkillSelects();
+  await renderEmergencySkillSelects();
 }
 
-// seleciona o tema/tipo no Gerador de conteúdo e rola a tela até lá
 function useThemeInGenerator(themeId, type){
   const genSelect = document.getElementById('genTheme');
   const genTypeSelect = document.getElementById('genType');
@@ -791,8 +845,8 @@ function closeThemeForm(){
   document.getElementById('btnSaveSkill').textContent = 'Salvar tema';
 }
 
-function renderEmergencySkillSelects(){
-  const list = getThemes();
+async function renderEmergencySkillSelects(){
+  const list = await getThemes();
   [['emTextoSkillSelect','templateTexto'], ['emImagemSkillSelect','templateImagem']].forEach(function(pair){
     const selectEl = document.getElementById(pair[0]);
     if(!selectEl) return;
@@ -818,19 +872,19 @@ function renderEmergencySkillSelects(){
 function setupEmergencySkillInsert(){
   renderEmergencySkillSelects();
   document.querySelectorAll('[data-insert-skill]').forEach(function(btn){
-    btn.addEventListener('click', function(){
+    btn.addEventListener('click', async function(){
       const targetId = btn.getAttribute('data-insert-skill');
       const selectId = btn.getAttribute('data-skill-select');
       const themeId = document.getElementById(selectId).value;
-      const theme = getThemes().find(function(t){ return t.id === themeId; });
+      const theme = (await getThemes()).find(function(t){ return t.id === themeId; });
       if(!theme){ return; }
       const field = targetId === 'emTexto' ? 'templateTexto' : 'templateImagem';
       const template = theme[field] || '';
       const textarea = document.getElementById(targetId);
       const filled = template.replace(/\{tema\}/gi, '[COLOQUE O TEMA AQUI]');
       textarea.value = filled;
-      const storageKey = targetId === 'emTexto' ? LS_EMERGENCY_TEXT : LS_EMERGENCY_IMAGE;
-      localStorage.setItem(storageKey, filled);
+      const col = targetId === 'emTexto' ? 'emergency_texto' : 'emergency_imagem';
+      await sb.from('settings').update({ [col]: filled }).eq('id', true);
       const original = btn.textContent;
       btn.textContent = 'Inserido!';
       setTimeout(function(){ btn.textContent = original; }, 1500);
@@ -844,30 +898,31 @@ document.getElementById('btnNewSkill').addEventListener('click', function(){
 document.getElementById('btnCancelSkill').addEventListener('click', function(){
   closeThemeForm();
 });
-document.getElementById('btnSaveSkill').addEventListener('click', function(){
+document.getElementById('btnSaveSkill').addEventListener('click', async function(){
   const nome = document.getElementById('ntNome').value.trim();
   const templateTexto = document.getElementById('ntTemplateTexto').value.trim();
   const templateImagem = document.getElementById('ntTemplateImagem').value.trim();
   if(!nome){ alert('Dê um nome ao tema.'); return; }
   if(!templateTexto && !templateImagem){ alert('Preencha ao menos o prompt de texto ou o de imagem.'); return; }
-  const list = getThemes();
   if(editingThemeId){
-    const idx = list.findIndex(function(t){ return t.id === editingThemeId; });
-    if(idx >= 0){
-      list[idx] = Object.assign({}, list[idx], { nome: nome, templateTexto: templateTexto, templateImagem: templateImagem });
-    }
+    const { error } = await sb.from('themes').update({
+      nome: nome, template_texto: templateTexto, template_imagem: templateImagem
+    }).eq('id', editingThemeId);
+    if(error){ alert('Erro ao salvar tema: ' + error.message); return; }
   } else {
-    list.push({ id: 't' + Date.now(), nome: nome, templateTexto: templateTexto, templateImagem: templateImagem, origem: 'personalizado' });
+    const { error } = await sb.from('themes').insert({
+      id: 't' + Date.now(), nome: nome, template_texto: templateTexto, template_imagem: templateImagem, origem: 'personalizado'
+    });
+    if(error){ alert('Erro ao criar tema: ' + error.message); return; }
   }
-  saveThemes(list);
   closeThemeForm();
-  renderThemeList();
+  await renderThemeList();
 });
 
-document.getElementById('ntBase').addEventListener('change', function(){
+document.getElementById('ntBase').addEventListener('change', async function(){
   const id = this.value;
   if(!id) return;
-  const base = getThemes().find(function(t){ return t.id === id; });
+  const base = (await getThemes()).find(function(t){ return t.id === id; });
   if(!base) return;
   if(!editingThemeId && !document.getElementById('ntNome').value.trim()){
     document.getElementById('ntNome').value = base.nome + ' (cópia)';
@@ -908,13 +963,13 @@ function setupThemeAIGeneration(kind, buttonId, textareaId){
       statusEl.className = 'admin-status err';
       return;
     }
-    if(!getKeys().length){
+    if(!(await getKeys()).length){
       statusEl.textContent = 'Cadastre sua API key do Gemini primeiro (seção API Keys do Gemini).';
       statusEl.className = 'admin-status err';
       return;
     }
     const baseId = document.getElementById('ntBase').value;
-    const baseTheme = baseId ? getThemes().find(function(t){ return t.id === baseId; }) : null;
+    const baseTheme = baseId ? (await getThemes()).find(function(t){ return t.id === baseId; }) : null;
     const baseTemplate = baseTheme ? (kind === 'texto' ? baseTheme.templateTexto : baseTheme.templateImagem) : '';
     const metaPrompt = buildThemeMetaPrompt(kind, description, baseTemplate);
 
@@ -922,7 +977,7 @@ function setupThemeAIGeneration(kind, buttonId, textareaId){
     statusEl.textContent = 'Gerando prompt de ' + kind + ' com IA...';
     statusEl.className = 'admin-status';
     try{
-      const model = localStorage.getItem(LS_MODEL_TEXT) || 'gemini-3.6-flash';
+      const model = (SETTINGS && SETTINGS.model_text) || 'gemini-3.6-flash';
       const result = await generateWithFailover('texto', model, metaPrompt, statusEl);
       document.getElementById(textareaId).value = result.trim();
       statusEl.textContent = 'Prompt de ' + kind + ' gerado. Revise antes de salvar o tema.';
@@ -936,35 +991,33 @@ function setupThemeAIGeneration(kind, buttonId, textareaId){
   });
 }
 
-// ---------- API KEYS (múltiplas) ----------
-function getKeys(){
-  try{
-    const raw = localStorage.getItem(LS_KEYS);
-    if(raw){
-      const parsed = JSON.parse(raw);
-      if(Array.isArray(parsed)) return parsed;
-    }
-  }catch(e){}
-  // migração da versão antiga (key única)
-  const legacy = localStorage.getItem(LS_KEY_LEGACY);
-  if(legacy){
-    const migrated = [{ id: 'k' + Date.now(), label: 'Key 1', key: legacy }];
-    localStorage.setItem(LS_KEYS, JSON.stringify(migrated));
-    localStorage.removeItem(LS_KEY_LEGACY);
-    return migrated;
-  }
-  return [];
-}
-function saveKeys(list){ localStorage.setItem(LS_KEYS, JSON.stringify(list)); }
-function getActiveKeyId(){ return localStorage.getItem(LS_ACTIVE_KEY_ID) || ''; }
-function setActiveKeyId(id){ localStorage.setItem(LS_ACTIVE_KEY_ID, id); }
+// ---------- API KEYS (múltiplas, Supabase) ----------
+let KEYS_CACHE = [];
 
-function getActiveKeyValue(){
-  const keys = getKeys();
+async function getKeys(){
+  const { data, error } = await sb.from('gemini_api_keys').select('*').order('created_at');
+  if(error){ console.error('Erro ao buscar keys:', error); return []; }
+  KEYS_CACHE = (data || []).map(function(row){
+    return { id: row.id, label: row.label, key: row.api_key };
+  });
+  return KEYS_CACHE;
+}
+
+function getActiveKeyId(){ return (SETTINGS && SETTINGS.active_key_id) || ''; }
+
+async function setActiveKeyId(id){
+  SETTINGS = SETTINGS || {};
+  SETTINGS.active_key_id = id;
+  const { error } = await sb.from('settings').update({ active_key_id: id }).eq('id', true);
+  if(error) console.error('Erro ao definir key ativa:', error);
+}
+
+async function getActiveKeyValue(){
+  const keys = await getKeys();
   if(!keys.length) return null;
   let id = getActiveKeyId();
   let found = keys.find(function(k){ return k.id === id; });
-  if(!found){ found = keys[0]; setActiveKeyId(found.id); }
+  if(!found){ found = keys[0]; await setActiveKeyId(found.id); }
   return found;
 }
 
@@ -973,10 +1026,10 @@ function maskKey(k){
   return k.slice(0,4) + '••••••••' + k.slice(-4);
 }
 
-function renderKeys(){
-  const keys = getKeys();
+async function renderKeys(){
+  const keys = await getKeys();
   const activeId = getActiveKeyId() || (keys[0] && keys[0].id) || '';
-  if(keys.length && !getActiveKeyId()) setActiveKeyId(activeId);
+  if(keys.length && !getActiveKeyId()) await setActiveKeyId(activeId);
 
   const sel = document.getElementById('keySelect');
   const listEl = document.getElementById('keyList');
@@ -1010,28 +1063,29 @@ function renderKeys(){
   });
 
   listEl.querySelectorAll('[data-use]').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      setActiveKeyId(btn.getAttribute('data-use'));
-      renderKeys();
+    btn.addEventListener('click', async function(){
+      await setActiveKeyId(btn.getAttribute('data-use'));
+      await renderKeys();
     });
   });
   listEl.querySelectorAll('[data-remove-key]').forEach(function(btn){
-    btn.addEventListener('click', function(){
+    btn.addEventListener('click', async function(){
       const id = btn.getAttribute('data-remove-key');
       if(!confirm('Remover esta API key?')) return;
-      let list = getKeys().filter(function(k){ return k.id !== id; });
-      saveKeys(list);
+      const { error } = await sb.from('gemini_api_keys').delete().eq('id', id);
+      if(error){ alert('Erro ao remover key: ' + error.message); return; }
       if(getActiveKeyId() === id){
-        setActiveKeyId(list.length ? list[0].id : '');
+        const remaining = await getKeys();
+        await setActiveKeyId(remaining.length ? remaining[0].id : '');
       }
-      renderKeys();
+      await renderKeys();
     });
   });
 }
 
-document.getElementById('keySelect').addEventListener('change', function(){
-  setActiveKeyId(this.value);
-  renderKeys();
+document.getElementById('keySelect').addEventListener('change', async function(){
+  await setActiveKeyId(this.value);
+  await renderKeys();
 });
 
 document.getElementById('btnShowNewKey').addEventListener('click', function(){
@@ -1041,7 +1095,7 @@ document.getElementById('btnShowNewKey').addEventListener('click', function(){
   this.textContent = showing ? 'Mostrar' : 'Ocultar';
 });
 
-document.getElementById('btnAddKey').addEventListener('click', function(){
+document.getElementById('btnAddKey').addEventListener('click', async function(){
   const labelInput = document.getElementById('newKeyLabel');
   const valueInput = document.getElementById('newKeyValue');
   const value = valueInput.value.trim();
@@ -1051,32 +1105,35 @@ document.getElementById('btnAddKey').addEventListener('click', function(){
     statusEl.className = 'admin-status err';
     return;
   }
-  const keys = getKeys();
+  const keys = await getKeys();
   const label = labelInput.value.trim() || ('Key ' + (keys.length + 1));
-  const newKey = { id: 'k' + Date.now(), label: label, key: value };
-  keys.push(newKey);
-  saveKeys(keys);
-  if(keys.length === 1) setActiveKeyId(newKey.id);
+  const newId = 'k' + Date.now();
+  const { error } = await sb.from('gemini_api_keys').insert({ id: newId, label: label, api_key: value, active: true });
+  if(error){
+    statusEl.textContent = 'Erro ao adicionar key: ' + error.message;
+    statusEl.className = 'admin-status err';
+    return;
+  }
+  if(keys.length === 0) await setActiveKeyId(newId);
   labelInput.value = '';
   valueInput.value = '';
   statusEl.textContent = 'Key "' + label + '" adicionada.';
   statusEl.className = 'admin-status ok';
-  renderKeys();
+  await renderKeys();
 });
 
-// ---------- MODELOS ----------
-function setupModelDropdown(selectId, customId, storageKey, fallback){
+// ---------- MODELOS (settings row) ----------
+function setupModelDropdown(selectId, customId, value){
   const select = document.getElementById(selectId);
   const custom = document.getElementById(customId);
-  const saved = localStorage.getItem(storageKey) || fallback;
   const knownValues = Array.from(select.options).map(function(o){ return o.value; }).filter(function(v){ return v !== '__custom__'; });
-  if(knownValues.indexOf(saved) >= 0){
-    select.value = saved;
+  if(knownValues.indexOf(value) >= 0){
+    select.value = value;
     custom.style.display = 'none';
   } else {
     select.value = '__custom__';
     custom.style.display = 'block';
-    custom.value = saved;
+    custom.value = value;
   }
   select.addEventListener('change', function(){
     custom.style.display = (select.value === '__custom__') ? 'block' : 'none';
@@ -1090,137 +1147,45 @@ function getModelValue(selectId, customId){
 
 const DEPRECATED_TEXT_MODELS = ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.5-flash-lite', 'gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-pro', 'gemini-1.5-flash'];
 
-function migrateDeprecatedTextModel(){
-  const saved = localStorage.getItem(LS_MODEL_TEXT);
-  if(saved && DEPRECATED_TEXT_MODELS.indexOf(saved) >= 0 && !localStorage.getItem(LS_MODEL_TEXT + '_kept_legacy')){
-    localStorage.setItem(LS_MODEL_TEXT, 'gemini-3.6-flash');
-  }
-}
-
-document.getElementById('btnSaveModels').addEventListener('click', function(){
+document.getElementById('btnSaveModels').addEventListener('click', async function(){
   const textModel = getModelValue('fModelText', 'fModelTextCustom') || 'gemini-3.6-flash';
   const imageModel = getModelValue('fModelImage', 'fModelImageCustom') || 'gemini-2.5-flash-image';
-  // se o usuário escolher manualmente um modelo antigo, respeita a escolha dele
-  if(DEPRECATED_TEXT_MODELS.indexOf(textModel) >= 0){
-    localStorage.setItem(LS_MODEL_TEXT + '_kept_legacy', '1');
-  } else {
-    localStorage.removeItem(LS_MODEL_TEXT + '_kept_legacy');
-  }
-  localStorage.setItem(LS_MODEL_TEXT, textModel);
-  localStorage.setItem(LS_MODEL_IMAGE, imageModel);
+  const keptLegacy = DEPRECATED_TEXT_MODELS.indexOf(textModel) >= 0;
+  const { error } = await sb.from('settings').update({
+    model_text: textModel, model_image: imageModel, model_text_kept_legacy: keptLegacy
+  }).eq('id', true);
   const st = document.getElementById('modelStatus');
+  if(error){
+    st.textContent = 'Erro ao salvar modelos: ' + error.message;
+    st.className = 'admin-status err';
+    return;
+  }
+  SETTINGS.model_text = textModel;
+  SETTINGS.model_image = imageModel;
+  SETTINGS.model_text_kept_legacy = keptLegacy;
   st.textContent = 'Modelos salvos.';
   st.className = 'admin-status ok';
 });
 
-// ---------- HISTÓRICO (IndexedDB) ----------
-const HIST_DB_NAME = 'se_admin_history_db';
-const HIST_DB_VERSION = 1;
-const HIST_STORE = 'items';
-const STORAGE_PRUNE_THRESHOLD = 0.8; // 80%
+// ---------- HISTÓRICO (Supabase + Storage) ----------
 let historySelectedIds = new Set();
-
-function openHistoryDB(){
-  return new Promise(function(resolve, reject){
-    if(!window.indexedDB){ reject(new Error('IndexedDB não suportado neste navegador.')); return; }
-    const req = indexedDB.open(HIST_DB_NAME, HIST_DB_VERSION);
-    req.onupgradeneeded = function(e){
-      const db = e.target.result;
-      if(!db.objectStoreNames.contains(HIST_STORE)){
-        const store = db.createObjectStore(HIST_STORE, { keyPath: 'id' });
-        store.createIndex('createdAt', 'createdAt', { unique: false });
-        store.createIndex('type', 'type', { unique: false });
-      }
-    };
-    req.onsuccess = function(e){ resolve(e.target.result); };
-    req.onerror = function(e){ reject(e.target.error || new Error('Erro ao abrir o banco de dados local.')); };
-  });
-}
-
-async function addHistoryItem(item){
-  try{
-    const db = await openHistoryDB();
-    await new Promise(function(resolve, reject){
-      const tx = db.transaction(HIST_STORE, 'readwrite');
-      tx.objectStore(HIST_STORE).add(item);
-      tx.oncomplete = resolve;
-      tx.onerror = function(e){ reject(e.target.error); };
-    });
-  }catch(e){
-    console.error('Não foi possível salvar no histórico:', e);
-  }
-}
+let HISTORY_CACHE = [];
 
 async function getAllHistoryItems(){
-  try{
-    const db = await openHistoryDB();
-    return await new Promise(function(resolve, reject){
-      const tx = db.transaction(HIST_STORE, 'readonly');
-      const req = tx.objectStore(HIST_STORE).getAll();
-      req.onsuccess = function(){ resolve(req.result || []); };
-      req.onerror = function(e){ reject(e.target.error); };
-    });
-  }catch(e){
-    console.error('Não foi possível ler o histórico:', e);
-    return [];
-  }
+  const { data, error } = await sb.from('history').select('*').order('created_at', { ascending: false });
+  if(error){ console.error('Erro ao buscar histórico:', error); return []; }
+  HISTORY_CACHE = data || [];
+  return HISTORY_CACHE;
 }
 
 async function deleteHistoryItem(id){
-  try{
-    const db = await openHistoryDB();
-    await new Promise(function(resolve, reject){
-      const tx = db.transaction(HIST_STORE, 'readwrite');
-      tx.objectStore(HIST_STORE).delete(id);
-      tx.oncomplete = resolve;
-      tx.onerror = function(e){ reject(e.target.error); };
-    });
-  }catch(e){
-    console.error('Não foi possível excluir o item do histórico:', e);
+  const item = HISTORY_CACHE.find(function(it){ return it.id === id; });
+  if(item && item.type === 'imagem' && item.content){
+    const { error: rmErr } = await sb.storage.from('post-images').remove([item.content]);
+    if(rmErr) console.error('Erro ao remover imagem do storage:', rmErr);
   }
-}
-
-// Apaga os itens mais antigos, aos poucos, enquanto o uso de armazenamento
-// estiver acima de 80% da cota disponível no navegador.
-async function enforceStorageQuota(){
-  if(!navigator.storage || !navigator.storage.estimate) return;
-  try{
-    let estimate = await navigator.storage.estimate();
-    if(!estimate.quota) return;
-    let ratio = estimate.usage / estimate.quota;
-    let guard = 0;
-    while(ratio >= STORAGE_PRUNE_THRESHOLD && guard < 200){
-      guard++;
-      const items = await getAllHistoryItems();
-      if(!items.length) break;
-      items.sort(function(a, b){ return a.createdAt - b.createdAt; }); // mais antigo primeiro
-      await deleteHistoryItem(items[0].id);
-      estimate = await navigator.storage.estimate();
-      ratio = estimate.quota ? estimate.usage / estimate.quota : 0;
-    }
-  }catch(e){
-    console.error('Não foi possível checar a cota de armazenamento:', e);
-  }
-}
-
-async function renderStorageInfo(){
-  const el = document.getElementById('storageInfo');
-  if(!el) return;
-  if(!navigator.storage || !navigator.storage.estimate){
-    el.textContent = '';
-    return;
-  }
-  try{
-    const estimate = await navigator.storage.estimate();
-    if(!estimate.quota){ el.textContent = ''; return; }
-    const pct = Math.min(100, Math.round((estimate.usage / estimate.quota) * 100));
-    const warn = pct >= 80;
-    el.innerHTML = 'Armazenamento local usado: ' + pct + '%' +
-      (warn ? ' — itens antigos serão apagados automaticamente para liberar espaço.' : '') +
-      '<span class="storage-bar"><span class="storage-bar-fill' + (warn ? ' warn' : '') + '" style="width:' + pct + '%;"></span></span>';
-  }catch(e){
-    el.textContent = '';
-  }
+  const { error } = await sb.from('history').delete().eq('id', id);
+  if(error) console.error('Erro ao excluir item do histórico:', error);
 }
 
 function historyMonthKey(ts){
@@ -1237,7 +1202,7 @@ function historyMonthLabel(monthKey){
 async function renderMonthFilterOptions(){
   const select = document.getElementById('histMonthFilter');
   const items = await getAllHistoryItems();
-  const months = Array.from(new Set(items.map(function(it){ return historyMonthKey(it.createdAt); })));
+  const months = Array.from(new Set(items.map(function(it){ return historyMonthKey(it.created_at); })));
   months.sort().reverse();
   const prev = select.value;
   select.innerHTML = '<option value="todos">Todos os meses</option>';
@@ -1259,7 +1224,6 @@ function updateBulkDeleteBar(visibleIds){
   const countEl = document.getElementById('histSelectedCount');
   const btn = document.getElementById('btnDeleteSelected');
   const selectAll = document.getElementById('histSelectAll');
-  // remove da seleção qualquer id que não esteja mais visível na lista atual
   historySelectedIds = new Set(Array.from(historySelectedIds).filter(function(id){ return visibleIds.indexOf(id) >= 0; }));
   countEl.textContent = String(historySelectedIds.size);
   btn.disabled = historySelectedIds.size === 0;
@@ -1273,13 +1237,12 @@ async function renderHistory(){
   const monthFilter = document.getElementById('histMonthFilter').value;
 
   let items = await getAllHistoryItems();
-  items.sort(function(a, b){ return b.createdAt - a.createdAt; }); // mais recente primeiro
 
   if(typeFilter !== 'todos'){
     items = items.filter(function(it){ return it.type === typeFilter; });
   }
   if(monthFilter !== 'todos'){
-    items = items.filter(function(it){ return historyMonthKey(it.createdAt) === monthFilter; });
+    items = items.filter(function(it){ return historyMonthKey(it.created_at) === monthFilter; });
   }
 
   listEl.innerHTML = '';
@@ -1290,7 +1253,7 @@ async function renderHistory(){
     return;
   }
 
-  items.forEach(function(it){
+  for(const it of items){
     const row = document.createElement('div');
     row.className = 'history-item' + (historySelectedIds.has(it.id) ? ' selected' : '');
 
@@ -1306,10 +1269,17 @@ async function renderHistory(){
     });
     row.appendChild(checkbox);
 
+    let signedUrl = '';
+    if(it.type === 'imagem' && it.content){
+      const { data: signed, error: signErr } = await sb.storage.from('post-images').createSignedUrl(it.content, 3600);
+      if(signErr) console.error('Erro ao gerar URL assinada:', signErr);
+      signedUrl = (signed && signed.signedUrl) || '';
+    }
+
     const thumb = document.createElement(it.type === 'imagem' ? 'img' : 'div');
     thumb.className = 'history-thumb' + (it.type === 'texto' ? ' is-text' : '');
     if(it.type === 'imagem'){
-      thumb.src = it.content;
+      thumb.src = signedUrl;
       thumb.alt = it.tema || 'Imagem gerada';
     } else {
       thumb.textContent = 'T';
@@ -1321,10 +1291,10 @@ async function renderHistory(){
     body.innerHTML =
       '<div class="history-top">' +
         '<span class="skill-tag ' + it.type + '">' + it.type + '</span>' +
-        '<span class="history-date">' + historyDateLabel(it.createdAt) + '</span>' +
+        '<span class="history-date">' + historyDateLabel(it.created_at) + '</span>' +
       '</div>' +
       '<div class="history-tema">' + escapeHtml(it.tema || '(sem tema)') + '</div>' +
-      (it.skillName ? '<div class="history-preview">Skill: ' + escapeHtml(it.skillName) + '</div>' : '') +
+      (it.skill_name ? '<div class="history-preview">Skill: ' + escapeHtml(it.skill_name) + '</div>' : '') +
       (it.type === 'texto' ? '<div class="history-preview">' + escapeHtml((it.content || '').slice(0, 220)) + ((it.content || '').length > 220 ? '…' : '') + '</div>' : '');
 
     const actions = document.createElement('div');
@@ -1341,7 +1311,9 @@ async function renderHistory(){
       const dlBtn = document.createElement('a');
       dlBtn.className = 'abtn small secondary';
       dlBtn.textContent = 'Baixar';
-      dlBtn.href = it.content;
+      dlBtn.href = signedUrl;
+      dlBtn.target = '_blank';
+      dlBtn.rel = 'noopener';
       dlBtn.download = 'post-sala-de-estudo-' + it.id + '.png';
       actions.appendChild(dlBtn);
     }
@@ -1356,30 +1328,52 @@ async function renderHistory(){
       await deleteHistoryItem(it.id);
       await renderMonthFilterOptions();
       await renderHistory();
-      await renderStorageInfo();
     });
     actions.appendChild(delBtn);
 
     body.appendChild(actions);
     row.appendChild(body);
     listEl.appendChild(row);
-  });
+  }
 }
 
-async function saveToHistory(type, content, tema, skillName){
-  const item = {
-    id: 'h' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
-    type: type,
-    content: content,
-    tema: tema,
-    skillName: skillName,
-    createdAt: Date.now()
-  };
-  await addHistoryItem(item);
-  await enforceStorageQuota();
+function dataUrlToBlob(dataUrl){
+  const match = /^data:([^;]+);base64,(.*)$/.exec(dataUrl);
+  if(!match) throw new Error('Formato de imagem inválido.');
+  const mime = match[1];
+  const b64 = match[2];
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for(let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return { blob: new Blob([bytes], { type: mime }), mime: mime };
+}
+
+function extensionFromMime(mime){
+  if(mime.indexOf('png') >= 0) return 'png';
+  if(mime.indexOf('jpeg') >= 0 || mime.indexOf('jpg') >= 0) return 'jpg';
+  if(mime.indexOf('webp') >= 0) return 'webp';
+  return 'png';
+}
+
+async function saveToHistory(type, content, tema, skillName, themeId){
+  const id = 'h' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+  let dbContent = content;
+
+  if(type === 'imagem'){
+    const { blob, mime } = dataUrlToBlob(content);
+    const path = id + '.' + extensionFromMime(mime);
+    const { error: upErr } = await sb.storage.from('post-images').upload(path, blob, { contentType: mime });
+    if(upErr){ console.error('Erro ao enviar imagem para o storage:', upErr); throw upErr; }
+    dbContent = path;
+  }
+
+  const { error } = await sb.from('history').insert({
+    id: id, type: type, content: dbContent, tema: tema, skill_name: skillName, theme_id: themeId || null
+  });
+  if(error) console.error('Erro ao salvar no histórico:', error);
+
   await renderMonthFilterOptions();
   await renderHistory();
-  await renderStorageInfo();
 }
 
 document.getElementById('histTypeFilter').addEventListener('change', renderHistory);
@@ -1392,7 +1386,7 @@ document.getElementById('histSelectAll').addEventListener('change', async functi
   const monthFilter = document.getElementById('histMonthFilter').value;
   let filtered = visibleItems;
   if(typeFilter !== 'todos') filtered = filtered.filter(function(it){ return it.type === typeFilter; });
-  if(monthFilter !== 'todos') filtered = filtered.filter(function(it){ return historyMonthKey(it.createdAt) === monthFilter; });
+  if(monthFilter !== 'todos') filtered = filtered.filter(function(it){ return historyMonthKey(it.created_at) === monthFilter; });
   if(checked){
     filtered.forEach(function(it){ historySelectedIds.add(it.id); });
   } else {
@@ -1411,7 +1405,6 @@ document.getElementById('btnDeleteSelected').addEventListener('click', async fun
   historySelectedIds.clear();
   await renderMonthFilterOptions();
   await renderHistory();
-  await renderStorageInfo();
 });
 
 // ---------- GERAÇÃO (com troca automática de key) ----------
@@ -1452,9 +1445,8 @@ async function callGeminiImage(apiKey, model, prompt){
   return 'data:' + imgPart.inlineData.mimeType + ';base64,' + imgPart.inlineData.data;
 }
 
-// tenta a key ativa; se der erro de cota, tenta as próximas keys da lista em ordem
 async function generateWithFailover(type, model, prompt, statusEl){
-  const keys = getKeys();
+  const keys = await getKeys();
   if(!keys.length) throw new Error('Cadastre pelo menos uma API key do Gemini primeiro.');
 
   const activeId = getActiveKeyId() || keys[0].id;
@@ -1469,11 +1461,11 @@ async function generateWithFailover(type, model, prompt, statusEl){
       const result = type === 'texto'
         ? await callGeminiText(k.key, model, prompt)
         : await callGeminiImage(k.key, model, prompt);
-      if(getActiveKeyId() !== k.id){ setActiveKeyId(k.id); renderKeys(); }
+      if(getActiveKeyId() !== k.id){ await setActiveKeyId(k.id); await renderKeys(); }
       return result;
     }catch(err){
       lastError = err;
-      if(!isQuotaError(err.message)) throw err; // erro que não é de cota: não adianta trocar de key
+      if(!isQuotaError(err.message)) throw err;
     }
   }
   throw lastError || new Error('Todas as keys cadastradas falharam.');
@@ -1482,12 +1474,12 @@ async function generateWithFailover(type, model, prompt, statusEl){
 document.getElementById('btnGenerate').addEventListener('click', async function(){
   const btn = this;
   const themeId = document.getElementById('genTheme').value;
-  const genType = document.getElementById('genType').value; // 'texto' ou 'imagem'
+  const genType = document.getElementById('genType').value;
   const tema = document.getElementById('genTema').value.trim();
   const statusEl = document.getElementById('genStatus');
   const outEl = document.getElementById('genOutput');
   const hintEl = document.getElementById('genHint');
-  const theme = getThemes().find(function(t){ return t.id === themeId; });
+  const theme = (await getThemes()).find(function(t){ return t.id === themeId; });
 
   outEl.style.display = 'none';
   hintEl.style.display = 'none';
@@ -1502,7 +1494,7 @@ document.getElementById('btnGenerate').addEventListener('click', async function(
     return;
   }
   if(!tema){ statusEl.textContent = 'Descreva o tema do post.'; statusEl.className = 'admin-status err'; return; }
-  if(!getKeys().length){ statusEl.textContent = 'Cadastre sua API key do Gemini primeiro.'; statusEl.className = 'admin-status err'; return; }
+  if(!(await getKeys()).length){ statusEl.textContent = 'Cadastre sua API key do Gemini primeiro.'; statusEl.className = 'admin-status err'; return; }
 
   const prompt = template.replace(/\{tema\}/gi, tema);
 
@@ -1510,7 +1502,7 @@ document.getElementById('btnGenerate').addEventListener('click', async function(
   statusEl.textContent = 'Gerando...';
   try{
     if(genType === 'texto'){
-      const model = localStorage.getItem(LS_MODEL_TEXT) || 'gemini-3.6-flash';
+      const model = (SETTINGS && SETTINGS.model_text) || 'gemini-3.6-flash';
       const text = await generateWithFailover('texto', model, prompt, statusEl);
       outEl.style.display = 'block';
       outEl.innerHTML = '';
@@ -1524,9 +1516,9 @@ document.getElementById('btnGenerate').addEventListener('click', async function(
       copyBtn.textContent = 'Copiar texto';
       copyBtn.addEventListener('click', function(){ copyText(ta.value); });
       outEl.appendChild(copyBtn);
-      await saveToHistory('texto', text, tema, theme.nome);
+      await saveToHistory('texto', text, tema, theme.nome, theme.id);
     } else {
-      const model = localStorage.getItem(LS_MODEL_IMAGE) || 'gemini-2.5-flash-image';
+      const model = (SETTINGS && SETTINGS.model_image) || 'gemini-2.5-flash-image';
       const dataUrl = await generateWithFailover('imagem', model, prompt, statusEl);
       outEl.style.display = 'block';
       outEl.innerHTML = '';
@@ -1539,7 +1531,7 @@ document.getElementById('btnGenerate').addEventListener('click', async function(
       dlBtn.href = dataUrl;
       dlBtn.download = 'post-sala-de-estudo.png';
       outEl.appendChild(dlBtn);
-      await saveToHistory('imagem', dataUrl, tema, theme.nome);
+      await saveToHistory('imagem', dataUrl, tema, theme.nome, theme.id);
     }
     statusEl.textContent = 'Conteúdo gerado com sucesso.';
     statusEl.className = 'admin-status ok';
@@ -1552,16 +1544,18 @@ document.getElementById('btnGenerate').addEventListener('click', async function(
   }
 });
 
-// ---------- EMERGÊNCIA ----------
+// ---------- EMERGÊNCIA (settings row) ----------
 function loadEmergencyFields(){
-  document.getElementById('emTexto').value = localStorage.getItem(LS_EMERGENCY_TEXT) || DEFAULT_EMERGENCY_TEXT;
-  document.getElementById('emImagem').value = localStorage.getItem(LS_EMERGENCY_IMAGE) || DEFAULT_EMERGENCY_IMAGE;
+  document.getElementById('emTexto').value = (SETTINGS && SETTINGS.emergency_texto) || DEFAULT_EMERGENCY_TEXT;
+  document.getElementById('emImagem').value = (SETTINGS && SETTINGS.emergency_imagem) || DEFAULT_EMERGENCY_IMAGE;
 }
-document.getElementById('emTexto').addEventListener('input', function(){
-  localStorage.setItem(LS_EMERGENCY_TEXT, this.value);
+document.getElementById('emTexto').addEventListener('input', async function(){
+  SETTINGS.emergency_texto = this.value;
+  await sb.from('settings').update({ emergency_texto: this.value }).eq('id', true);
 });
-document.getElementById('emImagem').addEventListener('input', function(){
-  localStorage.setItem(LS_EMERGENCY_IMAGE, this.value);
+document.getElementById('emImagem').addEventListener('input', async function(){
+  SETTINGS.emergency_imagem = this.value;
+  await sb.from('settings').update({ emergency_imagem: this.value }).eq('id', true);
 });
 
 const skillsAccordion = setupAccordion('skillsToggle', 'skillsBody');
@@ -1600,20 +1594,451 @@ document.querySelectorAll('[data-copy]').forEach(function(btn){
   });
 });
 
-// ---------- init ----------
-migrateDeprecatedTextModel();
-migrateOldSkillsToThemes();
-renderThemeList();
-document.getElementById('themeEditMode').addEventListener('change', renderThemeList);
-renderKeys();
-setupModelDropdown('fModelText', 'fModelTextCustom', LS_MODEL_TEXT, 'gemini-3.6-flash');
-setupModelDropdown('fModelImage', 'fModelImageCustom', LS_MODEL_IMAGE, 'gemini-2.5-flash-image');
-loadEmergencyFields();
-setupEmergencySkillInsert();
-setupThemeAIGeneration('texto', 'btnGerarTextoIA', 'ntTemplateTexto');
-setupThemeAIGeneration('imagem', 'btnGerarImagemIA', 'ntTemplateImagem');
-renderMonthFilterOptions().then(renderHistory);
-renderStorageInfo();
+// ================= AUTH / MFA GATE =================
+
+async function logAccess(nome){
+  try{
+    await sb.from('access_logs').insert({ nome: nome, event: 'login', user_agent: navigator.userAgent });
+  }catch(e){ console.error('Erro ao registrar acesso:', e); }
+}
+
+async function ensureSharedSession(){
+  const { data: sessionData } = await sb.auth.getSession();
+  if(!sessionData || !sessionData.session){
+    const { error } = await sb.auth.signInWithPassword({ email: SHARED_EMAIL, password: SHARED_PASSWORD });
+    if(error) throw error;
+  }
+}
+
+async function getVerifiedFactors(){
+  const { data, error } = await sb.auth.mfa.listFactors();
+  if(error){ console.error('Erro ao listar fatores MFA:', error); return []; }
+  return (data && data.totp || []).filter(function(f){ return f.status === 'verified'; });
+}
+
+function renderLoginLoading(msg){
+  document.getElementById('loginCard').innerHTML = '<p class="admin-desc">' + escapeHtml(msg || 'Carregando...') + '</p>';
+}
+
+function renderFirstEnrollPanel(){
+  const card = document.getElementById('loginCard');
+  card.innerHTML =
+    '<h1>Primeiro acesso</h1>' +
+    '<p class="admin-desc">Cadastre seu autenticador para entrar no painel.</p>' +
+    '<div class="admin-field full">' +
+      '<label for="loginNome">Seu nome</label>' +
+      '<input type="text" id="loginNome" placeholder="Ex: Maria">' +
+    '</div>' +
+    '<button class="abtn" id="btnGerarQr" type="button" style="margin-top:12px; width:100%; justify-content:center;">Gerar QR Code</button>' +
+    '<div id="loginEnrollArea"></div>' +
+    '<div class="admin-status" id="loginStatus"></div>';
+
+  document.getElementById('btnGerarQr').addEventListener('click', async function(){
+    const nome = document.getElementById('loginNome').value.trim();
+    const statusEl = document.getElementById('loginStatus');
+    if(!nome){ statusEl.textContent = 'Digite seu nome.'; statusEl.className = 'admin-status err'; return; }
+    this.disabled = true;
+    statusEl.textContent = 'Gerando QR Code...';
+    statusEl.className = 'admin-status';
+    try{
+      const { data, error } = await sb.auth.mfa.enroll({ factorType: 'totp', friendlyName: nome });
+      if(error) throw error;
+      const factorId = data.id;
+      const area = document.getElementById('loginEnrollArea');
+      area.innerHTML =
+        '<div class="login-qr-box">' + data.totp.qr_code + '</div>' +
+        '<p class="admin-desc">Não conseguiu escanear? Digite manualmente este código no seu app autenticador:</p>' +
+        '<code class="login-secret">' + escapeHtml(data.totp.secret) + '</code>' +
+        '<div class="admin-field full">' +
+          '<label for="loginCode">Código de 6 dígitos</label>' +
+          '<input type="text" id="loginCode" class="login-code-input" maxlength="6" inputmode="numeric" placeholder="000000">' +
+        '</div>' +
+        '<button class="abtn" id="btnConfirmarEnroll" type="button" style="margin-top:10px; width:100%; justify-content:center;">Confirmar</button>';
+      statusEl.textContent = '';
+      document.getElementById('btnConfirmarEnroll').addEventListener('click', async function(){
+        const code = document.getElementById('loginCode').value.trim();
+        if(!/^\d{6}$/.test(code)){ statusEl.textContent = 'Digite o código de 6 dígitos.'; statusEl.className = 'admin-status err'; return; }
+        this.disabled = true;
+        statusEl.textContent = 'Verificando...';
+        statusEl.className = 'admin-status';
+        try{
+          const { data: chData, error: chErr } = await sb.auth.mfa.challenge({ factorId: factorId });
+          if(chErr) throw chErr;
+          const { error: vErr } = await sb.auth.mfa.verify({ factorId: factorId, challengeId: chData.id, code: code });
+          if(vErr) throw vErr;
+          await onAal2Reached(nome);
+        }catch(err){
+          statusEl.textContent = 'Código inválido, tente novamente.';
+          statusEl.className = 'admin-status err';
+          this.disabled = false;
+        }
+      });
+    }catch(err){
+      statusEl.textContent = 'Erro ao gerar QR Code: ' + err.message;
+      statusEl.className = 'admin-status err';
+      this.disabled = false;
+    }
+  });
+}
+
+function renderFactorPickerPanel(factors){
+  const card = document.getElementById('loginCard');
+  card.innerHTML =
+    '<h1>Entrar no painel</h1>' +
+    '<p class="admin-desc">Escolha seu nome e digite o código do seu autenticador.</p>' +
+    '<div class="admin-field full">' +
+      '<label for="loginFactorSelect">Seu nome</label>' +
+      '<select id="loginFactorSelect"></select>' +
+    '</div>' +
+    '<div class="admin-field full" style="margin-top:10px;">' +
+      '<label for="loginCode2">Código de 6 dígitos</label>' +
+      '<input type="text" id="loginCode2" class="login-code-input" maxlength="6" inputmode="numeric" placeholder="000000">' +
+    '</div>' +
+    '<button class="abtn" id="btnEntrar" type="button" style="margin-top:12px; width:100%; justify-content:center;">Entrar</button>' +
+    '<div class="admin-status" id="loginStatus"></div>';
+
+  const select = document.getElementById('loginFactorSelect');
+  factors.forEach(function(f){
+    const opt = document.createElement('option');
+    opt.value = f.id;
+    opt.textContent = f.friendly_name || f.friendlyName || '(sem nome)';
+    select.appendChild(opt);
+  });
+
+  document.getElementById('btnEntrar').addEventListener('click', async function(){
+    const factorId = select.value;
+    const friendlyName = select.options[select.selectedIndex].textContent;
+    const code = document.getElementById('loginCode2').value.trim();
+    const statusEl = document.getElementById('loginStatus');
+    if(!/^\d{6}$/.test(code)){ statusEl.textContent = 'Digite o código de 6 dígitos.'; statusEl.className = 'admin-status err'; return; }
+    this.disabled = true;
+    statusEl.textContent = 'Verificando...';
+    statusEl.className = 'admin-status';
+    try{
+      const { data: chData, error: chErr } = await sb.auth.mfa.challenge({ factorId: factorId });
+      if(chErr) throw chErr;
+      const { error: vErr } = await sb.auth.mfa.verify({ factorId: factorId, challengeId: chData.id, code: code });
+      if(vErr) throw vErr;
+      await onAal2Reached(friendlyName);
+    }catch(err){
+      statusEl.textContent = 'Código inválido, tente novamente.';
+      statusEl.className = 'admin-status err';
+      this.disabled = false;
+    }
+  });
+}
+
+async function onAal2Reached(nome){
+  await logAccess(nome);
+  try{
+    localStorage.setItem(LS_LOGIN_AT, String(Date.now()));
+    localStorage.setItem(LS_LOGIN_NOME, nome);
+  }catch(e){ console.error('Erro ao salvar sessão local:', e); }
+  document.getElementById('loginOverlay').style.display = 'none';
+  document.getElementById('adminRoot').style.display = '';
+  document.getElementById('btnOpenAccessLog').style.display = '';
+  startPanelCountdown();
+  await initAdminApp();
+}
+
+function formatHMS(ms){
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  return h + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+
+async function forceLogoutToLoginFlow(){
+  if(panelCountdownInterval){ clearInterval(panelCountdownInterval); panelCountdownInterval = null; }
+  try{ await sb.auth.signOut(); }catch(e){ console.error('Erro no signOut:', e); }
+  try{
+    localStorage.removeItem(LS_LOGIN_AT);
+    localStorage.removeItem(LS_LOGIN_NOME);
+  }catch(e){}
+  document.getElementById('adminRoot').style.display = 'none';
+  document.getElementById('btnOpenAccessLog').style.display = 'none';
+  document.getElementById('loginOverlay').style.display = 'flex';
+  await runNormalLoginDecision();
+}
+
+// ---------- top-right in-panel countdown + logout (shown while inside #adminRoot) ----------
+function ensurePanelCountdownWidget(){
+  let el = document.getElementById('panelSessionWidget');
+  if(el) return el;
+  el = document.createElement('div');
+  el.id = 'panelSessionWidget';
+  el.style.cssText = 'position:fixed; top:16px; right:16px; z-index:50; display:flex; align-items:center; gap:10px; background:#fff; border:2px solid var(--color-blue); border-radius:10px; padding:6px 10px; box-shadow:-4px 4px 0 rgba(0,78,181,0.12);';
+  el.innerHTML =
+    '<span id="panelSessionCountdown" style="font-family:monospace; font-weight:700; color:var(--color-blue); font-size:0.85rem;"></span>' +
+    '<button class="abtn small" id="btnPanelLogout" type="button">Logout</button>';
+  document.body.appendChild(el);
+  document.getElementById('btnPanelLogout').addEventListener('click', function(){
+    forceLogoutToLoginFlow();
+  });
+  return el;
+}
+
+function startPanelCountdown(){
+  if(panelCountdownInterval){ clearInterval(panelCountdownInterval); panelCountdownInterval = null; }
+  ensurePanelCountdownWidget();
+  const loginAt = Number(localStorage.getItem(LS_LOGIN_AT)) || Date.now();
+  function tick(){
+    const remaining = SESSION_TTL_MS - (Date.now() - loginAt);
+    const countdownEl = document.getElementById('panelSessionCountdown');
+    if(remaining <= 0){
+      if(countdownEl) countdownEl.textContent = formatHMS(0);
+      clearInterval(panelCountdownInterval);
+      panelCountdownInterval = null;
+      forceLogoutToLoginFlow();
+      return;
+    }
+    if(countdownEl) countdownEl.textContent = formatHMS(remaining);
+  }
+  tick();
+  panelCountdownInterval = setInterval(tick, 1000);
+}
+
+// ---------- "bem-vindo de volta" resume gate (shown in loginOverlay, before entering the panel) ----------
+function renderResumeGatePanel(remainingMs, nome){
+  const card = document.getElementById('loginCard');
+  let gateInterval = null;
+  card.innerHTML =
+    '<h1>Bem-vindo de volta' + (nome ? ', ' + escapeHtml(nome) : '') + '</h1>' +
+    '<p class="admin-desc">Sua sessão anterior ainda está ativa. Você pode continuar sem digitar o código novamente, ou sair.</p>' +
+    '<div style="text-align:center; font-family:monospace; font-size:1.4rem; font-weight:700; color:var(--color-blue); margin:14px 0;" id="resumeGateCountdown"></div>' +
+    '<div class="admin-row" style="justify-content:center;">' +
+      '<button class="abtn" id="btnResumeLogin" type="button" style="flex:1; justify-content:center;">Login</button>' +
+      '<button class="abtn ghost" id="btnResumeLogout" type="button" style="flex:1; justify-content:center;">Logout</button>' +
+    '</div>';
+
+  function tick(){
+    const remaining = SESSION_TTL_MS - (Date.now() - (Number(localStorage.getItem(LS_LOGIN_AT)) || Date.now()));
+    const el = document.getElementById('resumeGateCountdown');
+    if(remaining <= 0){
+      if(gateInterval){ clearInterval(gateInterval); gateInterval = null; }
+      if(el) el.textContent = formatHMS(0);
+      runNormalLoginDecision();
+      return;
+    }
+    if(el) el.textContent = formatHMS(remaining);
+  }
+  tick();
+  gateInterval = setInterval(tick, 1000);
+
+  document.getElementById('btnResumeLogin').addEventListener('click', async function(){
+    if(gateInterval){ clearInterval(gateInterval); gateInterval = null; }
+    const usedNome = nome || 'desconhecido';
+    try{
+      await sb.from('access_logs').insert({ nome: usedNome, event: 'resume', user_agent: navigator.userAgent });
+    }catch(e){ console.error('Erro ao registrar acesso (resume):', e); }
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('adminRoot').style.display = '';
+    document.getElementById('btnOpenAccessLog').style.display = '';
+    startPanelCountdown();
+    await initAdminApp();
+  });
+
+  document.getElementById('btnResumeLogout').addEventListener('click', async function(){
+    if(gateInterval){ clearInterval(gateInterval); gateInterval = null; }
+    try{ await sb.auth.signOut(); }catch(e){ console.error('Erro no signOut:', e); }
+    try{
+      localStorage.removeItem(LS_LOGIN_AT);
+      localStorage.removeItem(LS_LOGIN_NOME);
+    }catch(e){}
+    await runNormalLoginDecision();
+  });
+}
+
+// existing (pre-resume) decision logic: list factors → first-enrollment or name+code screen.
+async function runNormalLoginDecision(){
+  renderLoginLoading('Verificando sessão...');
+  await ensureSharedSession();
+  const factors = await getVerifiedFactors();
+  if(!factors.length){
+    renderFirstEnrollPanel();
+  } else {
+    renderFactorPickerPanel(factors);
+  }
+}
+
+async function runLoginFlow(){
+  renderLoginLoading('Verificando sessão...');
+  await ensureSharedSession();
+  const { data: sessionData } = await sb.auth.getSession();
+  const { data: aalData } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+  let loginAt = 0;
+  try{ loginAt = Number(localStorage.getItem(LS_LOGIN_AT)) || 0; }catch(e){}
+  const hasValidSession = !!(sessionData && sessionData.session);
+  const isAal2 = !!(aalData && aalData.currentLevel === 'aal2');
+  const withinTtl = loginAt > 0 && (Date.now() - loginAt) < SESSION_TTL_MS;
+
+  if(hasValidSession && isAal2 && withinTtl){
+    let nome = '';
+    try{ nome = localStorage.getItem(LS_LOGIN_NOME) || ''; }catch(e){}
+    renderResumeGatePanel(SESSION_TTL_MS - (Date.now() - loginAt), nome);
+    return;
+  }
+
+  // no resumable session: if a stale/expired session exists, clean it up first.
+  if(hasValidSession && (!isAal2 || !withinTtl)){
+    try{ await sb.auth.signOut(); }catch(e){ console.error('Erro no signOut de sessão expirada:', e); }
+    try{
+      localStorage.removeItem(LS_LOGIN_AT);
+      localStorage.removeItem(LS_LOGIN_NOME);
+    }catch(e){}
+  }
+  await runNormalLoginDecision();
+}
+
+// ---------- Cadastrar novo acesso (modal, requer já estar aal2) ----------
+function setupEnrollModal(){
+  const overlay = document.getElementById('enrollModal');
+  const openBtn = document.getElementById('btnOpenEnroll');
+  openBtn.addEventListener('click', function(){
+    renderEnrollModalContent();
+    overlay.hidden = false;
+  });
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) overlay.hidden = true;
+  });
+}
+
+function renderEnrollModalContent(){
+  const card = document.getElementById('enrollCard');
+  card.innerHTML =
+    '<div class="admin-top" style="margin-bottom:1rem;">' +
+      '<h1 style="margin:0;">Cadastrar novo acesso</h1>' +
+      '<button class="abtn ghost small" id="btnCloseEnroll" type="button">Fechar</button>' +
+    '</div>' +
+    '<div class="admin-field full">' +
+      '<label for="enrollNome">Nome da pessoa</label>' +
+      '<input type="text" id="enrollNome" placeholder="Ex: João">' +
+    '</div>' +
+    '<button class="abtn" id="btnEnrollGerarQr" type="button" style="margin-top:12px; width:100%; justify-content:center;">Gerar QR Code</button>' +
+    '<div id="enrollArea"></div>' +
+    '<div class="admin-status" id="enrollStatus"></div>';
+
+  document.getElementById('btnCloseEnroll').addEventListener('click', function(){
+    document.getElementById('enrollModal').hidden = true;
+  });
+
+  document.getElementById('btnEnrollGerarQr').addEventListener('click', async function(){
+    const nome = document.getElementById('enrollNome').value.trim();
+    const statusEl = document.getElementById('enrollStatus');
+    if(!nome){ statusEl.textContent = 'Digite o nome da pessoa.'; statusEl.className = 'admin-status err'; return; }
+    this.disabled = true;
+    statusEl.textContent = 'Gerando QR Code...';
+    statusEl.className = 'admin-status';
+    try{
+      const { data, error } = await sb.auth.mfa.enroll({ factorType: 'totp', friendlyName: nome });
+      if(error) throw error;
+      const factorId = data.id;
+      const area = document.getElementById('enrollArea');
+      area.innerHTML =
+        '<div class="login-qr-box">' + data.totp.qr_code + '</div>' +
+        '<p class="admin-desc">Não conseguiu escanear? Digite manualmente este código no app autenticador:</p>' +
+        '<code class="login-secret">' + escapeHtml(data.totp.secret) + '</code>' +
+        '<div class="admin-field full">' +
+          '<label for="enrollCode">Código de 6 dígitos</label>' +
+          '<input type="text" id="enrollCode" class="login-code-input" maxlength="6" inputmode="numeric" placeholder="000000">' +
+        '</div>' +
+        '<button class="abtn" id="btnEnrollConfirmar" type="button" style="margin-top:10px; width:100%; justify-content:center;">Confirmar</button>';
+      statusEl.textContent = '';
+      document.getElementById('btnEnrollConfirmar').addEventListener('click', async function(){
+        const code = document.getElementById('enrollCode').value.trim();
+        if(!/^\d{6}$/.test(code)){ statusEl.textContent = 'Digite o código de 6 dígitos.'; statusEl.className = 'admin-status err'; return; }
+        this.disabled = true;
+        statusEl.textContent = 'Verificando...';
+        statusEl.className = 'admin-status';
+        try{
+          const { data: chData, error: chErr } = await sb.auth.mfa.challenge({ factorId: factorId });
+          if(chErr) throw chErr;
+          const { error: vErr } = await sb.auth.mfa.verify({ factorId: factorId, challengeId: chData.id, code: code });
+          if(vErr) throw vErr;
+          statusEl.textContent = 'Autenticador cadastrado para ' + nome + '!';
+          statusEl.className = 'admin-status ok';
+          setTimeout(function(){ document.getElementById('enrollModal').hidden = true; }, 1500);
+        }catch(err){
+          statusEl.textContent = 'Código inválido, tente novamente.';
+          statusEl.className = 'admin-status err';
+          this.disabled = false;
+        }
+      });
+    }catch(err){
+      statusEl.textContent = 'Erro ao gerar QR Code: ' + err.message;
+      statusEl.className = 'admin-status err';
+      this.disabled = false;
+    }
+  });
+}
+
+// ---------- Histórico de acessos (modal, read-only) ----------
+function setupAccessLogModal(){
+  const overlay = document.getElementById('accessLogModal');
+  document.getElementById('btnOpenAccessLog').addEventListener('click', async function(){
+    overlay.hidden = false;
+    await renderAccessLog();
+  });
+  document.getElementById('btnCloseAccessLog').addEventListener('click', function(){
+    overlay.hidden = true;
+  });
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) overlay.hidden = true;
+  });
+}
+
+async function renderAccessLog(){
+  const listEl = document.getElementById('accessLogList');
+  listEl.innerHTML = '<div class="history-empty">Carregando...</div>';
+  const { data, error } = await sb.from('access_logs').select('*').order('created_at', { ascending: false }).limit(200);
+  if(error){
+    listEl.innerHTML = '<div class="history-empty">Erro ao carregar histórico de acessos.</div>';
+    return;
+  }
+  if(!data || !data.length){
+    listEl.innerHTML = '<div class="history-empty">Nenhum acesso registrado ainda.</div>';
+    return;
+  }
+  listEl.innerHTML = '';
+  data.forEach(function(row){
+    const d = new Date(row.created_at);
+    const label = d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML =
+      '<div class="history-body">' +
+        '<div class="history-tema">' + escapeHtml(row.nome || '(sem nome)') + '</div>' +
+        '<div class="history-preview">' + escapeHtml(label) + '</div>' +
+      '</div>';
+    listEl.appendChild(item);
+  });
+}
+
+// ---------- init do painel (após aal2) ----------
+async function initAdminApp(){
+  await seedThemesIfEmpty();
+
+  const { data: settingsRow, error: settingsErr } = await sb.from('settings').select('*').eq('id', true).maybeSingle();
+  if(settingsErr) console.error('Erro ao buscar settings:', settingsErr);
+  SETTINGS = settingsRow || {};
+
+  await renderThemeList();
+  document.getElementById('themeEditMode').addEventListener('change', renderThemeList);
+  await renderKeys();
+  setupModelDropdown('fModelText', 'fModelTextCustom', SETTINGS.model_text || 'gemini-3.6-flash');
+  setupModelDropdown('fModelImage', 'fModelImageCustom', SETTINGS.model_image || 'gemini-2.5-flash-image');
+  loadEmergencyFields();
+  setupEmergencySkillInsert();
+  setupThemeAIGeneration('texto', 'btnGerarTextoIA', 'ntTemplateTexto');
+  setupThemeAIGeneration('imagem', 'btnGerarImagemIA', 'ntTemplateImagem');
+  await renderMonthFilterOptions();
+  await renderHistory();
+}
+
+setupEnrollModal();
+setupAccessLogModal();
+runLoginFlow();
 </script>
 </body>
 </html>
