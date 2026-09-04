@@ -177,6 +177,10 @@ function setupIntroFastForwardOnClick(){
     introFastForward = true;
     applyIntroFastForward();
   }, { passive: true });
+  document.addEventListener('keydown', function(e){
+    introFastForward = true;
+    applyIntroFastForward();
+  });
 }
 
 if ('scrollRestoration' in history) {
@@ -190,3 +194,4 @@ if (!sessionStorage.getItem('introPlayed')) {
     setupIntroFastForwardOnClick();
     initHandwriting();
 }
+

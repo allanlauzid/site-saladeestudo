@@ -1,0 +1,4 @@
+project_id = "fesejrbindspzafiyssm"
+
+[functions.ai-provider-router]
+verify_jwt = false

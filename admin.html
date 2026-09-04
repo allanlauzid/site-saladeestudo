@@ -38,9 +38,10 @@
     background:var(--color-yellow); color:var(--color-blue); font-weight:700; font-size:0.85rem; cursor:pointer; transition:all .15s; white-space:nowrap; }
   .abtn:hover{ transform:translate(-2px,-2px); box-shadow:-3px 3px 0 var(--color-blue); }
   .abtn.secondary{ background:#fff; }
+  .abtn.blue{ background:var(--color-blue); color:#fff; border-color:var(--color-blue); }
   .abtn.ghost{ background:transparent; border-color:#d8d3c4; color:#6b6b6b; }
   .abtn.small{ padding:6px 12px; font-size:0.75rem; }
-  .abtn:disabled{ opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; }
+  .abtn:disabled{ opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; filter: grayscale(100%); }
   .admin-status{ font-size:0.8rem; margin-top:8px; }
   .admin-status.ok{ color:#0a8a3f; }
   .admin-status.err{ color:#c0392b; }
@@ -147,6 +148,126 @@
   }
   .modal-overlay[hidden]{ display:none; }
   .fixed-bottom-btn{ position:fixed; bottom:20px; right:20px; z-index:500; }
+  .provider-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:12px; }
+  .provider-summary{ margin-top:12px; padding:10px 12px; border:1px solid rgba(0,78,181,.22); border-left:4px solid var(--color-yellow); border-radius:8px; background:#f7f9ff; color:#34445f; font-size:.82rem; }
+  .provider-summary strong{ color:var(--color-blue); }
+  .provider-actions{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:12px 0; }
+  .provider-toggle{ display:flex; align-items:flex-start; gap:8px; font-size:.82rem; color:#4b5563; cursor:pointer; }
+  .provider-toggle input{ margin-top:2px; accent-color:var(--color-blue); }
+  .provider-catalog{ display:grid; gap:10px; margin-top:12px; }
+  .provider-catalog[hidden]{ display:none; }
+  .provider-card{ border:1px solid #ded8ca; border-radius:10px; padding:12px; background:#fff; }
+  .provider-card-head{ display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap; }
+  .provider-card-title{ font-weight:800; color:var(--color-blue); }
+  .provider-card-meta{ font-size:.74rem; color:#7b7469; }
+  .model-tags{ display:flex; flex-wrap:wrap; gap:6px; margin-top:9px; }
+  .model-tag{ display:inline-flex; align-items:center; gap:5px; padding:4px 7px; border-radius:999px; background:#eef4ff; color:#164c93; font-size:.72rem; border:1px solid #cfe0fb; }
+  .model-tag.image{ background:#fff7cf; border-color:#ecd76b; color:#745f00; }
+  .provider-readonly{ background:#f1efe9 !important; color:#5d5a52 !important; }
+  .toast-region{ position:fixed; top:18px; right:18px; z-index:10020; display:grid; gap:8px; width:min(360px,calc(100vw - 36px)); pointer-events:none; }
+  .provider-toast{ pointer-events:auto; border-radius:10px; padding:12px 14px; box-shadow:0 12px 30px rgba(0,0,0,.2); background:#123f79; color:#fff; border-left:5px solid var(--color-yellow); font-size:.84rem; animation:toast-in .18s ease-out; }
+  .provider-toast.error{ background:#8f2d2d; }
+  .provider-toast.ok{ background:#17653d; }
+  @keyframes toast-in{ from{ opacity:0; transform:translateY(-8px); } to{ opacity:1; transform:translateY(0); } }
+  .provider-decision-card{ width:min(520px,100%); background:#fff; border:2px solid var(--color-blue); border-radius:14px; padding:22px; box-shadow:8px 8px 0 rgba(0,78,181,.18); }
+  .provider-decision-card h2{ margin:0 0 8px; font-size:1.2rem; }
+  .provider-decision-card p{ color:#5e5a52; font-size:.88rem; }
+  .provider-decision-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:18px; }
+  .gen-choice-actions{ display:flex; flex-direction:column; gap:10px; margin-top:18px; }
+  .gen-choice-actions .abtn{ justify-content:center; display:flex; align-items:center; gap:7px; }
+  .ext-link-icon{ width:14px; height:14px; flex-shrink:0; }
+  @media (max-width:760px){ .provider-grid{ grid-template-columns:1fr; } .toast-region{ top:10px; right:10px; width:calc(100vw - 20px); } }
+  @media (prefers-reduced-motion:reduce){ .provider-toast{ animation:none; } }
+
+  .type-toggle{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+  .type-toggle-btn{ flex:1; min-width: 120px; background:#f4f1ea; border:2px solid transparent; color:var(--color-blue); font-weight:700; padding:10px 14px; border-radius:8px; cursor:pointer; transition:all .25s ease; font-size:.9rem; text-align:center; }
+  .type-toggle-btn.active{ background:var(--color-blue); color:#fff; }
+  .type-toggle-btn:hover{ transform:translate(-1px,-1px); }
+  .gen-settings-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:16px; }
+  .gen-settings-toggle{ width:auto; padding:6px 0; flex:0 1 auto; }
+  .gen-settings-toggle .gen-settings-label{ display:inline-flex; align-items:center; gap:6px; font-size:0.85rem; font-weight:700; color:var(--color-blue); }
+  .gen-settings-toggle .gen-settings-label .chev{ font-size:1.1rem; }
+  .gen-settings-row .abtn{ flex:0 0 auto; }
+  .prompt-box{ margin-top:1rem; border:2px solid var(--color-blue); border-radius:10px; background:#f7f9ff; overflow:hidden; box-sizing:border-box; transition:all 0.2s ease; }
+  .prompt-box.empty { border-color:#ccc; background:#f9f9f9; }
+  .prompt-box[hidden]{ display:none; }
+  .prompt-box-inner{ padding:14px; }
+  .prompt-box-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:10px; flex-wrap:wrap; }
+  .prompt-box-title-group{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .prompt-box-title-group span{ font-weight:700; color:var(--color-blue); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.03em; transition:color 0.2s ease; }
+  .prompt-box.empty .prompt-box-title-group span { color:#888; }
+  .prompt-box textarea#genPromptText{ width:100%; min-height:140px; border:1px solid #d0d0d0; border-radius:8px; padding:12px; font-family:'Inter',sans-serif; font-size:0.88rem; color:#2b2b2b; background:#f4f4f4; resize:vertical; transition:border-color .2s ease, box-shadow .2s ease; }
+  .prompt-box textarea#genPromptText:focus{ outline:none; border-color:var(--color-blue); box-shadow:0 0 0 3px rgba(0,74,173,0.1); }
+  #btnExecutePrompt{ display:inline-flex; align-items:center; gap:6px; }
+
+  .gen-result-box{ margin-top:1rem; border:2px solid var(--color-blue); box-shadow:0 0 0 4px rgba(255, 209, 0, 0.4); border-radius:10px; padding:14px; background:#fff; opacity:1; transition:opacity .2s ease; margin-bottom: 6px; }
+  .gen-result-box[hidden]{ display:none; }
+  .gen-result-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:10px; flex-wrap:wrap; }
+  .gen-result-head span{ font-weight:700; color:var(--color-blue); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.03em; }
+  .gen-result-loading{ display:flex; align-items:center; gap:10px; color:#6b6b6b; font-size:0.85rem; }
+  .gen-result-spinner{ width:16px; height:16px; border-radius:50%; border:2px solid #d8d3c4; border-top-color:var(--color-blue); animation:genSpin .7s linear infinite; flex-shrink:0; }
+  @keyframes genSpin{ to{ transform:rotate(360deg); } }
+  .gen-result-textarea{ width:100%; min-height:140px; border:1px solid #d0d0d0; border-radius:8px; padding:12px; font-family:'Inter',sans-serif; font-size:0.88rem; color:#2b2b2b; background:#f4f4f4; resize:vertical; transition:border-color .2s ease, box-shadow .2s ease; margin-top: 8px; }
+  .gen-result-textarea:focus{ outline:none; border-color:var(--color-blue); box-shadow:0 0 0 3px rgba(0,74,173,0.1); }
+  .gen-result-box img{ max-width:100%; border-radius:8px; display:block; margin:0 auto; object-fit:contain; }
+  .gen-result-chatgpt-msg{ font-size:0.85rem; color:#2b2b2b; }
+  .gen-result-chatgpt-msg a{ color:var(--color-blue); font-weight:700; text-decoration:underline; display:inline-flex; align-items:center; gap:4px; }
+  .gen-result-chatgpt-msg .ext-link-icon{ width:13px; height:13px; }
+
+  /* --- modo imagem: inversao de cores --- */
+  #genCardRoot{ transition:background-color .25s ease, border-color .25s ease, box-shadow .25s ease; }
+  #genCardRoot.gen-image-mode{ background:var(--color-blue); border-color:var(--color-yellow); box-shadow:-6px 6px 0 rgba(255,209,0,0.25); }
+  #genCardRoot.gen-image-mode h2{ color:#fff; }
+  #genCardRoot.gen-image-mode .admin-desc{ color:#dce6ff; }
+  #genCardRoot.gen-image-mode .admin-field label{ color:#fff; }
+  #genCardRoot.gen-image-mode .admin-field input[type="text"],
+  #genCardRoot.gen-image-mode .admin-field select,
+  #genCardRoot.gen-image-mode .admin-field textarea{ background:#fff; border-color:#fff; color:var(--color-blue); }
+  #genCardRoot.gen-image-mode .type-toggle-btn{ background:#fff; border-color:#fff; }
+  #genCardRoot.gen-image-mode .type-toggle-btn.active{ background:var(--color-yellow); color:var(--color-blue); border-color:var(--color-yellow); }
+  #genCardRoot.gen-image-mode .gen-settings-toggle .gen-settings-label,
+  #genCardRoot.gen-image-mode .gen-settings-toggle .gen-settings-label .chev{ color:#fff; }
+  #genCardRoot.gen-image-mode .provider-summary{ background:rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.35); color:#fff; }
+  #genCardRoot.gen-image-mode .provider-summary strong{ color:var(--color-yellow); }
+  #genCardRoot.gen-image-mode .provider-toggle{ color:#eaf0ff; }
+  #genCardRoot.gen-image-mode .abtn{ border-color:var(--color-yellow); }
+  #genCardRoot.gen-image-mode .abtn.secondary{ background:#fff; }
+  #genCardRoot.gen-image-mode .admin-status.ok{ color:#bfffd8; }
+  #genCardRoot.gen-image-mode .admin-status.err{ color:#ffc4c4; }
+  #genCardRoot.gen-image-mode .prompt-box{ background:rgba(255,255,255,0.08); border-color:var(--color-yellow); }
+  #genCardRoot.gen-image-mode .prompt-box-title-group span{ color:var(--color-yellow); }
+  #genCardRoot.gen-image-mode .gen-result-box{ background:rgba(255,255,255,0.08); border-color:var(--color-yellow); box-shadow:0 0 0 4px rgba(255, 209, 0, 0.2); }
+  #genCardRoot.gen-image-mode .gen-result-head span{ color:var(--color-yellow); }
+  #genCardRoot.gen-image-mode .gen-result-loading{ color:#eaf0ff; }
+  #genCardRoot.gen-image-mode .gen-result-chatgpt-msg{ color:#fff; }
+  #genCardRoot.gen-image-mode .gen-result-chatgpt-msg a{ color:var(--color-yellow); }
+  #genCardRoot.gen-image-mode .hint{ background:rgba(255,255,255,0.92); }
+
+  /* --- histórico: cabeçalho recolhível --- */
+  .hist-toggle{ display:flex; align-items:center; justify-content:space-between; width:100%; background:none; border:none; padding:0; margin:0 0 0.35rem; cursor:pointer; text-align:left; }
+  .hist-toggle h2{ margin:0; }
+  .hist-toggle .chev{ font-size:1.1rem; color:var(--color-blue); transition:transform .25s ease; flex-shrink:0; }
+  .hist-toggle[aria-expanded="true"] .chev{ transform:rotate(180deg); }
+  .hist-collapse{ display:grid; grid-template-rows:1fr; transition:grid-template-rows .3s ease; }
+  .hist-collapse.closed{ grid-template-rows:0fr; }
+  .hist-collapse-inner{ overflow:hidden; min-height:0; }
+
+  @keyframes blinkYellow {
+    0% { background-color: transparent; }
+    50% { background-color: rgba(255, 209, 0, 0.4); }
+    100% { background-color: transparent; }
+  }
+  .flash-yellow {
+    animation: blinkYellow 1s infinite;
+  }
+
+  /* --- modal de escolha: onde gerar --- */
+  .gen-choice-card{ position:relative; width:min(700px, 96%) !important; }
+  .modal-close-btn{ position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:50%; border:none; background:transparent; color:#8a8a8a; font-size:1.3rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .modal-close-btn:hover{ background:#f4f1ea; color:var(--color-blue); }
+  .gen-choice-actions.gen-choice-row{ flex-direction:row; flex-wrap:wrap; }
+  .gen-choice-actions.gen-choice-row .abtn{ flex:1; min-width: 140px; }
+  .chatgpt-mark{ width:17px; height:17px; flex-shrink:0; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -166,7 +287,86 @@
 
 <!-- CONFIGURAÇÕES (modal: ver logs de acesso / configurar acesso) -->
 <div class="modal-overlay" id="settingsModal" hidden>
-  <div class="login-card" id="settingsCard" style="max-width:520px;"></div>
+  <div class="login-card" id="settingsCard" style="max-width:800px; width:95%;"></div>
+</div>
+
+<div class="toast-region" id="providerToastRegion" aria-live="polite" aria-atomic="true"></div>
+<div class="modal-overlay" id="providerDecisionModal" hidden role="presentation">
+  <div class="provider-decision-card" role="dialog" aria-modal="true" aria-labelledby="providerDecisionTitle" aria-describedby="providerDecisionMessage">
+    <h2 id="providerDecisionTitle">A geração não foi concluída</h2>
+    <p id="providerDecisionMessage"></p>
+    <div class="provider-decision-actions">
+      <button class="abtn ghost" id="providerDecisionNo" type="button">Não</button>
+      <button class="abtn" id="providerDecisionYes" type="button">Sim</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="genChoiceModal" hidden role="presentation">
+  <div class="provider-decision-card gen-choice-card" role="dialog" aria-modal="true" aria-labelledby="genChoiceTitle">
+    <button class="modal-close-btn" id="genChoiceClose" type="button" aria-label="Fechar">&times;</button>
+    <div id="genChoiceScreen1">
+      <h2 id="genChoiceTitle">Onde deseja gerar este conteúdo?</h2>
+      <div class="gen-choice-actions gen-choice-row">
+        <button class="abtn" id="genChoiceApi" type="button">Via API</button>
+        <button class="abtn secondary" id="genChoiceChatgpt" type="button" style="display:inline-flex; align-items:center; gap:8px;">
+          <img src="../icon_chatgpt.webp" alt="ChatGPT" style="width:20px; height:20px; object-fit:contain; border-radius:50%;">
+          ChatGPT
+          <svg class="ext-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-left:auto;">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </button>
+        <button class="abtn secondary" id="genChoiceClaude" type="button" style="display:inline-flex; align-items:center; gap:8px; transition:all .2s ease;">
+          <img src="../icon_claude.webp" alt="Claude" style="width:20px; height:20px; object-fit:contain; border-radius:50%;">
+          Claude
+          <svg class="ext-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-left:auto;">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </button>
+        <button class="abtn secondary" id="genChoiceGemini" type="button" style="display:inline-flex; align-items:center; gap:8px; transition:all .2s ease;">
+          <img src="../icon_gemini.webp" alt="Gemini" style="width:20px; height:20px; object-fit:contain; border-radius:50%;">
+          Gemini
+          <svg class="ext-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-left:auto;">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div id="genChoiceScreen2" hidden>
+      <h2 style="color:var(--color-blue); margin-bottom:12px; margin-top:0;">Claude e Imagens</h2>
+      <p style="margin-bottom:16px;">Claude não gera imagens, mas ele é capaz de melhorar o prompt gerador de imagem para garantir uma maior qualidade de resultado.</p>
+      <div class="gen-choice-actions" style="display:flex; flex-direction:column; gap:10px;">
+        <button class="abtn secondary" id="genChoiceClaudeOptimize" type="button" style="justify-content:flex-start; text-align:left;">
+          <img src="../icon_claude.webp" alt="Claude" style="width:24px; height:24px; border-radius:50%; margin-right:8px; flex-shrink:0;">
+          <span>Clique novamente no Claude caso queira otimizar o prompt gerador de imagem</span>
+        </button>
+        <button class="abtn secondary" id="genChoiceChatGPTFallback" type="button" style="justify-content:flex-start; text-align:left;">
+          <img src="../icon_chatgpt.webp" alt="ChatGPT" style="width:24px; height:24px; border-radius:50%; margin-right:8px; flex-shrink:0;">
+          <span>Clique no ChatGPT para gerar a imagem no ChatGPT</span>
+        </button>
+      </div>
+    </div>
+    <div id="genChoiceScreen3" hidden>
+      <h2 style="color:var(--color-blue); margin-bottom:12px; margin-top:0;">Gerar no Gemini</h2>
+      <p style="margin-bottom:16px;">Gemini não recebe o prompt automaticamente na sua página. Clique no botão abaixo [Copiar] depois clique novamente no botão [Gemini] para que dentro da página do Gemini você possa colar o prompt gerado.</p>
+      <div class="gen-choice-actions" style="display:flex; flex-direction:column; gap:10px;">
+        <button class="abtn secondary" id="genChoiceGeminiCopy" type="button" style="justify-content:flex-start; text-align:left;">
+          <span style="display:inline-block; width:24px; text-align:center; margin-right:8px;">📋</span>
+          Copiar prompt gerado
+        </button>
+        <button class="abtn secondary" id="genChoiceGeminiOpen" type="button" style="justify-content:flex-start; text-align:left;">
+          <img src="../icon_gemini.webp" alt="Gemini" style="width:24px; height:24px; border-radius:50%; margin-right:8px; flex-shrink:0;">
+          Gemini
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="admin-wrap" id="adminRoot" style="display:none;">
@@ -179,22 +379,27 @@
   </div>
 
   <!-- GERADOR (primeiro) -->
-  <div class="admin-card">
+  <div class="admin-card" id="genCardRoot">
     <h2>Gerador de conteúdo</h2>
-    <p class="admin-desc">Escolha um tema, o tipo de conteúdo e descreva o assunto do post para gerar com o Gemini.</p>
+    <p class="admin-desc">Escolha um tema, o tipo de conteúdo e o assunto do post.</p>
 
     <div class="admin-row">
       <div class="admin-field" style="flex:2;">
         <label for="genTheme">Tema</label>
         <select id="genTheme"></select>
       </div>
-      <div class="admin-field" style="max-width:150px;">
-        <label for="genType">Gerar</label>
-        <select id="genType">
-          <option value="texto">Texto</option>
-          <option value="imagem">Imagem</option>
-        </select>
+    </div>
+
+    <div class="admin-field" style="margin-top:12px;">
+      <label>Tipo de conteúdo</label>
+      <div class="type-toggle" id="genTypeToggle" role="group" aria-label="Tipo de conteúdo">
+        <button type="button" class="type-toggle-btn active" id="genTypeBtnTexto" data-type="texto" aria-pressed="true">Texto</button>
+        <button type="button" class="type-toggle-btn" id="genTypeBtnImagem" data-type="imagem" aria-pressed="false">Imagem</button>
       </div>
+      <select id="genType" style="display:none;" aria-hidden="true" tabindex="-1">
+        <option value="texto">Texto</option>
+        <option value="imagem">Imagem</option>
+      </select>
     </div>
 
     <div class="admin-row" style="margin-top:12px;">
@@ -202,20 +407,78 @@
         <label for="genTema">Tema / assunto do post</label>
         <input type="text" id="genTema" placeholder="Ex: importância da rotina de estudos no ENEM">
       </div>
-      <button class="abtn" id="btnGenerate" type="button">Gerar</button>
     </div>
-    <div class="admin-status" id="genStatus"></div>
+
+    <div style="text-align:center; margin-top:16px; margin-bottom:16px;">
+      <button class="abtn" id="btnGenerate" type="button" style="display:inline-block; text-align:center; padding:8px 24px; font-size:1.05rem;">
+        <span><span style="font-weight:400;">Gerar</span><strong style="text-transform:uppercase;">PROMPT</strong></span>
+      </button>
+    </div>
+
+    <div class="admin-status" id="genStatus" aria-live="polite"></div>
+
+    <div class="prompt-box empty" id="genPromptBox">
+      <div class="prompt-box-inner" id="genPromptBoxInner">
+        <div class="prompt-box-head" style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; margin-bottom:12px;">
+          <div class="prompt-box-title-group" style="display:flex; align-items:center; gap:8px; justify-content:flex-start;">
+            <span>PROMPT</span>
+            <button class="abtn secondary small" id="btnCopyPrompt" type="button" disabled>Copiar</button>
+          </div>
+          <div style="display:flex; justify-content:center;">
+            <button class="abtn small" id="btnExecutePrompt" type="button" disabled>
+              <span><span style="font-weight:400;">Gerar</span><strong id="btnExecutePromptLabel" style="text-transform:uppercase;">TEXTO</strong></span>
+            </button>
+          </div>
+          <div style="display:flex; justify-content:flex-end;">
+            <button class="abtn small blue" id="btnSavePrompt" type="button" style="visibility:hidden;">Salvar PROMPT</button>
+          </div>
+        </div>
+        <textarea id="genPromptText" placeholder="Seu prompt aparecerá aqui..."></textarea>
+      </div>
+    </div>
+
+    <div class="admin-row" style="align-items:center; justify-content:center; margin-top:24px;">
+      <button class="accordion-toggle gen-settings-toggle" id="genSettingsToggle" type="button" aria-expanded="false" aria-controls="genSettingsBody" style="background:transparent; border:none;">
+        <span class="gen-settings-label">&#9881; Configurações de geração <span class="chev">&#9662;</span></span>
+      </button>
+    </div>
+
+    <div class="accordion-body" id="genSettingsBody">
+      <div class="accordion-body-inner">
+        <div class="provider-grid">
+          <div class="admin-field">
+            <label for="genKeySelect">API Key</label>
+            <select id="genKeySelect"><option value="__all__">Todos</option></select>
+          </div>
+          <div class="admin-field">
+            <label for="genModelSelect">Modelo</label>
+            <select id="genModelSelect"><option value="__auto__">Automático</option></select>
+          </div>
+        </div>
+        <div class="provider-summary" id="genSelectionSummary" aria-live="polite">Cadastre e verifique uma API Key para listar os modelos disponíveis.</div>
+        <label class="provider-toggle" style="margin-top:10px;">
+          <input type="checkbox" id="genFailover" checked>
+          <span>Procurar automaticamente outra API Key ou outro modelo em caso de falha</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="gen-result-box" id="genResultBox" hidden>
+      <div class="gen-result-head">
+        <span id="genResultLabel">Resultado gerado</span>
+        <button class="abtn secondary small" id="btnCopyResult" type="button" hidden>Copiar resultado</button>
+      </div>
+      <div id="genResultContent"></div>
+    </div>
+
     <div class="output-box" id="genOutput" style="display:none;"></div>
-    <div class="hint" id="genHint" style="display:none;">
-      <div>Sem créditos ou deu erro na API? Use a seção de <strong>Prompts de emergência</strong> abaixo para copiar o prompt e colar direto no Gemini pelo navegador.</div>
-      <button class="abtn secondary small" id="btnGoToEmergency" type="button" style="margin-top:10px;">Ir para Prompts de emergência</button>
-    </div>
+    <div class="hint" id="genHint" style="display:none;"></div>
   </div>
 
   <!-- TEMAS E SKILLS (dropdown/accordion, fechado por padrão) -->
   <div class="admin-card">
     <button class="accordion-toggle" id="skillsToggle" type="button" aria-expanded="false" aria-controls="skillsBody">
-      <h2 style="margin:0;">Temas e Skills</h2>
+      <h2 style="margin:0;">Prompts, Temas e Skills</h2>
       <span class="chev">&#9662;</span>
     </button>
     <div class="accordion-body" id="skillsBody">
@@ -273,43 +536,50 @@
 
   <!-- HISTÓRICO -->
   <div class="admin-card">
-    <h2>Histórico de gerações</h2>
-    <p class="admin-desc">Todo texto e imagem gerados aqui ficam salvos automaticamente neste navegador, do mais recente para o mais antigo. Quando o armazenamento local chegar perto do limite, os itens mais antigos são apagados sozinhos aos poucos para abrir espaço.</p>
+    <button class="hist-toggle" id="histToggle" type="button" aria-expanded="true" aria-controls="histCollapse">
+      <h2>Histórico de gerações</h2>
+      <span class="chev">&#9662;</span>
+    </button>
+    <div class="hist-collapse" id="histCollapse">
+      <div class="hist-collapse-inner">
+        <p class="admin-desc">Textos e imagens gerados ficam salvos no histórico do projeto, do mais recente para o mais antigo.</p>
 
-    <div class="admin-row" style="margin-bottom:1rem;">
-      <div class="admin-field" style="max-width:180px;">
-        <label for="histTypeFilter">Tipo</label>
-        <select id="histTypeFilter">
-          <option value="todos">Todos</option>
-          <option value="texto">Texto</option>
-          <option value="imagem">Imagem</option>
-        </select>
-      </div>
-      <div class="admin-field" style="max-width:220px;">
-        <label for="histMonthFilter">Mês</label>
-        <select id="histMonthFilter">
-          <option value="todos">Todos os meses</option>
-        </select>
+        <div class="admin-row" style="margin-bottom:1rem;">
+          <div class="admin-field" style="max-width:180px;">
+            <label for="histTypeFilter">Tipo</label>
+            <select id="histTypeFilter">
+              <option value="todos">Todos</option>
+              <option value="texto">Texto</option>
+              <option value="imagem">Imagem</option>
+            </select>
+          </div>
+          <div class="admin-field" style="max-width:220px;">
+            <label for="histMonthFilter">Mês</label>
+            <select id="histMonthFilter">
+              <option value="todos">Todos os meses</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="history-bulk-bar">
+          <label><input type="checkbox" id="histSelectAll"> Selecionar todos</label>
+          <button class="abtn small ghost" id="btnDeleteSelected" type="button" disabled>Excluir selecionados (<span id="histSelectedCount">0</span>)</button>
+        </div>
+
+        <div class="history-list" id="historyList"></div>
       </div>
     </div>
-
-    <div class="history-bulk-bar">
-      <label><input type="checkbox" id="histSelectAll"> Selecionar todos</label>
-      <button class="abtn small ghost" id="btnDeleteSelected" type="button" disabled>Excluir selecionados (<span id="histSelectedCount">0</span>)</button>
-    </div>
-
-    <div class="history-list" id="historyList"></div>
   </div>
 
   <!-- API KEY (dropdown/accordion, fechado por padrão) -->
   <div class="admin-card">
     <button class="accordion-toggle" id="keysToggle" type="button" aria-expanded="false" aria-controls="keysBody">
-      <h2 style="margin:0;">API Keys do Gemini</h2>
+      <h2 style="margin:0;">API Keys</h2>
       <span class="chev">&#9662;</span>
     </button>
     <div class="accordion-body" id="keysBody">
       <div class="accordion-body-inner">
-        <p class="admin-desc">Ficam salvas só neste navegador (localStorage). Você pode cadastrar várias keys: se a ativa ficar sem créditos, o gerador troca automaticamente para a próxima.</p>
+        <p class="admin-desc">Cadastre chaves de diferentes provedores. O painel identifica o provedor, verifica os modelos disponíveis e mantém o valor da chave sempre mascarado na interface.</p>
 
         <div class="admin-field full">
           <label for="keySelect">Key ativa</label>
@@ -326,15 +596,31 @@
             </div>
             <div class="admin-field" style="flex:2; min-width:260px;">
               <label for="newKeyValue">API Key</label>
-              <input type="password" id="newKeyValue" placeholder="Cole a API key do Gemini aqui">
+              <input type="password" id="newKeyValue" placeholder="Cole a API Key aqui" autocomplete="off" spellcheck="false">
+            </div>
+            <div class="admin-field" style="min-width:210px;">
+              <label for="newKeyProvider">Empresa / provedor</label>
+              <input type="text" id="newKeyProvider" class="provider-readonly" value="Provedor não identificado" readonly aria-readonly="true">
             </div>
             <button class="abtn secondary" id="btnAddKey" type="button">+ Adicionar key</button>
             <button class="abtn ghost" id="btnShowNewKey" type="button">Mostrar</button>
           </div>
+          <div class="admin-field full" style="margin-top:10px;">
+            <label for="newKeyBaseUrl">Endpoint compatível com OpenAI (opcional)</label>
+            <input type="url" id="newKeyBaseUrl" placeholder="https://api.exemplo.com/v1" autocomplete="off" spellcheck="false">
+            <div class="hint">Use apenas para provedores personalizados ou compatíveis com a API da OpenAI.</div>
+          </div>
           <div class="admin-status" id="keyStatus"></div>
         </div>
 
-        <div class="admin-row" style="margin-top:1.5rem;">
+        <div class="provider-actions">
+          <button class="abtn secondary" id="btnVerifyModels" type="button">Verificar modelos</button>
+          <button class="abtn ghost" id="btnShowAllModels" type="button" aria-expanded="false" aria-controls="providerModelCatalog">Mostrar todos os modelos</button>
+          <span class="provider-card-meta" id="modelsLastChecked"></span>
+        </div>
+        <div class="provider-catalog" id="providerModelCatalog" hidden></div>
+
+        <div class="admin-row" style="margin-top:1.5rem;" hidden aria-hidden="true">
           <div class="admin-field">
             <label for="fModelText">Modelo (texto)</label>
             <select id="fModelText">
@@ -367,44 +653,34 @@
     </div>
   </div>
 
-  <!-- EMERGENCIA (dentro de um dropdown/accordion) -->
-  <div class="admin-card">
-    <button class="accordion-toggle" id="emergencyToggle" type="button" aria-expanded="false" aria-controls="emergencyBody">
-      <h2 style="margin:0;">Prompts de emergência</h2>
-      <span class="chev">&#9662;</span>
-    </button>
-    <div class="accordion-body" id="emergencyBody">
-      <div class="accordion-body-inner">
-        <p class="admin-desc">Se a API key ficar sem créditos, copie o prompt e cole direto no Gemini no navegador. Use "Inserir da skill" para carregar o prompt de uma das skills salvas (o placeholder <code>{tema}</code> vira <code>[COLOQUE O TEMA AQUI]</code> para você preencher na mão).</p>
-        <div class="admin-row" style="margin-bottom:1rem;">
-          <a class="abtn secondary" href="https://gemini.google.com/" target="_blank" rel="noopener">Abrir Gemini no navegador ↗</a>
-        </div>
-        <div class="grid-2">
-          <div class="admin-field">
-            <label for="emTexto">Prompt de emergência — Texto</label>
-            <div class="admin-row" style="margin-bottom:8px;">
-              <select id="emTextoSkillSelect" style="flex:1; min-width:0;"></select>
-              <button class="abtn secondary small" data-insert-skill="emTexto" data-skill-select="emTextoSkillSelect" type="button">Inserir da skill</button>
-            </div>
-            <textarea id="emTexto" style="min-height:180px;"></textarea>
-            <button class="abtn ghost" style="margin-top:8px;" data-copy="emTexto" type="button">Copiar</button>
-          </div>
-          <div class="admin-field">
-            <label for="emImagem">Prompt de emergência — Imagem</label>
-            <div class="admin-row" style="margin-bottom:8px;">
-              <select id="emImagemSkillSelect" style="flex:1; min-width:0;"></select>
-              <button class="abtn secondary small" data-insert-skill="emImagem" data-skill-select="emImagemSkillSelect" type="button">Inserir da skill</button>
-            </div>
-            <textarea id="emImagem" style="min-height:180px;"></textarea>
-            <button class="abtn ghost" style="margin-top:8px;" data-copy="emImagem" type="button">Copiar</button>
-          </div>
-        </div>
-      </div>
-    </div>
+
+
+  <div class="admin-row" style="margin-top:20px; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:40px;">
+    <a class="abtn secondary" href="https://gemini.google.com/" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px;">
+      Abrir Gemini 
+      <svg class="ext-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:14px; height:14px;">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+      </svg>
+    </a>
+    <a class="abtn secondary" href="https://chatgpt.com/" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px;">
+      <img src="../icon_chatgpt.webp" alt="ChatGPT" style="width:16px; height:16px; object-fit:contain; border-radius:50%;">
+      Abrir ChatGPT
+      <svg class="ext-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:14px; height:14px;">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+      </svg>
+    </a>
+    <a class="abtn secondary" href="https://claude.ai/new" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px;">
+      <img src="../icon_claude.webp" alt="Claude" style="width:16px; height:16px; object-fit:contain; border-radius:50%;">
+      Abrir Claude
+      <svg class="ext-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:14px; height:14px;">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+      </svg>
+    </a>
   </div>
 
 </div>
 
+<script src="provider-manager.js"></script>
 <script>
 // ================= SUPABASE CONFIG =================
 const SUPABASE_URL = 'https://fesejrbindspzafiyssm.supabase.co';
@@ -435,8 +711,6 @@ const ICON_LOGOUT_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="n
 const ICON_GEAR_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009.6 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9.6a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>';
 
 const LS_THEMES = 'se_admin_themes'; // legacy key, read-only, used for one-time migration
-const LS_EMERGENCY_TEXT = 'se_admin_emergency_texto';
-const LS_EMERGENCY_IMAGE = 'se_admin_emergency_imagem';
 
 const DEFAULT_THEMES = [
   {
@@ -581,19 +855,7 @@ const DEFAULT_THEMES = [
   }
 ];
 
-const DEFAULT_EMERGENCY_TEXT =`Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, para todas as disciplinas, ENEM e vestibulares). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, confiável e motivador.
 
-Escreva uma legenda de Instagram sobre: [COLOQUE O TEMA AQUI]
-
-Regras:
-- 3 a 6 frases curtas, fáceis de ler no celular.
-- Sem jargão pedagógico.
-- Termine com uma chamada para agendar um diagnóstico gratuito.
-- Sugira de 5 a 8 hashtags em português no final.`;
-
-const DEFAULT_EMERGENCY_IMAGE = `Crie uma imagem quadrada para Instagram no estilo da marca Sala de Estudo: paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno, acolhedor, com elementos de estudo (livros, cadernos, lápis, quadro), estilo ilustração flat/vetorial, sem nenhum texto embutido na imagem.
-
-Tema da imagem: [COLOQUE O TEMA AQUI]`;
 
 // in-memory settings row cache (single row, id=true)
 let SETTINGS = null;
@@ -805,15 +1067,12 @@ async function renderThemeList(){
       useThemeInGenerator(id, type);
     });
   });
-
-  await renderEmergencySkillSelects();
 }
 
 function useThemeInGenerator(themeId, type){
   const genSelect = document.getElementById('genTheme');
-  const genTypeSelect = document.getElementById('genType');
   genSelect.value = themeId;
-  genTypeSelect.value = type;
+  if(typeof setGenType === 'function') setGenType(type);
   const genCard = document.getElementById('genTheme').closest('.admin-card');
   genCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
   const tema = document.getElementById('genTema');
@@ -846,52 +1105,7 @@ function closeThemeForm(){
   document.getElementById('btnSaveSkill').textContent = 'Salvar tema';
 }
 
-async function renderEmergencySkillSelects(){
-  const list = await getThemes();
-  [['emTextoSkillSelect','templateTexto'], ['emImagemSkillSelect','templateImagem']].forEach(function(pair){
-    const selectEl = document.getElementById(pair[0]);
-    if(!selectEl) return;
-    const filtered = list.filter(function(t){ return t[pair[1]]; });
-    const prev = selectEl.value;
-    selectEl.innerHTML = '';
-    if(!filtered.length){
-      selectEl.innerHTML = '<option value="">Nenhum tema com esse tipo de prompt salvo</option>';
-      selectEl.disabled = true;
-      return;
-    }
-    selectEl.disabled = false;
-    filtered.forEach(function(theme){
-      const opt = document.createElement('option');
-      opt.value = theme.id;
-      opt.textContent = theme.nome;
-      selectEl.appendChild(opt);
-    });
-    if(prev && filtered.some(function(t){ return t.id === prev; })) selectEl.value = prev;
-  });
-}
 
-function setupEmergencySkillInsert(){
-  renderEmergencySkillSelects();
-  document.querySelectorAll('[data-insert-skill]').forEach(function(btn){
-    btn.addEventListener('click', async function(){
-      const targetId = btn.getAttribute('data-insert-skill');
-      const selectId = btn.getAttribute('data-skill-select');
-      const themeId = document.getElementById(selectId).value;
-      const theme = (await getThemes()).find(function(t){ return t.id === themeId; });
-      if(!theme){ return; }
-      const field = targetId === 'emTexto' ? 'templateTexto' : 'templateImagem';
-      const template = theme[field] || '';
-      const textarea = document.getElementById(targetId);
-      const filled = template.replace(/\{tema\}/gi, '[COLOQUE O TEMA AQUI]');
-      textarea.value = filled;
-      const col = targetId === 'emTexto' ? 'emergency_texto' : 'emergency_imagem';
-      await sb.from('settings').update({ [col]: filled }).eq('id', true);
-      const original = btn.textContent;
-      btn.textContent = 'Inserido!';
-      setTimeout(function(){ btn.textContent = original; }, 1500);
-    });
-  });
-}
 
 document.getElementById('btnNewSkill').addEventListener('click', function(){
   openThemeForm(null);
@@ -965,7 +1179,7 @@ function setupThemeAIGeneration(kind, buttonId, textareaId){
       return;
     }
     if(!(await getKeys()).length){
-      statusEl.textContent = 'Cadastre sua API key do Gemini primeiro (seção API Keys do Gemini).';
+      statusEl.textContent = 'Cadastre uma API Key primeiro (seção API Keys).';
       statusEl.className = 'admin-status err';
       return;
     }
@@ -1453,8 +1667,11 @@ async function callGeminiImage(apiKey, model, prompt){
 }
 
 async function generateWithFailover(type, model, prompt, statusEl){
+  if(window.ProviderManager && window.ProviderManager.isReady()){
+    return window.ProviderManager.generate(type, prompt, { statusEl: statusEl, fallbackModel: model });
+  }
   const keys = await getKeys();
-  if(!keys.length) throw new Error('Cadastre pelo menos uma API key do Gemini primeiro.');
+  if(!keys.length) throw new Error('Cadastre pelo menos uma API Key primeiro.');
 
   const activeId = getActiveKeyId() || keys[0].id;
   const startIndex = Math.max(0, keys.findIndex(function(k){ return k.id === activeId; }));
@@ -1478,17 +1695,363 @@ async function generateWithFailover(type, model, prompt, statusEl){
   throw lastError || new Error('Todas as keys cadastradas falharam.');
 }
 
+function openGenChoiceModal(){
+  return new Promise(function(resolve){
+    const modal = document.getElementById('genChoiceModal');
+    const apiBtn = document.getElementById('genChoiceApi');
+    const chatgptBtn = document.getElementById('genChoiceChatgpt');
+    const claudeBtn = document.getElementById('genChoiceClaude');
+    const geminiBtn = document.getElementById('genChoiceGemini');
+    const closeBtn = document.getElementById('genChoiceClose');
+    
+    const screen1 = document.getElementById('genChoiceScreen1');
+    const screen2 = document.getElementById('genChoiceScreen2');
+    const screen3 = document.getElementById('genChoiceScreen3');
+    
+    const btnOptimize = document.getElementById('genChoiceClaudeOptimize');
+    const btnFallback = document.getElementById('genChoiceChatGPTFallback');
+    const btnGeminiCopy = document.getElementById('genChoiceGeminiCopy');
+    const btnGeminiOpen = document.getElementById('genChoiceGeminiOpen');
+
+    const isImage = currentPromptState && currentPromptState.type === 'imagem';
+    
+    screen1.hidden = false;
+    screen2.hidden = true;
+    screen3.hidden = true;
+    
+    if (isImage) {
+      claudeBtn.style.filter = 'grayscale(100%)';
+      claudeBtn.style.opacity = '0.6';
+    } else {
+      claudeBtn.style.filter = 'none';
+      claudeBtn.style.opacity = '1';
+    }
+
+    function cleanup(choice){
+      modal.hidden = true;
+      apiBtn.removeEventListener('click', onApi);
+      chatgptBtn.removeEventListener('click', onChatgpt);
+      claudeBtn.removeEventListener('click', onClaude);
+      geminiBtn.removeEventListener('click', onGemini);
+      closeBtn.removeEventListener('click', onClose);
+      btnOptimize.removeEventListener('click', onOptimize);
+      btnFallback.removeEventListener('click', onFallback);
+      btnGeminiCopy.removeEventListener('click', onGeminiCopy);
+      btnGeminiOpen.removeEventListener('click', onGeminiOpen);
+      modal.removeEventListener('click', onOverlayClick);
+      document.removeEventListener('keydown', onKeydown);
+      resolve(choice);
+    }
+    
+    function onApi(){ cleanup('api'); }
+    function onChatgpt(){ cleanup('chatgpt'); }
+    function onClaude(){
+      if (isImage) {
+        screen1.hidden = true;
+        screen2.hidden = false;
+      } else {
+        cleanup('claude');
+      }
+    }
+    function onGemini(){
+      screen1.hidden = true;
+      screen3.hidden = false;
+    }
+    function onOptimize(){ cleanup('claude-optimize'); }
+    function onFallback(){ cleanup('chatgpt'); }
+    function onGeminiCopy(){
+      if(currentPromptState) copyText(currentPromptState.prompt);
+    }
+    function onGeminiOpen(){ cleanup('gemini'); }
+    
+    function onClose(){ cleanup(null); }
+    function onOverlayClick(e){ if(e.target === modal) cleanup(null); }
+    function onKeydown(e){ if(e.key === 'Escape') cleanup(null); }
+    
+    apiBtn.addEventListener('click', onApi);
+    chatgptBtn.addEventListener('click', onChatgpt);
+    claudeBtn.addEventListener('click', onClaude);
+    geminiBtn.addEventListener('click', onGemini);
+    closeBtn.addEventListener('click', onClose);
+    btnOptimize.addEventListener('click', onOptimize);
+    btnFallback.addEventListener('click', onFallback);
+    btnGeminiCopy.addEventListener('click', onGeminiCopy);
+    btnGeminiOpen.addEventListener('click', onGeminiOpen);
+    modal.addEventListener('click', onOverlayClick);
+    document.addEventListener('keydown', onKeydown);
+    modal.hidden = false;
+  });
+}
+
+// ---------- toggle Texto/Imagem, configurações recolhíveis, prompt e execução ----------
+let genPromptBoxRevealed = false;
+let currentPromptState = null;
+
+function setGenType(type){
+  const select = document.getElementById('genType');
+  const changed = select.value !== type;
+  if(changed){
+    select.value = type;
+    select.dispatchEvent(new Event('change'));
+  }
+  const btnTexto = document.getElementById('genTypeBtnTexto');
+  const btnImagem = document.getElementById('genTypeBtnImagem');
+  btnTexto.classList.toggle('active', type === 'texto');
+  btnTexto.setAttribute('aria-pressed', String(type === 'texto'));
+  btnImagem.classList.toggle('active', type === 'imagem');
+  btnImagem.setAttribute('aria-pressed', String(type === 'imagem'));
+  document.getElementById('genCardRoot').classList.toggle('gen-image-mode', type === 'imagem');
+  const executeBtnLabel = document.getElementById('btnExecutePromptLabel');
+  if(executeBtnLabel) executeBtnLabel.textContent = type === 'imagem' ? 'IMAGEM' : 'TEXTO';
+  if(changed){
+    const box = document.getElementById('genPromptBox');
+    const textarea = document.getElementById('genPromptText');
+    if (box && textarea) {
+      textarea.value = '';
+      box.classList.add('empty');
+      const copyBtn = document.getElementById('btnCopyPrompt');
+      const execBtn = document.getElementById('btnExecutePrompt');
+      const saveBtn = document.getElementById('btnSavePrompt');
+      if(copyBtn) copyBtn.disabled = true;
+      if(execBtn) execBtn.disabled = true;
+      if(saveBtn) saveBtn.style.visibility = 'hidden';
+    }
+    document.getElementById('genResultBox').hidden = true;
+    currentPromptState = null;
+  }
+}
+document.getElementById('genTypeBtnTexto').addEventListener('click', function(){ setGenType('texto'); });
+document.getElementById('genTypeBtnImagem').addEventListener('click', function(){ setGenType('imagem'); });
+
+(function(){
+  const toggle = document.getElementById('genSettingsToggle');
+  const body = document.getElementById('genSettingsBody');
+  toggle.addEventListener('click', function(){
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    body.classList.toggle('open', !expanded);
+  });
+})();
+
+// ---------- histórico: cabeçalho recolhível ----------
+(function(){
+  const toggle = document.getElementById('histToggle');
+  const collapse = document.getElementById('histCollapse');
+  if(!toggle || !collapse) return;
+  toggle.addEventListener('click', function(){
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    collapse.classList.toggle('closed', expanded);
+  });
+})();
+
+function showGeneratedPrompt(text, type){
+  const box = document.getElementById('genPromptBox');
+  const textarea = document.getElementById('genPromptText');
+  textarea.value = text;
+
+  // um novo prompt invalida qualquer resultado anterior
+  document.getElementById('genResultBox').hidden = true;
+
+  box.classList.remove('empty');
+  document.getElementById('btnCopyPrompt').disabled = false;
+  document.getElementById('btnExecutePrompt').disabled = false;
+  document.getElementById('btnSavePrompt').style.visibility = 'hidden';
+
+  document.getElementById('btnExecutePromptLabel').textContent = type.toUpperCase();
+}
+
+document.getElementById('genPromptText').addEventListener('input', function(){
+  const box = document.getElementById('genPromptBox');
+  const text = this.value.trim();
+  if(!text){
+    box.classList.add('empty');
+    document.getElementById('btnCopyPrompt').disabled = true;
+    document.getElementById('btnExecutePrompt').disabled = true;
+    document.getElementById('btnSavePrompt').style.visibility = 'hidden';
+  } else {
+    box.classList.remove('empty');
+    document.getElementById('btnCopyPrompt').disabled = false;
+    document.getElementById('btnExecutePrompt').disabled = false;
+    document.getElementById('btnSavePrompt').style.visibility = 'visible';
+    if (currentPromptState) {
+      currentPromptState.prompt = this.value;
+    }
+  }
+});
+
+document.getElementById('btnSavePrompt').addEventListener('click', async function(){
+  if(!currentPromptState || !currentPromptState.theme) return;
+  const newPrompt = document.getElementById('genPromptText').value;
+  const isText = currentPromptState.type === 'texto';
+  const updateObj = isText ? { texto_base: newPrompt } : { imagem_base: newPrompt };
+  
+  this.textContent = 'Salvando...';
+  const { error } = await sb.from('skills').update(updateObj).eq('id', currentPromptState.theme.id);
+  if(!error){
+    this.textContent = 'Salvo!';
+    if (isText) currentPromptState.theme.templateTexto = newPrompt;
+    else currentPromptState.theme.templateImagem = newPrompt;
+    setTimeout(() => {
+      this.textContent = 'Salvar PROMPT';
+      this.hidden = true;
+    }, 2000);
+  } else {
+    this.textContent = 'Erro';
+    setTimeout(() => { this.textContent = 'Salvar PROMPT'; }, 2000);
+  }
+});
+
+document.getElementById('btnCopyPrompt').addEventListener('click', function(){
+  copyText(document.getElementById('genPromptText').value);
+});
+
+function runExternalExecution(state, provider = 'chatgpt'){
+  const statusEl = document.getElementById('genStatus');
+  copyText(state.prompt);
+  
+  if (provider === 'claude') {
+    window.open('https://claude.ai/new?q=' + encodeURIComponent(state.prompt), '_blank', 'noopener');
+    statusEl.textContent = 'Prompt aberto no Claude (se a caixa estiver vazia, cole usando Ctrl+V).';
+  } else if (provider === 'gemini') {
+    window.open('https://gemini.google.com/', '_blank', 'noopener');
+    statusEl.textContent = 'Prompt copiado. Cole na aba do Gemini que foi aberta (Ctrl+V).';
+  } else {
+    window.open('https://chatgpt.com/?q=' + encodeURIComponent(state.prompt), '_blank', 'noopener');
+    statusEl.textContent = 'Prompt aberto no ChatGPT (se a caixa estiver vazia, cole usando Ctrl+V).';
+  }
+  
+  statusEl.className = 'admin-status ok';
+  document.getElementById('genResultBox').hidden = true;
+}
+
+async function runApiExecution(state, btn){
+  const statusEl = document.getElementById('genStatus');
+  const hintEl = document.getElementById('genHint');
+  const resultBox = document.getElementById('genResultBox');
+  const resultLabel = document.getElementById('genResultLabel');
+  const resultContent = document.getElementById('genResultContent');
+  const copyResultBtn = document.getElementById('btnCopyResult');
+
+  if(!(await getKeys()).length){ statusEl.textContent = 'Cadastre uma API Key primeiro.'; statusEl.className = 'admin-status err'; return; }
+
+  resultLabel.textContent = state.type === 'imagem' ? 'Imagem gerada' : 'Resultado gerado';
+  copyResultBtn.hidden = true;
+  resultContent.innerHTML = '<div class="gen-result-loading"><span class="gen-result-spinner"></span> Gerando conteúdo...</div>';
+  resultBox.hidden = false;
+
+  if(btn) btn.disabled = true;
+  statusEl.textContent = 'Gerando...';
+  statusEl.className = 'admin-status';
+  hintEl.style.display = 'none';
+  try{
+    if(state.type === 'texto'){
+      const model = (SETTINGS && SETTINGS.model_text) || 'gemini-3.6-flash';
+      const text = await generateWithFailover('texto', model, state.prompt, statusEl);
+      resultContent.innerHTML = '';
+      const ta = document.createElement('textarea');
+      ta.className = 'gen-result-textarea';
+      ta.value = text;
+      resultContent.appendChild(ta);
+      copyResultBtn.hidden = false;
+      copyResultBtn.onclick = function(){ copyText(ta.value); };
+      await saveToHistory('texto', text, state.tema, state.theme.nome, state.theme.id);
+    } else {
+      const model = (SETTINGS && SETTINGS.model_image) || 'gemini-2.5-flash-image';
+      const dataUrl = await generateWithFailover('imagem', model, state.prompt, statusEl);
+      resultContent.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = dataUrl;
+      resultContent.appendChild(img);
+      const dlBtn = document.createElement('a');
+      dlBtn.className = 'abtn secondary small';
+      dlBtn.style.marginTop = '10px';
+      dlBtn.style.display = 'inline-block';
+      dlBtn.textContent = 'Baixar imagem';
+      dlBtn.href = dataUrl;
+      dlBtn.download = 'post-sala-de-estudo.png';
+      resultContent.appendChild(dlBtn);
+      copyResultBtn.hidden = true;
+      await saveToHistory('imagem', dataUrl, state.tema, state.theme.nome, state.theme.id);
+    }
+    const providerResult = window.ProviderManager && window.ProviderManager.getLastSuccess();
+    statusEl.textContent = providerResult
+      ? 'Conteúdo gerado com ' + providerResult.provider + ' · ' + providerResult.keyLabel + ' · ' + providerResult.model + '.'
+      : 'Conteúdo gerado com sucesso.';
+    statusEl.className = 'admin-status ok';
+  }catch(err){
+    resultContent.innerHTML = '';
+    const errMsg = document.createElement('p');
+    errMsg.className = 'admin-status err';
+    errMsg.style.margin = '0';
+    errMsg.textContent = 'Erro: ' + err.message;
+    resultContent.appendChild(errMsg);
+    statusEl.textContent = 'Erro: ' + err.message;
+    statusEl.className = 'admin-status err';
+    hintEl.style.display = 'block';
+  }finally{
+    if(btn) btn.disabled = false;
+  }
+}
+
+function setupCfgToggle(groupId, dbKey){
+  const container = document.getElementById(groupId);
+  if(!container) return;
+  const currentVal = (SETTINGS && SETTINGS[dbKey]) || 'perguntar';
+  const btns = container.querySelectorAll('.type-toggle-btn');
+  btns.forEach(function(btn){
+    if (btn.getAttribute('data-val') === currentVal) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+    btn.addEventListener('click', async function(){
+      btns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      const val = btn.getAttribute('data-val');
+      SETTINGS[dbKey] = val;
+      await sb.from('settings').update({ [dbKey]: val }).eq('id', true);
+    });
+  });
+}
+
+function getCfg(cfgId){
+  const dbKey = cfgId === 'cfgToggleImagem' ? 'cfg_imagem' : (cfgId === 'cfgToggleTexto' ? 'cfg_texto' : 'cfg_prompt');
+  return (SETTINGS && SETTINGS[dbKey]) || 'perguntar';
+}
+
+document.getElementById('btnExecutePrompt').addEventListener('click', async function(){
+  if(!currentPromptState) return;
+  // garante que usamos a versão atualizada do textarea caso o usuário tenha editado
+  currentPromptState.prompt = document.getElementById('genPromptText').value;
+
+  const isImage = currentPromptState.type === 'imagem';
+  const cfgId = isImage ? 'cfgToggleImagem' : 'cfgToggleTexto';
+  let choice = getCfg(cfgId);
+
+  if (choice === 'perguntar') {
+    choice = await openGenChoiceModal();
+    if(choice === null) return;
+  }
+  
+  if(choice === 'claude-optimize'){
+    const optimizedState = { ...currentPromptState, prompt: "otimize o prompt a seguir:\n\n" + currentPromptState.prompt };
+    runExternalExecution(optimizedState, 'claude');
+  } else if(choice === 'chatgpt' || choice === 'claude' || choice === 'gemini'){
+    runExternalExecution(currentPromptState, choice);
+  } else {
+    await runApiExecution(currentPromptState, this);
+  }
+});
+
 document.getElementById('btnGenerate').addEventListener('click', async function(){
-  const btn = this;
   const themeId = document.getElementById('genTheme').value;
   const genType = document.getElementById('genType').value;
   const tema = document.getElementById('genTema').value.trim();
   const statusEl = document.getElementById('genStatus');
-  const outEl = document.getElementById('genOutput');
   const hintEl = document.getElementById('genHint');
   const theme = (await getThemes()).find(function(t){ return t.id === themeId; });
 
-  outEl.style.display = 'none';
   hintEl.style.display = 'none';
   statusEl.className = 'admin-status';
   statusEl.textContent = '';
@@ -1500,83 +2063,44 @@ document.getElementById('btnGenerate').addEventListener('click', async function(
     statusEl.className = 'admin-status err';
     return;
   }
-  if(!tema){ statusEl.textContent = 'Descreva o tema do post.'; statusEl.className = 'admin-status err'; return; }
-  if(!(await getKeys()).length){ statusEl.textContent = 'Cadastre sua API key do Gemini primeiro.'; statusEl.className = 'admin-status err'; return; }
+  if(!tema){ 
+    statusEl.innerHTML = '<span style="font-size:1.1rem; font-weight:bold; text-decoration:underline;">Descreva o tema do post.</span>'; 
+    statusEl.className = 'admin-status err'; 
+    
+    const promptPlaceholder = template.replace(/\{tema\}/gi, '[[[ TEMA DO POST ]]]');
+    currentPromptState = { prompt: promptPlaceholder, type: genType, tema: '', theme: theme };
+    showGeneratedPrompt(promptPlaceholder, genType);
+    
+    const temaInput = document.getElementById('genTema');
+    temaInput.classList.add('flash-yellow');
+    const removeFlash = () => {
+      temaInput.classList.remove('flash-yellow');
+      temaInput.removeEventListener('click', removeFlash);
+      temaInput.removeEventListener('focus', removeFlash);
+    };
+    temaInput.addEventListener('click', removeFlash);
+    temaInput.addEventListener('focus', removeFlash);
+
+    setTimeout(() => {
+      const textarea = document.getElementById('genPromptText');
+      const idx = promptPlaceholder.indexOf('[[[ TEMA DO POST ]]]');
+      if (idx !== -1) {
+        textarea.focus();
+        textarea.setSelectionRange(idx, idx + '[[[ TEMA DO POST ]]]'.length);
+      }
+    }, 50);
+
+    return; 
+  }
 
   const prompt = template.replace(/\{tema\}/gi, tema);
-
-  btn.disabled = true;
-  statusEl.textContent = 'Gerando...';
-  try{
-    if(genType === 'texto'){
-      const model = (SETTINGS && SETTINGS.model_text) || 'gemini-3.6-flash';
-      const text = await generateWithFailover('texto', model, prompt, statusEl);
-      outEl.style.display = 'block';
-      outEl.innerHTML = '';
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      outEl.appendChild(ta);
-      const copyBtn = document.createElement('button');
-      copyBtn.className = 'abtn secondary';
-      copyBtn.type = 'button';
-      copyBtn.style.marginTop = '8px';
-      copyBtn.textContent = 'Copiar texto';
-      copyBtn.addEventListener('click', function(){ copyText(ta.value); });
-      outEl.appendChild(copyBtn);
-      await saveToHistory('texto', text, tema, theme.nome, theme.id);
-    } else {
-      const model = (SETTINGS && SETTINGS.model_image) || 'gemini-2.5-flash-image';
-      const dataUrl = await generateWithFailover('imagem', model, prompt, statusEl);
-      outEl.style.display = 'block';
-      outEl.innerHTML = '';
-      const img = document.createElement('img');
-      img.src = dataUrl;
-      outEl.appendChild(img);
-      const dlBtn = document.createElement('a');
-      dlBtn.className = 'abtn secondary';
-      dlBtn.textContent = 'Baixar imagem';
-      dlBtn.href = dataUrl;
-      dlBtn.download = 'post-sala-de-estudo.png';
-      outEl.appendChild(dlBtn);
-      await saveToHistory('imagem', dataUrl, tema, theme.nome, theme.id);
-    }
-    statusEl.textContent = 'Conteúdo gerado com sucesso.';
-    statusEl.className = 'admin-status ok';
-  }catch(err){
-    statusEl.textContent = 'Erro: ' + err.message;
-    statusEl.className = 'admin-status err';
-    hintEl.style.display = 'block';
-  }finally{
-    btn.disabled = false;
-  }
+  currentPromptState = { prompt: prompt, type: genType, tema: tema, theme: theme };
+  showGeneratedPrompt(prompt, genType);
+  
+  // Remover execução automática
 });
-
-// ---------- EMERGÊNCIA (settings row) ----------
-function loadEmergencyFields(){
-  document.getElementById('emTexto').value = (SETTINGS && SETTINGS.emergency_texto) || DEFAULT_EMERGENCY_TEXT;
-  document.getElementById('emImagem').value = (SETTINGS && SETTINGS.emergency_imagem) || DEFAULT_EMERGENCY_IMAGE;
-}
-document.getElementById('emTexto').addEventListener('input', async function(){
-  SETTINGS.emergency_texto = this.value;
-  await sb.from('settings').update({ emergency_texto: this.value }).eq('id', true);
-});
-document.getElementById('emImagem').addEventListener('input', async function(){
-  SETTINGS.emergency_imagem = this.value;
-  await sb.from('settings').update({ emergency_imagem: this.value }).eq('id', true);
-});
-
 const skillsAccordion = setupAccordion('skillsToggle', 'skillsBody');
 const keysAccordion = setupAccordion('keysToggle', 'keysBody');
-const emergencyAccordion = setupAccordion('emergencyToggle', 'emergencyBody');
-
-function goToEmergencySection(){
-  emergencyAccordion.open();
-  document.getElementById('emergencyToggle').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-const btnGoToEmergency = document.getElementById('btnGoToEmergency');
-if(btnGoToEmergency){
-  btnGoToEmergency.addEventListener('click', goToEmergencySection);
-}
 
 function copyText(text){
   if(navigator.clipboard && navigator.clipboard.writeText){
@@ -1598,6 +2122,28 @@ document.querySelectorAll('[data-copy]').forEach(function(btn){
     const original = btn.textContent;
     btn.textContent = 'Copiado!';
     setTimeout(function(){ btn.textContent = original; }, 1500);
+  });
+});
+
+// Abre o ChatGPT em nova aba com o prompt já preenchido via ?q=.
+// O Gemini não suporta esse tipo de preenchimento por URL (só o link fixo acima).
+document.querySelectorAll('[data-open-chatgpt]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    const id = btn.getAttribute('data-open-chatgpt');
+    const val = document.getElementById(id).value.trim();
+    if(!val){ alert('Preencha o prompt antes de abrir no ChatGPT.'); return; }
+    const url = 'https://chatgpt.com/?q=' + encodeURIComponent(val);
+    window.open(url, '_blank', 'noopener');
+  });
+});
+
+document.querySelectorAll('[data-open-claude]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    const id = btn.getAttribute('data-open-claude');
+    const val = document.getElementById(id).value.trim();
+    if(!val){ alert('Preencha o prompt antes de abrir no Claude.'); return; }
+    const url = 'https://claude.ai/new?q=' + encodeURIComponent(val);
+    window.open(url, '_blank', 'noopener');
   });
 });
 
@@ -2032,6 +2578,39 @@ function renderSettingsHome(){
       '<button class="abtn secondary" id="btnSettingsAccessLog" type="button" style="flex:1; justify-content:center;">Ver logs de acesso</button>' +
       '<button class="abtn secondary" id="btnSettingsConfigAccess" type="button" style="flex:1; justify-content:center;">Configurar acesso</button>' +
     '</div>' +
+    '<div style="margin-top:16px; padding-top:16px; border-top:1px solid #eee6d3;">' +
+      '<h3 style="font-size:0.85rem; margin:0 0 10px; color:var(--color-blue); text-transform:uppercase; letter-spacing:0.03em;">Botão GERAR (Ação Padrão)</h3>' +
+      '<div class="admin-field" style="margin-bottom:12px;">' +
+        '<label>Gerar PROMPT</label>' +
+        '<div class="type-toggle" id="cfgTogglePrompt">' +
+          '<button type="button" class="type-toggle-btn" data-val="perguntar">Perguntar</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="api">Via API</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="chatgpt" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="../icon_chatgpt.webp" alt="ChatGPT" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> ChatGPT</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="claude" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="../icon_claude.webp" alt="Claude" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> Claude</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="gemini" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="../icon_gemini.webp" alt="Gemini" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> Gemini</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="admin-field" style="margin-bottom:12px;">' +
+        '<label>Gerar TEXTO</label>' +
+        '<div class="type-toggle" id="cfgToggleTexto">' +
+          '<button type="button" class="type-toggle-btn" data-val="perguntar">Perguntar</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="api">Via API</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="chatgpt" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="../icon_chatgpt.webp" alt="ChatGPT" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> ChatGPT</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="claude" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="../icon_claude.webp" alt="Claude" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> Claude</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="gemini" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="../icon_gemini.webp" alt="Gemini" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> Gemini</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="admin-field">' +
+        '<label>Gerar IMAGEM</label>' +
+        '<div class="type-toggle" id="cfgToggleImagem">' +
+          '<button type="button" class="type-toggle-btn" data-val="perguntar">Perguntar</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="api">Via API</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="chatgpt" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="../icon_chatgpt.webp" alt="ChatGPT" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> ChatGPT</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="claude" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="../icon_claude.webp" alt="Claude" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> Claude</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="gemini" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="../icon_gemini.webp" alt="Gemini" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> Gemini</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
     '<div id="settingsBody"></div>';
 
   document.getElementById('btnCloseSettings').addEventListener('click', function(){
@@ -2039,6 +2618,10 @@ function renderSettingsHome(){
   });
   document.getElementById('btnSettingsAccessLog').addEventListener('click', renderSettingsAccessLogView);
   document.getElementById('btnSettingsConfigAccess').addEventListener('click', renderSettingsConfigAccessView);
+
+  setupCfgToggle('cfgTogglePrompt', 'cfg_prompt');
+  setupCfgToggle('cfgToggleTexto', 'cfg_texto');
+  setupCfgToggle('cfgToggleImagem', 'cfg_imagem');
 }
 
 function renderSettingsAccessLogView(){
@@ -2197,11 +2780,13 @@ async function initAdminApp(){
 
   await renderThemeList();
   document.getElementById('themeEditMode').addEventListener('change', renderThemeList);
-  await renderKeys();
-  setupModelDropdown('fModelText', 'fModelTextCustom', SETTINGS.model_text || 'gemini-3.6-flash');
-  setupModelDropdown('fModelImage', 'fModelImageCustom', SETTINGS.model_image || 'gemini-2.5-flash-image');
-  loadEmergencyFields();
-  setupEmergencySkillInsert();
+  if(window.ProviderManager){
+    await window.ProviderManager.init({ sb: sb, settings: SETTINGS });
+  }else{
+    await renderKeys();
+    setupModelDropdown('fModelText', 'fModelTextCustom', SETTINGS.model_text || 'gemini-3.6-flash');
+    setupModelDropdown('fModelImage', 'fModelImageCustom', SETTINGS.model_image || 'gemini-2.5-flash-image');
+  }
   setupThemeAIGeneration('texto', 'btnGerarTextoIA', 'ntTemplateTexto');
   setupThemeAIGeneration('imagem', 'btnGerarImagemIA', 'ntTemplateImagem');
   await renderMonthFilterOptions();
