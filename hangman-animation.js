@@ -73,6 +73,12 @@
   var activeTimeline = null;
   var pageCamera = null;
   var fastForwardListenersAttached = false;
+  var landscapeOverlay = null;
+  var landscapeBlockersAttached = false;
+  var mobileLandscapeActive = false;
+  var mobileLandscapeStarted = false;
+  var mobileFullscreenOwned = false;
+  var landscapeRequestToken = 0;
 
   function isSequenceRunning() {
     return activeTimeline && activeTimeline.progress() < 1;
@@ -110,6 +116,199 @@
     window.removeEventListener('click', handleFastForwardInput, true);
     window.removeEventListener('keydown', handleFastForwardInput, true);
     fastForwardListenersAttached = false;
+  }
+
+  function isMobileDevice() {
+    var userAgent = navigator.userAgent || '';
+    var userAgentData = navigator.userAgentData;
+    return Boolean(userAgentData && userAgentData.mobile) ||
+      /Android|iPhone|iPod|IEMobile|Opera Mini/i.test(userAgent) ||
+      (/Macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1);
+  }
+
+  function isLandscapeViewport() {
+    return window.innerWidth > window.innerHeight;
+  }
+
+  function blockInputWhileWaitingForLandscape(event) {
+    if (!mobileLandscapeActive || isLandscapeViewport()) return;
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  function attachLandscapeBlockers() {
+    if (landscapeBlockersAttached) return;
+    window.addEventListener('pointerdown', blockInputWhileWaitingForLandscape, true);
+    window.addEventListener('click', blockInputWhileWaitingForLandscape, true);
+    window.addEventListener('keydown', blockInputWhileWaitingForLandscape, true);
+    landscapeBlockersAttached = true;
+  }
+
+  function detachLandscapeBlockers() {
+    if (!landscapeBlockersAttached) return;
+    window.removeEventListener('pointerdown', blockInputWhileWaitingForLandscape, true);
+    window.removeEventListener('click', blockInputWhileWaitingForLandscape, true);
+    window.removeEventListener('keydown', blockInputWhileWaitingForLandscape, true);
+    landscapeBlockersAttached = false;
+  }
+
+  function ensureLandscapeOverlay() {
+    if (landscapeOverlay && landscapeOverlay.isConnected) return landscapeOverlay;
+
+    landscapeOverlay = document.createElement('div');
+    landscapeOverlay.id = 'hangman-landscape-gate';
+    landscapeOverlay.setAttribute('role', 'status');
+    landscapeOverlay.setAttribute('aria-live', 'polite');
+    landscapeOverlay.style.cssText = [
+      'display:none',
+      'position:fixed',
+      'inset:0',
+      'z-index:20000',
+      'align-items:center',
+      'justify-content:center',
+      'padding:24px',
+      'background:#f8f9fa',
+      'color:#111827',
+      'font-family:Inter,Arial,sans-serif',
+      'text-align:center'
+    ].join(';');
+    landscapeOverlay.innerHTML =
+      '<div style="max-width:360px">' +
+        '<div aria-hidden="true" style="font-size:56px;line-height:1;color:#0055d4;margin-bottom:18px">&#8635;</div>' +
+        '<strong style="display:block;font:700 24px/1.15 Outfit,Inter,sans-serif;margin-bottom:10px">Gire o celular</strong>' +
+        '<span style="display:block;font-size:16px;line-height:1.45">A animação continuará automaticamente na orientação horizontal.</span>' +
+      '</div>';
+    document.body.appendChild(landscapeOverlay);
+    return landscapeOverlay;
+  }
+
+  function showLandscapeOverlay() {
+    ensureLandscapeOverlay().style.display = 'flex';
+  }
+
+  function hideLandscapeOverlay() {
+    if (landscapeOverlay) landscapeOverlay.style.display = 'none';
+  }
+
+  function updateMobileLandscapeState() {
+    if (!mobileLandscapeActive || !activeTimeline) return;
+
+    if (!isLandscapeViewport()) {
+      if (mobileLandscapeStarted) activeTimeline.pause();
+      detachFastForwardControls();
+      attachLandscapeBlockers();
+      showLandscapeOverlay();
+      return;
+    }
+
+    hideLandscapeOverlay();
+    detachLandscapeBlockers();
+    attachFastForwardControls();
+
+    if (!mobileLandscapeStarted) {
+      mobileLandscapeStarted = true;
+      activeTimeline.play(0);
+    } else if (activeTimeline.paused()) {
+      activeTimeline.resume();
+    }
+  }
+
+  function tryOrientationLock() {
+    var orientation = window.screen && window.screen.orientation;
+    if (!orientation || typeof orientation.lock !== 'function') {
+      return Promise.resolve(false);
+    }
+    try {
+      return orientation.lock('landscape').then(function () {
+        return true;
+      }).catch(function () {
+        return false;
+      });
+    } catch (error) {
+      return Promise.resolve(false);
+    }
+  }
+
+  function requestMobileLandscapeLock() {
+    var token = ++landscapeRequestToken;
+    var root = document.documentElement;
+    var requestFullscreen = root.requestFullscreen || root.webkitRequestFullscreen;
+    var fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+
+    function refreshOrientationState() {
+      if (token !== landscapeRequestToken || !mobileLandscapeActive) return;
+      window.setTimeout(updateMobileLandscapeState, 80);
+    }
+
+    if (!fullscreenElement && typeof requestFullscreen === 'function') {
+      try {
+        Promise.resolve(requestFullscreen.call(root)).then(function () {
+          if (token !== landscapeRequestToken || !mobileLandscapeActive) return false;
+          mobileFullscreenOwned = true;
+          return tryOrientationLock();
+        }).then(refreshOrientationState).catch(function () {
+          return tryOrientationLock().then(refreshOrientationState);
+        });
+      } catch (error) {
+        tryOrientationLock().then(refreshOrientationState);
+      }
+      return;
+    }
+
+    tryOrientationLock().then(refreshOrientationState);
+  }
+
+  function playTimelineWithMobileLandscape() {
+    if (!isMobileDevice()) {
+      attachFastForwardControls();
+      activeTimeline.play(0);
+      return;
+    }
+
+    mobileLandscapeActive = true;
+    mobileLandscapeStarted = false;
+    window.addEventListener('resize', updateMobileLandscapeState);
+    window.addEventListener('orientationchange', updateMobileLandscapeState);
+
+    /* A solicitação precisa acontecer imediatamente dentro do gesto que
+       iniciou o jogo para os navegadores móveis aceitarem tela cheia. */
+    requestMobileLandscapeLock();
+    updateMobileLandscapeState();
+  }
+
+  function releaseMobileLandscapeMode() {
+    var hadMobileLandscapeSession = mobileLandscapeActive || mobileFullscreenOwned;
+    landscapeRequestToken += 1;
+    mobileLandscapeActive = false;
+    mobileLandscapeStarted = false;
+    window.removeEventListener('resize', updateMobileLandscapeState);
+    window.removeEventListener('orientationchange', updateMobileLandscapeState);
+    detachLandscapeBlockers();
+    hideLandscapeOverlay();
+
+    if (landscapeOverlay && landscapeOverlay.parentNode) {
+      landscapeOverlay.parentNode.removeChild(landscapeOverlay);
+      landscapeOverlay = null;
+    }
+
+    var orientation = window.screen && window.screen.orientation;
+    if (hadMobileLandscapeSession && orientation && typeof orientation.unlock === 'function') {
+      try { orientation.unlock(); } catch (error) { /* Sem suporte no navegador. */ }
+    }
+
+    if (mobileFullscreenOwned) {
+      var exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
+      mobileFullscreenOwned = false;
+      if (typeof exitFullscreen === 'function' &&
+          (document.fullscreenElement || document.webkitFullscreenElement)) {
+        try {
+          var exitResult = exitFullscreen.call(document);
+          if (exitResult && typeof exitResult.catch === 'function') {
+            exitResult.catch(function () {});
+          }
+        } catch (error) { /* A saída pode já ter sido feita pelo usuário. */ }
+      }
+    }
   }
 
   /* O jogo da velha desloca a página como um cenário único quando precisa
@@ -397,6 +596,7 @@
     var gsap = window.gsap;
 
     detachFastForwardControls();
+    releaseMobileLandscapeMode();
 
     if (activeTimeline) {
       activeTimeline.timeScale(1);
@@ -473,8 +673,7 @@
 
     activeTimeline = buildTimeline(parts, frames);
     activeTimeline.timeScale(1);
-    attachFastForwardControls();
-    activeTimeline.play(0);
+    playTimelineWithMobileLandscape();
     return activeTimeline;
   }
 
