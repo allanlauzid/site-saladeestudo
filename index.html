@@ -186,12 +186,12 @@
                         <path id="hangman-book-shape" d="M9 20 L3 12"/>
                       </g>
                       <!-- Forca espelhada, ampliada e pronta no mundo; a câmera a revela. -->
-                      <g id="hangman-gallows" opacity="1" fill="none" stroke="#0055d4" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round" aria-label="Forca">
-                        <path class="gallows-stroke" pathLength="1" d="M290 83 H357"/>
-                        <path class="gallows-stroke" pathLength="1" d="M357 83 V-53"/>
-                        <path class="gallows-stroke" pathLength="1" d="M290 -53 H357"/>
-                        <path class="gallows-stroke" pathLength="1" d="M357 -29 L337 -53"/>
-                        <path class="gallows-stroke" pathLength="1" d="M290 -53 V-25 M290 -25 C282 -25 282 -5 290 -5 C298 -5 298 -25 290 -25 Z"/>
+                      <g id="hangman-gallows" opacity="1" fill="none" stroke="#8B4513" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round" aria-label="Forca">
+                        <path class="gallows-stroke gallows-wood" pathLength="1" d="M290 83 H357"/>
+                        <path class="gallows-stroke gallows-wood" pathLength="1" d="M357 83 V-53"/>
+                        <path class="gallows-stroke gallows-wood" pathLength="1" d="M290 -53 H357"/>
+                        <path class="gallows-stroke gallows-wood" pathLength="1" d="M357 -29 L337 -53"/>
+                        <path class="gallows-stroke gallows-rope" stroke="#B88A5A" pathLength="1" d="M290 -53 V-25 M290 -25 C282 -25 282 -5 290 -5 C298 -5 298 -25 290 -25 Z"/>
                       </g>
 
                       <!-- Rig articulado preenchido usado durante o movimento. -->
@@ -520,7 +520,9 @@
     <script src="intro.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script src="mascote-pose-data.js?v=10"></script>
-    <script src="hangman-animation.js?v=16"></script>
+    <script src="hangman-animation.js?v=26"></script>
+    <script src="hangman-gameplay.js?v=6"></script>
     <script src="game-jogodavelha.js"></script>
+    <script src="game-trigger.js"></script>
 </body>
 </html>

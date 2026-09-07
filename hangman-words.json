@@ -1,0 +1,1607 @@
+[
+  {
+    "topico": "Matérias escolares",
+    "palavra": "artes",
+    "charada": "Todo mundo me acha fácil até alguém pedir pra desenhar um cavalo de frente."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "biologia",
+    "charada": "Todo mundo decorou o nome de uma organela só pra fazer meme, e ninguém mais lembra pra que ela serve."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "espanhol",
+    "charada": "Todo brasileiro acha que me fala fluentemente só de colocar um 'ito' no final das palavras."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "filosofia",
+    "charada": "Deixo um adolescente de 16 anos numa crise existencial só de perguntar 'o que é o ser'."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "física",
+    "charada": "Explico por que seu celular, entre todas as posições possíveis, sempre escolhe cair com a tela pra baixo."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "geografia",
+    "charada": "Você sabe a capital de um país que nunca vai visitar, mas esquece onde estacionou o carro."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "história",
+    "charada": "Alguém decepcionado vive dizendo que eu me repito, mas ninguém repete a prova sobre mim se colar direito."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "inglês",
+    "charada": "Te deixo cantar um hit inteiro com pronúncia perfeita e travar solenemente na hora de pedir satisfação no aeroporto."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "literatura",
+    "charada": "Fingir que te leu inteira antes da prova é praticamente uma segunda matéria à parte."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "matemática",
+    "charada": "Toda vida adulta promete que você nunca mais vai precisar achar o valor de x, e a vida adulta mente descaradamente."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "português",
+    "charada": "A única matéria em que 'mim fazer isso' está errado, mas sai natural na hora de falar."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "química",
+    "charada": "Sou a razão do professor falar 'não façam isso em casa' logo depois de fazer bem na sua frente."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "redação",
+    "charada": "Ninguém nunca viu um 1000 de verdade em mim, só ouviu falar, que nem disco voador."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "sociologia",
+    "charada": "Te ensinei a dizer 'isso é uma construção social' pra ganhar qualquer discussão no almoço de domingo."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "altura",
+    "charada": "A desculpa clássica de quem não alcança a prateleira de cima do mercado."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "ângulo",
+    "charada": "Toda selfie busca o melhor de mim antes de postar."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "área",
+    "charada": "O motivo de duas pessoas discutirem sobre quem tem o quintal maior."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "cálculo",
+    "charada": "Ninguém nunca resolveu um de mim de cabeça sem fingir que já sabia a resposta."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "círculo",
+    "charada": "Não tenho começo nem fim, e mesmo assim toda discussão de família parece terminar do mesmo jeito que eu."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "conta",
+    "charada": "Sempre chega no fim do mês e nunca fecha do jeito que você espera."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "distância",
+    "charada": "Sempre parece menor no mapa do carro do que quando você está andando a pé."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "divisão",
+    "charada": "A pior parte de qualquer conta de restaurante em grupo."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "dobro",
+    "charada": "O que você promete estudar amanhã depois de não estudar nada hoje."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "equação",
+    "charada": "Tenho um lado igual ao outro, mas isso não impede ninguém de me errar feio na prova."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "escala",
+    "charada": "Reduzo o mundo inteiro pra caber numa folha de papel, mas ninguém confia em mim pra montar móvel."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "estatística",
+    "charada": "Prometo que a maioria concorda com você, mesmo quando ninguém perguntou a ninguém."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "fração",
+    "charada": "Prometo uma parte do bolo, mas ninguém nunca concorda em como cortar direito."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "função",
+    "charada": "Recebo uma entrada, devolvo uma saída, e ainda assim ninguém confia em mim sem conferir duas vezes."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "geometria",
+    "charada": "A parte da matemática que finge que a vida é feita só de formas perfeitas."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "gráfico",
+    "charada": "Consigo fazer qualquer notícia parecer mais dramática só mudando onde o eixo começa."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "juros",
+    "charada": "A razão de parcelar em 12x parecer uma boa ideia até o extrato chegar."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "largura",
+    "charada": "Ninguém nunca mede direito antes de tentar passar o sofá pela porta."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "média",
+    "charada": "A nota que decide se você repete de ano ou faz aquela última prova puxada."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "medida",
+    "charada": "Sem mim, todo mundo jura que a calça ainda serve."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "metade",
+    "charada": "Sempre sobra pro outro quando é hora de dividir a pizza."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "moda",
+    "charada": "O número que mais aparece, tipo aquela desculpa que todo mundo usa quando se atrasa."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "multiplicação",
+    "charada": "A tabuada que ninguém decorou direito, mas todo mundo finge que sim."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "número",
+    "charada": "Existo em quantidade suficiente pra você nunca mais confiar de olho no troco do mercado."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "perímetro",
+    "charada": "A volta toda que você dá no quarteirão fingindo que está fazendo exercício."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "peso",
+    "charada": "A única coisa que a balança do banheiro sempre acha uma desculpa pra aumentar."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "polígono",
+    "charada": "Tenho vários lados, que nem toda discussão de família no grupo do WhatsApp."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "porcentagem",
+    "charada": "Apareço toda vez que alguém quer fingir que um desconto é maior do que é."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "probabilidade",
+    "charada": "A razão de todo mundo achar que vai ganhar na loteria dessa vez."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "proporção",
+    "charada": "Ninguém tira foto de comida sem tentar me manipular a favor do prato."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "quadrado",
+    "charada": "Tenho quatro lados iguais, e ainda assim chamam alguém sem noção de 'mais quadrado que eu'."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "raiz",
+    "charada": "Debaixo da terra ou dentro de mim, ninguém gosta de ficar cavando até me encontrar."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "retângulo",
+    "charada": "Sou tipo um quadrado que decidiu esticar um pouco os braços."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "sequência",
+    "charada": "Netflix pergunta se você ainda está assistindo bem no meio de mim."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "soma",
+    "charada": "Junto duas quantias e sempre sobra alguém no grupo do rango achando que pagou a mais."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "subtração",
+    "charada": "O que sobra na carteira depois que você jura que ia economizar esse mês."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "tabela",
+    "charada": "Organizo tudo em linhas e colunas, menos a vida de quem promete se organizar."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "triângulo",
+    "charada": "Tenho três lados e ainda assim sou o instrumento mais esquecido da banda da escola."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "vértice",
+    "charada": "O canto onde dois lados se encontram, tipo você e aquele parente chato na mesma festa."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "volume",
+    "charada": "Some no controle remoto bem na hora que o comercial começa mais alto que o programa."
+  },
+  {
+    "topico": "Física",
+    "palavra": "aceleração",
+    "charada": "O que todo mundo faz no último quilômetro só pra não perder o compromisso que já está atrasado."
+  },
+  {
+    "topico": "Física",
+    "palavra": "atração",
+    "charada": "Faz dois corpos se aproximarem, e também é a desculpa de qualquer paquera capenga."
+  },
+  {
+    "topico": "Física",
+    "palavra": "atrito",
+    "charada": "A razão de você escorregar justo quando tem gente olhando."
+  },
+  {
+    "topico": "Física",
+    "palavra": "calor",
+    "charada": "A desculpa nacional pra não fazer absolutamente nada em janeiro."
+  },
+  {
+    "topico": "Física",
+    "palavra": "campo",
+    "charada": "Onde o time de futebol do bairro sempre jura que ia ganhar esse ano."
+  },
+  {
+    "topico": "Física",
+    "palavra": "circuito",
+    "charada": "Preciso estar fechado pra funcionar, que nem aquela roda de amigos que nunca deixa ninguém novo entrar."
+  },
+  {
+    "topico": "Física",
+    "palavra": "corrente",
+    "charada": "Passa pelo fio, e também é a razão de você nunca lembrar a senha do wifi de cor."
+  },
+  {
+    "topico": "Física",
+    "palavra": "eco",
+    "charada": "Repito o que você gritou na montanha, mas nunca respondo quando te chamam pra lavar louça."
+  },
+  {
+    "topico": "Física",
+    "palavra": "eletricidade",
+    "charada": "Falta justo quando o capítulo da novela está no ápice."
+  },
+  {
+    "topico": "Física",
+    "palavra": "energia",
+    "charada": "Falta justo na hora que você mais precisa dela, tipo numa segunda-feira de manhã."
+  },
+  {
+    "topico": "Física",
+    "palavra": "espaço",
+    "charada": "O motivo de você nunca conseguir estacionar o carro igual ao vizinho."
+  },
+  {
+    "topico": "Física",
+    "palavra": "força",
+    "charada": "A desculpa de quem não consegue abrir o pote de azeitona sozinho."
+  },
+  {
+    "topico": "Física",
+    "palavra": "gravidade",
+    "charada": "A única força que nunca tira folga, nem nos fins de semana."
+  },
+  {
+    "topico": "Física",
+    "palavra": "ímã",
+    "charada": "Atrai o metal, e também atrai foto de viagem que ninguém tira mais direito."
+  },
+  {
+    "topico": "Física",
+    "palavra": "inércia",
+    "charada": "A vontade de continuar deitado no sofá exatamente como você já estava."
+  },
+  {
+    "topico": "Física",
+    "palavra": "luz",
+    "charada": "Apaga bem na cena mais assustadora do filme, nunca antes."
+  },
+  {
+    "topico": "Física",
+    "palavra": "massa",
+    "charada": "A desculpa científica de por que o pão não flutua na sua frente."
+  },
+  {
+    "topico": "Física",
+    "palavra": "movimento",
+    "charada": "Sem mim, a academia perderia a única coisa que justifica a mensalidade."
+  },
+  {
+    "topico": "Física",
+    "palavra": "onda",
+    "charada": "Chega, some, e sempre te pega de calças curtas justo na praia."
+  },
+  {
+    "topico": "Física",
+    "palavra": "óptica",
+    "charada": "Estudo a luz e as ilusões, tipo aquele espelho de provador que sempre mente pra você."
+  },
+  {
+    "topico": "Física",
+    "palavra": "potência",
+    "charada": "Quanto mais alta a minha, mais rápido a conta de luz assusta no fim do mês."
+  },
+  {
+    "topico": "Física",
+    "palavra": "pressão",
+    "charada": "Sobe quando o chefe manda mensagem sexta às 18h."
+  },
+  {
+    "topico": "Física",
+    "palavra": "refração",
+    "charada": "Faço um lápis parecer quebrado dentro d'água, sem nunca quebrar nada de verdade."
+  },
+  {
+    "topico": "Física",
+    "palavra": "resistência",
+    "charada": "Quanto mais eu tenho, mais difícil a corrente passa, e mais difícil você aceitar um não."
+  },
+  {
+    "topico": "Física",
+    "palavra": "som",
+    "charada": "Baixa sozinho assim que o professor começa a falar algo importante."
+  },
+  {
+    "topico": "Física",
+    "palavra": "temperatura",
+    "charada": "Discussão eterna de quem controla o ar-condicionado do escritório."
+  },
+  {
+    "topico": "Física",
+    "palavra": "tempo",
+    "charada": "Some rápido demais quando é fim de semana, e devagar demais numa reunião chata."
+  },
+  {
+    "topico": "Física",
+    "palavra": "vácuo",
+    "charada": "Lugar onde não existe nada, parecido com sua cabeça segunda de manhã antes do café."
+  },
+  {
+    "topico": "Física",
+    "palavra": "velocidade",
+    "charada": "O motivo de toda lombada existir."
+  },
+  {
+    "topico": "Química",
+    "palavra": "ácido",
+    "charada": "A razão do seu estômago reclamar depois daquele lanche às 2 da manhã."
+  },
+  {
+    "topico": "Química",
+    "palavra": "água",
+    "charada": "Prometem que você deveria beber mais de mim o dia inteiro, e ninguém cumpre."
+  },
+  {
+    "topico": "Química",
+    "palavra": "átomo",
+    "charada": "Tão pequeno que ninguém nunca viu, e mesmo assim vive sendo citado em conversa de bar sobre o universo."
+  },
+  {
+    "topico": "Química",
+    "palavra": "base",
+    "charada": "Meu oposto é ácido, e assim como toda discussão de política, a gente nunca concorda no meio termo."
+  },
+  {
+    "topico": "Química",
+    "palavra": "carbono",
+    "charada": "Estou em todo ser vivo, e também na desculpa de todo mundo pra reduzir a pegada."
+  },
+  {
+    "topico": "Química",
+    "palavra": "combustão",
+    "charada": "Preciso de oxigênio pra acontecer, que nem aquela fofoca que só pega fogo com plateia."
+  },
+  {
+    "topico": "Química",
+    "palavra": "composto",
+    "charada": "Feito de mais de um elemento, que nem aquela receita de família que ninguém sabe explicar direito."
+  },
+  {
+    "topico": "Química",
+    "palavra": "concentração",
+    "charada": "Quanto mais eu tenho numa solução, mais forte ela fica, e é exatamente o que falta em você numa reunião de segunda."
+  },
+  {
+    "topico": "Química",
+    "palavra": "cristal",
+    "charada": "Organizado até nos átomos, ao contrário do seu quarto."
+  },
+  {
+    "topico": "Química",
+    "palavra": "elemento",
+    "charada": "Tenho uma tabela inteira dedicada a mim, e ainda assim ninguém decora além de uns 5."
+  },
+  {
+    "topico": "Química",
+    "palavra": "ferro",
+    "charada": "Deixo a roupa lisinha, e também deixo o detector do aeroporto apitando bem na sua vez."
+  },
+  {
+    "topico": "Química",
+    "palavra": "fórmula",
+    "charada": "Todo mundo decora a minha e esquece pra que ela serve dois dias depois da prova."
+  },
+  {
+    "topico": "Química",
+    "palavra": "gás",
+    "charada": "Escapo da panela de pressão bem na hora que você tira os olhos dela."
+  },
+  {
+    "topico": "Química",
+    "palavra": "hidrogênio",
+    "charada": "O elemento mais simples da tabela, mas ninguém lembra de mim até a aula sobre a água."
+  },
+  {
+    "topico": "Química",
+    "palavra": "íon",
+    "charada": "Um átomo que perdeu ou ganhou elétron, tipo você depois de uma treta no grupo da família."
+  },
+  {
+    "topico": "Química",
+    "palavra": "líquido",
+    "charada": "Me ajeito em qualquer copo, ao contrário da sua vida financeira."
+  },
+  {
+    "topico": "Química",
+    "palavra": "metal",
+    "charada": "Faz o detector de aeroporto apitar justo em você, nunca na pessoa da frente."
+  },
+  {
+    "topico": "Química",
+    "palavra": "mistura",
+    "charada": "Junto duas coisas sem virar uma terceira, tipo arroz com feijão que nunca vira arroz-feijão de vez."
+  },
+  {
+    "topico": "Química",
+    "palavra": "molécula",
+    "charada": "Pequena demais pra você ver, grande o suficiente pra decidir se seu perfume é bom."
+  },
+  {
+    "topico": "Química",
+    "palavra": "nitrogênio",
+    "charada": "Sou a maior parte do ar que você respira, e ainda assim ninguém nunca fala de mim numa conversa de elevador."
+  },
+  {
+    "topico": "Química",
+    "palavra": "oxigênio",
+    "charada": "A única coisa que todo mundo concorda que é essencial, e mesmo assim ninguém agradece por ela."
+  },
+  {
+    "topico": "Química",
+    "palavra": "reação",
+    "charada": "O motivo de todo experimento de escola prometer fumaça e nunca entregar."
+  },
+  {
+    "topico": "Química",
+    "palavra": "sal",
+    "charada": "Aquele que sempre falta bem na hora que a comida já está pronta."
+  },
+  {
+    "topico": "Química",
+    "palavra": "sólido",
+    "charada": "A única coisa que seu argumento numa discussão de família raramente é."
+  },
+  {
+    "topico": "Química",
+    "palavra": "solução",
+    "charada": "Sempre pareço óbvia depois que alguém já te falou qual sou."
+  },
+  {
+    "topico": "Química",
+    "palavra": "solvente",
+    "charada": "Dissolvo qualquer coisa, menos aquela mancha teimosa que já virou parte da camisa."
+  },
+  {
+    "topico": "Química",
+    "palavra": "substância",
+    "charada": "Toda embalagem de produto de limpeza me esconde atrás de um nome que ninguém consegue pronunciar."
+  },
+  {
+    "topico": "Química",
+    "palavra": "vapor",
+    "charada": "Saio da panela e embaço o espelho bem na hora que você mais precisa se ver antes de sair."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "animal",
+    "charada": "Categoria que inclui você, mesmo que sua timeline discorde."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "bactéria",
+    "charada": "Vive numa maçaneta que ninguém nunca limpa direito."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "célula",
+    "charada": "Tão pequena que ninguém vê, e mesmo assim sou citada em toda propaganda de creme anti-idade."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "cérebro",
+    "charada": "Trabalha o dia inteiro sem parar, e mesmo assim esquece onde você colocou a chave de casa."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "coração",
+    "charada": "Dispara sozinho quando o crush curte sua última foto."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "corpo",
+    "charada": "A coisa que você promete cuidar melhor toda segunda-feira de janeiro."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "digestão",
+    "charada": "A razão de ninguém querer correr logo depois do almoço de domingo."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "doença",
+    "charada": "Sempre aparece na sexta-feira à noite, nunca durante a semana de trabalho."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "ecossistema",
+    "charada": "Um equilíbrio que se desfaz completamente quando um mosquito entra no seu quarto às 3 da manhã."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "espécie",
+    "charada": "Categoria que agrupa seres tão diferentes quanto você e seu primo que só aparece no Natal."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "evolução",
+    "charada": "Levei milhões de anos pra chegar no polegar, e você ainda erra ao digitar no celular."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "fotossíntese",
+    "charada": "O processo que faz a planta comer luz do sol, coisa que você nunca conseguiu fazer nem com café."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "fungo",
+    "charada": "Cresço em qualquer lugar úmido, inclusive naquele pote de comida esquecido na geladeira."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "gene",
+    "charada": "A desculpa perfeita pra herdar o mau humor de manhã da família."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "habitat",
+    "charada": "O lugar onde cada bicho vive, e também o motivo de reclamarem quando você invade o quarto do outro sem bater."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "hormônio",
+    "charada": "A desculpa perfeita pra explicar qualquer mudança de humor repentina."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "músculo",
+    "charada": "Prometido em janeiro, esquecido em fevereiro, junto com a inscrição da academia."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "natureza",
+    "charada": "Chama você pra um passeio e depois te lembra que existe wi-fi em casa."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "órgão",
+    "charada": "Cada um de nós tem uma função, menos aquele que ninguém sabe pra que serve até o médico explicar."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "osso",
+    "charada": "Aguento o corpo inteiro de pé, e ainda assim ninguém me agradece até doer."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "planta",
+    "charada": "Prometem que sou fácil de cuidar, e mesmo assim toda suculenta da sua casa já morreu."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "proteína",
+    "charada": "Prometo músculo pra quem toma, mas o shaker sujo na pia é a única coisa que realmente aparece."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "pulmão",
+    "charada": "Trabalho o tempo todo sem parar, e mesmo assim sou o primeiro a reclamar quando você sobe uma escada."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "reprodução",
+    "charada": "O assunto da aula que fazia todo mundo olhar pro teto fingindo interesse no ventilador."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "respiração",
+    "charada": "Automática até alguém te lembrar dela, e então você não consegue parar de pensar nela."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "sangue",
+    "charada": "Sobe na cabeça bem na hora que alguém mexe com você no grupo da família."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "saúde",
+    "charada": "Só vira prioridade de verdade depois que alguém te dá um susto no consultório."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "vacina",
+    "charada": "Uma picadinha rápida que sempre vem acompanhada de choro, seu ou de alguém do lado."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "vida",
+    "charada": "A única coisa que ninguém consegue devolver depois de reclamar dela o dia inteiro."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "vírus",
+    "charada": "Se espalha mais rápido que fofoca de grupo de WhatsApp da família."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "vitamina",
+    "charada": "Existo na fruta, mas todo mundo prefere me tomar em comprimido mesmo assim."
+  },
+  {
+    "topico": "História",
+    "palavra": "batalha",
+    "charada": "Aquele confronto que os livros descrevem em páginas inteiras, mas que na vida real dura só alguns minutos."
+  },
+  {
+    "topico": "História",
+    "palavra": "colônia",
+    "charada": "Território emprestado que o dono original nunca mais devolveu de bom grado."
+  },
+  {
+    "topico": "História",
+    "palavra": "conquista",
+    "charada": "Tomar posse de um território, ou aquela sensação de finalmente estacionar numa vaga difícil."
+  },
+  {
+    "topico": "História",
+    "palavra": "constituição",
+    "charada": "O documento que organiza as regras do país, tipo aquele regulamento do condomínio que ninguém lê até dar problema."
+  },
+  {
+    "topico": "História",
+    "palavra": "democracia",
+    "charada": "Onde todo mundo vota, e depois metade reclama do resultado do mesmo jeito."
+  },
+  {
+    "topico": "História",
+    "palavra": "ditador",
+    "charada": "A pessoa que numa reunião de amigos decide o restaurante sem perguntar pra ninguém."
+  },
+  {
+    "topico": "História",
+    "palavra": "ditadura",
+    "charada": "Quando uma pessoa só decide tudo, tipo aquele parente que manda no controle remoto."
+  },
+  {
+    "topico": "História",
+    "palavra": "eleição",
+    "charada": "O dia em que todo mundo lembra que tem opinião política forte, só esse dia."
+  },
+  {
+    "topico": "História",
+    "palavra": "era",
+    "charada": "Um pedacinho enorme do tempo que os livros adoram nomear com uma palavra só."
+  },
+  {
+    "topico": "História",
+    "palavra": "escravidão",
+    "charada": "A página mais pesada de qualquer livro didático, e a que menos tempo de aula recebe."
+  },
+  {
+    "topico": "História",
+    "palavra": "escravo",
+    "charada": "A prova mais dolorosa de que o passado de um país nunca sai completamente das contas do presente."
+  },
+  {
+    "topico": "História",
+    "palavra": "evento",
+    "charada": "Aquilo que todo mundo marca no calendário e esquece de verdade duas semanas antes."
+  },
+  {
+    "topico": "História",
+    "palavra": "golpe",
+    "charada": "Quando alguém toma o poder sem pedir licença, ou aquela dor no dedão quando bate na quina da cama."
+  },
+  {
+    "topico": "História",
+    "palavra": "governo",
+    "charada": "Sempre culpado no bar, elogiado nunca."
+  },
+  {
+    "topico": "História",
+    "palavra": "guerra",
+    "charada": "Começo por um motivo pequeno e termino virando capítulo de livro que ninguém quer estudar pra prova."
+  },
+  {
+    "topico": "História",
+    "palavra": "imigrante",
+    "charada": "Quem sai de um lugar em busca de uma vida melhor, e ainda assim é o primeiro a defender o time local de futebol."
+  },
+  {
+    "topico": "História",
+    "palavra": "império",
+    "charada": "Tão grande que até hoje apareço em nome de restaurante querendo parecer chique."
+  },
+  {
+    "topico": "História",
+    "palavra": "independência",
+    "charada": "O dia em que um país decide que não precisa mais pedir permissão pra ninguém."
+  },
+  {
+    "topico": "História",
+    "palavra": "monarquia",
+    "charada": "Governo de família que passa o cargo de pai pra filho, tipo herança de bar de esquina."
+  },
+  {
+    "topico": "História",
+    "palavra": "povo",
+    "charada": "A galera inteira, incluindo você reclamando do trânsito hoje de manhã."
+  },
+  {
+    "topico": "História",
+    "palavra": "presidente",
+    "charada": "A pessoa que todo mundo culpa no boteco, mesmo sem saber direito o que ela faz."
+  },
+  {
+    "topico": "História",
+    "palavra": "rei",
+    "charada": "Nasci com o cargo garantido, sem nunca precisar mandar currículo."
+  },
+  {
+    "topico": "História",
+    "palavra": "república",
+    "charada": "O tipo de governo que faz todo mundo brigar em grupo de família no dia da eleição."
+  },
+  {
+    "topico": "História",
+    "palavra": "revolta",
+    "charada": "Começo com um grupo cansado de aguentar calado, tipo o vizinho depois do terceiro churrasco barulhento seguido."
+  },
+  {
+    "topico": "História",
+    "palavra": "revolução",
+    "charada": "Todo mundo promete fazer uma na segunda-feira, e a academia continua vazia."
+  },
+  {
+    "topico": "História",
+    "palavra": "século",
+    "charada": "Cem anos, ou o tempo que parece ter passado desde a última vez que o wifi de casa funcionou direito."
+  },
+  {
+    "topico": "História",
+    "palavra": "tratado",
+    "charada": "Um papel assinado prometendo paz, que nem aquele combinado de família que dura até o próximo Natal."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "ambiente",
+    "charada": "Tudo ao redor que a gente promete cuidar melhor, geralmente depois de assistir um documentário."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "bússola",
+    "charada": "Aponto sempre pro norte, ao contrário de qualquer decisão que você tenta tomar sozinho."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "capital",
+    "charada": "A cidade que todo mundo sabe o nome mesmo sem nunca ter visitado."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "chuva",
+    "charada": "Sempre decido cair bem na hora que você esqueceu o guarda-chuva em casa."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "cidade",
+    "charada": "Cheia de gente, e mesmo assim você sente falta de alguém pra conversar."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "clima",
+    "charada": "Sempre o primeiro assunto de conversa quando ninguém tem mais nada pra falar."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "continente",
+    "charada": "Grande o suficiente pra caber um país inteiro que você nem sabia que existia."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "deserto",
+    "charada": "O lugar mais seco do mundo, e ainda assim mais organizado que sua geladeira no fim do mês."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "floresta",
+    "charada": "Cheia de árvores que produzem o oxigênio que você respira sem nunca agradecer."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "fronteira",
+    "charada": "A linha que dois países discutem, mas que o GPS do celular já decidiu sozinho."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "ilha",
+    "charada": "Cercada de água por todo lado, que nem você depois de cancelar todos os compromissos do fim de semana."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "latitude",
+    "charada": "Uma linha imaginária que decide se seu verão vai ser de praia ou de casaco."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "litoral",
+    "charada": "A faixa de terra que todo mundo lota em janeiro e esquece o resto do ano."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "mapa",
+    "charada": "Prometo o caminho mais rápido e te levo direto pro trânsito parado."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "migração",
+    "charada": "Sair de um lugar pra outro em busca de coisa melhor, que nem passarinho ou aquele primo que foi tentar a vida em outra cidade."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "montanha",
+    "charada": "O tamanho que qualquer problema pequeno vira na sua cabeça às 3 da manhã."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "oceano",
+    "charada": "Grande demais pra atravessar nadando, mas pequeno o suficiente pra sumir com seu chinelo na primeira onda."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "país",
+    "charada": "Tenho bandeira, hino e um grupo de WhatsApp inteiro discutindo política sobre mim."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "planeta",
+    "charada": "Sua casa inteira, girando sem parar, e ainda assim ninguém sente a velocidade."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "poluição",
+    "charada": "O motivo do rio que era limpo na foto antiga da vovó não existir mais assim hoje."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "população",
+    "charada": "Todo mundo, incluindo aquele vizinho que você nunca viu a cara."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "região",
+    "charada": "Um pedaço do mapa que reclama que ninguém fala o sotaque dele direito na TV."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "relevo",
+    "charada": "A razão de a bicicleta ficar bem mais cansativa na volta pra casa."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "rio",
+    "charada": "Corro sem parar, ao contrário de você numa segunda de manhã."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "solo",
+    "charada": "Onde tudo cresce, inclusive aquela grama que você promete cortar todo fim de semana."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "terremoto",
+    "charada": "Balanço o chão inteiro sem avisar, igual susto de notificação de banco de madrugada."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "território",
+    "charada": "A linha imaginária que faz duas pessoas brigarem por um metro de terreno."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "vale",
+    "charada": "O ponto mais baixo entre duas montanhas, e também o motivo de a bicicleta parecer fácil só na descida."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "vento",
+    "charada": "Viro sua sombrinha do avesso sem pedir licença."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "vulcão",
+    "charada": "Fico quieto por anos e depois exploso do nada, que nem aquele parente numa discussão de família."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "adjetivo",
+    "charada": "Dou qualidade a um substantivo, tipo aquele elogio que sua mãe manda com segunda intenção."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "antônimo",
+    "charada": "O oposto exato de uma palavra, igual você e aquele parente que discorda de tudo só por discordar."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "autor",
+    "charada": "A pessoa que decide o final da história antes de você, e nunca avisa com antecedência."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "clímax",
+    "charada": "O momento mais tenso da história, bem antes do final que todo mundo já desconfiava."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "conto",
+    "charada": "Termino rápido demais, tipo aquele fim de semana bom."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "crônica",
+    "charada": "Conto um dia comum de um jeito que faz até fila de banco parecer interessante."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "enredo",
+    "charada": "O motivo de você perder a hora de dormir assistindo 'só mais um episódio'."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "escrita",
+    "charada": "A prova de que você pensou antes de falar, coisa rara nas redes sociais."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "frase",
+    "charada": "Quando bem colocada, viro status de rede social por meses."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "gramática",
+    "charada": "As regras que todo mundo segue errado no WhatsApp e certo só na prova."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "leitura",
+    "charada": "Prometida toda virada de ano, esquecida já em fevereiro."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "livro",
+    "charada": "Prometido pra ser lido em uma semana, viro enfeite de estante por dois anos."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "metáfora",
+    "charada": "Comparo duas coisas sem usar \"como\", tipo chamar o trânsito de guerra sem ninguém realmente atirar em ninguém."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "narrador",
+    "charada": "Sei de tudo, menos por que ninguém nunca confia totalmente em mim."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "palavra",
+    "charada": "Uma só já é capaz de estragar o clima de qualquer grupo de família."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "personagem",
+    "charada": "Vivo dramas emocionantes sem nunca ter que pagar boleto de verdade."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "poema",
+    "charada": "Digo em quatro linhas o que uma pessoa levaria uma noite inteira explicando por mensagem de voz."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "poesia",
+    "charada": "Consigo fazer até uma lista de compras parecer profunda se você quebrar as linhas do jeito certo."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "pronome",
+    "charada": "Existo pra você não repetir o nome da pessoa cem vezes na mesma fofoca."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "protagonista",
+    "charada": "Quem vive a história inteira sem nunca precisar dividir os créditos com ninguém."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "rima",
+    "charada": "Faço duas palavras diferentes soarem como se fossem feitas uma pra outra."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "romance",
+    "charada": "Sempre mais longo que o namoro que me inspirou."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "sílaba",
+    "charada": "Um pedacinho da palavra, e o motivo de você travar bonito tentando ler um nome esquisito em voz alta."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "sinônimo",
+    "charada": "Uma palavra que significa quase a mesma coisa que outra, tipo dizer \"econômico\" em vez de \"pão-duro\"."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "substantivo",
+    "charada": "Dou nome pra tudo, inclusive pra aquela coisa que você não lembra o nome e chama de 'treco'."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "sujeito",
+    "charada": "Quem pratica a ação na frase, e também aquele suspeito que sempre aparece em toda história de família mal contada."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "texto",
+    "charada": "Chego grande no grupo do trabalho e ninguém me lê inteiro antes de responder 'combinado'."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "verbo",
+    "charada": "A palavra que faz a ação acontecer, mesmo quando você só promete e não faz nada."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "verso",
+    "charada": "Uma linha só, mas decido se o poema inteiro vai rimar ou não."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "vírgula",
+    "charada": "Uma pausa pequena que muda o sentido da frase inteira, e também de qualquer herança mal escrita."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "argumento",
+    "charada": "Aquilo que todo mundo jura ter na discussão de grupo de família, mas poucos realmente trazem."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "citação",
+    "charada": "Uma frase de outra pessoa que você usa pra parecer mais culto do que realmente é."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "clareza",
+    "charada": "A coisa que falta na explicação de qualquer manual de eletrônico."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "coerência",
+    "charada": "A coisa que falta na desculpa de quem chega atrasado dizendo que 'o trânsito estava do nada'."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "coesão",
+    "charada": "O motivo de um texto não parecer um monte de frases jogadas ao acaso, tipo esta explicação aqui."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "conclusão",
+    "charada": "Sempre escrita correndo, faltando dois minutos pra acabar o tempo de prova."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "conectivo",
+    "charada": "A palavrinha que costura uma ideia na outra, tipo aquele parente que sempre lembra de puxar assunto na mesa."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "crítica",
+    "charada": "O comentário que todo mundo faz depois que o problema já não tem mais solução."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "dissertação",
+    "charada": "O tipo de texto em que você precisa parecer seguro de algo que decidiu pensar cinco minutos atrás."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "intervenção",
+    "charada": "A proposta de solução que todo mundo escreve no final sem nunca aplicar de verdade na própria vida."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "introdução",
+    "charada": "A parte que ninguém lê com atenção, mas que decide se alguém vai continuar lendo o resto."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "objetividade",
+    "charada": "Ir direto ao ponto, coisa que ninguém consegue fazer numa desculpa por chegar atrasado."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "opinião",
+    "charada": "Todo mundo tem uma, principalmente sobre assunto que não entende bem."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "parágrafo",
+    "charada": "Recuo, ideia, ponto final — e ainda assim tem gente que escreve um texto inteiro sem nenhum de mim."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "proposta",
+    "charada": "Aquilo que ninguém pediu pra discutir, mas que virou obrigatório numa folha de prova."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "reflexão",
+    "charada": "Aquele momento de pensar profundamente sobre a vida, geralmente às 2 da manhã sem motivo aparente."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "repertório",
+    "charada": "Aquelas referências que você guarda pra usar na hora certa, tipo aquela citação que ninguém sabe se é verdadeira mesmo."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "tema",
+    "charada": "Escolhido por alguém que nunca vai ler o que você escreveu sobre mim com tanto carinho quanto você escreveu."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "tese",
+    "charada": "A ideia que você defende com unhas e dentes, mesmo sem certeza nenhuma."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "conhecimento",
+    "charada": "A única coisa que ninguém consegue tirar de você, exceto na hora da prova que você não estudou."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "consciência",
+    "charada": "Aquela voz que fala 'você devia estar estudando' bem na hora do episódio mais interessante da série."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "crença",
+    "charada": "Aquilo que você aceita sem precisar de prova nenhuma, tipo achar que hoje vai ser o dia que a dieta começa de verdade."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "dilema",
+    "charada": "Uma escolha difícil entre duas opções ruins, tipo decidir entre acordar cedo ou chegar atrasado de novo."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "dúvida",
+    "charada": "O motivo de você reler a mesma mensagem cinco vezes antes de enviar."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "essência",
+    "charada": "O que uma coisa realmente é por trás de toda aparência, tipo aquele perfume que promete durar o dia todo e não dura."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "ética",
+    "charada": "O que impede você de comer o último pedaço de bolo sem perguntar antes."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "existência",
+    "charada": "A pergunta que ataca você bem quando a luz apaga e você já está deitado tentando dormir."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "ideia",
+    "charada": "Apareço do nada, geralmente às 2 da manhã, e sumo assim que você acorda pra me anotar."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "ilusão",
+    "charada": "Uma percepção que engana os sentidos, tipo achar que vai estudar cedo só porque comprou uma agenda nova."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "liberdade",
+    "charada": "A sensação de sexta-feira às 18h em ponto."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "lógica",
+    "charada": "A sequência de raciocínio que todo mundo jura seguir, principalmente numa discussão que já perdeu o sentido."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "moral",
+    "charada": "A régua invisível que todo mundo usa pra julgar o comportamento dos outros, nunca o próprio."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "pensamento",
+    "charada": "Aquilo que passa pela sua cabeça um segundo antes de você falar besteira mesmo assim."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "questionamento",
+    "charada": "Aquela pergunta incômoda que ninguém faz até o final da reunião, quando já é tarde demais pra responder direito."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "razão",
+    "charada": "A parte de você que sabe que devia ter ido dormir mais cedo ontem."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "realidade",
+    "charada": "Aquilo que continua existindo mesmo depois que você fecha os olhos e finge que não viu."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "sentido",
+    "charada": "O que você tenta encontrar na vida e também na última temporada de uma série que decidiu não explicar nada."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "verdade",
+    "charada": "Sempre dói mais que a mentira, mesmo sendo mais curta de contar."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "cidadania",
+    "charada": "Os direitos e deveres que todo mundo lembra dos direitos e esquece os deveres."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "cidadão",
+    "charada": "A pessoa que reclama do imposto e também reclama quando falta asfalto na rua."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "classe",
+    "charada": "Divido as pessoas por quanto dinheiro elas têm, mesmo quando ninguém quer admitir que reparou nisso."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "comunidade",
+    "charada": "O grupo de vizinhos que só se fala de verdade quando falta água ou luz."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "costume",
+    "charada": "O jeito de fazer as coisas que vira automático, tipo pôr sal antes mesmo de provar a comida."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "cultura",
+    "charada": "O motivo de cada família ter uma regra completamente diferente pra passar o Natal."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "desigualdade",
+    "charada": "A razão de duas pessoas nascerem no mesmo país e terem chances completamente diferentes."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "direito",
+    "charada": "Aquilo que você invoca bem alto assim que alguém tenta te prejudicar."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "diversidade",
+    "charada": "Ter gente diferente reunida no mesmo lugar, tipo o grupo de família que ninguém entende como ainda funciona."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "estereótipo",
+    "charada": "A ideia pronta que todo mundo tem sobre um grupo antes mesmo de conhecer alguém dele de verdade."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "família",
+    "charada": "O grupo que você não escolhe, mas que aparece inteiro assim que alguém posta uma foto de herança."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "grupo",
+    "charada": "Aquele do WhatsApp que ninguém tem coragem de sair, só de silenciar."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "identidade",
+    "charada": "A resposta que ninguém consegue dar rápido quando alguém pergunta 'me conta sobre você'."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "instituição",
+    "charada": "Uma organização com regras próprias, tipo a família que tem lei não escrita sobre quem senta onde na mesa de Natal."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "norma",
+    "charada": "A regra que todo mundo segue sem nunca ter assinado nada, tipo separar o lixo só quando alguém está olhando."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "poder",
+    "charada": "Quem segura o controle remoto de verdade na casa."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "preconceito",
+    "charada": "Julgar o livro pela capa antes mesmo de ler o título."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "religião",
+    "charada": "O conjunto de crenças que sempre vira assunto proibido na mesa de almoço de domingo, e mesmo assim sempre aparece."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "sociedade",
+    "charada": "Todo mundo, inclusive quem jura que 'não liga pra opinião dos outros'."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "tradição",
+    "charada": "Aquilo que a família repete todo ano só porque sempre foi assim, mesmo sem ninguém lembrar por quê."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "alfabeto",
+    "charada": "Vinte e seis letrinhas que decidem toda discussão sobre como se escreve certo."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "bilíngue",
+    "charada": "Quem fala dois idiomas, e ainda assim trava igual todo mundo na hora de pedir a conta no restaurante."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "conversa",
+    "charada": "Sempre fico mais interessante depois que alguém já foi embora e não pode mais participar de mim."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "diálogo",
+    "charada": "A parte do livro que você lê rápido só pra saber quem falou o quê."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "expressão",
+    "charada": "Um jeito de dizer algo que não faz sentido nenhum traduzido ao pé da letra pra outro idioma."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "fala",
+    "charada": "A coisa que trava completamente na primeira vez que você precisa usar outro idioma de verdade."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "gíria",
+    "charada": "A palavra que os mais velhos usam errado tentando parecer descolados."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "idioma",
+    "charada": "Aquele que você jura entender assistindo série com legenda, e trava completamente numa ligação de verdade."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "intérprete",
+    "charada": "Traduzo na hora, sem tempo pra pensar, tipo você tentando explicar uma piada que ninguém mais riu."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "legenda",
+    "charada": "A única razão de você entender o final do filme sem precisar admitir que não sabe o idioma."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "língua",
+    "charada": "Também sou a parte da boca que enrola bonito na hora de pronunciar uma palavra difícil."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "pronúncia",
+    "charada": "O motivo de você preferir mandar áudio a falar aquela palavra difícil em inglês."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "significado",
+    "charada": "O que uma palavra realmente quer dizer, coisa que o tradutor automático sempre erra na hora mais importante."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "sotaque",
+    "charada": "A prova de onde você nasceu, mesmo depois de anos tentando me esconder."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "tradução",
+    "charada": "Transformo uma piada engraçada em outro idioma numa frase sem graça nenhuma."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "vocabulário",
+    "charada": "Cresço muito rápido quando o assunto é xingamento em outro idioma."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "artista",
+    "charada": "Quem transforma sentimento em obra, e também qualquer pessoa que decora o próprio bolo de aniversário torto com orgulho."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "ator",
+    "charada": "Finge sentir emoção profissionalmente, coisa que todo mundo já fez pelo menos uma vez numa festa chata."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "cena",
+    "charada": "Um pedacinho da história que, fora de contexto, sempre parece mais dramático do que realmente é."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "cor",
+    "charada": "O motivo de duas pessoas discutirem se aquele vestido é azul ou dourado."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "dança",
+    "charada": "A primeira coisa que todo mundo jura que não sabe fazer, um segundo antes de fazer mesmo assim no casamento."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "desenho",
+    "charada": "Sempre pareço mais fácil no vídeo do YouTube do que na sua própria mão."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "escultura",
+    "charada": "Uma pedra que alguém teve paciência suficiente pra me transformar em outra coisa."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "instrumento",
+    "charada": "Todo mundo me comprou pra aprender em 2020, e estou pegando poeira desde então."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "melodia",
+    "charada": "A parte da música que gruda na cabeça o dia inteiro mesmo você não lembrando a letra."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "museu",
+    "charada": "O lugar mais silencioso que existe, até alguém esquecer de colocar o celular no silencioso."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "música",
+    "charada": "Grudo na sua cabeça o dia inteiro depois de tocar só uma vez de manhã."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "obra",
+    "charada": "Posso ser um quadro num museu, ou aquela reforma na rua que nunca termina."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "palco",
+    "charada": "O lugar onde qualquer nervosismo vira parte do show, quer você queira ou não."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "pincel",
+    "charada": "A ferramenta que promete uma pintura perfeita, e sempre termina com mais tinta na sua roupa do que na tela."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "pintura",
+    "charada": "Posso valer uma fortuna ou parecer rabisco de criança, dependendo de quem assinou embaixo."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "retrato",
+    "charada": "A versão sua que sai bem melhor no papel do que na selfie de verdade."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "ritmo",
+    "charada": "O que falta pra metade da pista de dança no casamento logo depois da primeira música mais animada."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "teatro",
+    "charada": "Onde fingir sentimento na frente de estranhos é literalmente o trabalho."
+  }
+]

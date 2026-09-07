@@ -1,9 +1,13 @@
 /* =========================================================================
    Easter egg: Jogo da Velha escondido no fundo do site.
-   10 cliques seguidos no FUNDO (a malha quadriculada do body, fora de
-   qualquer elemento de conteudo) abrem um jogo da velha desenhado com a
-   mesma tecnica de "traco de caneta" da intro (SVG com stroke-dasharray
-   animado), na cor definida pela mesma regra de segundos da intro.
+   Desenhado com a mesma tecnica de "traco de caneta" da intro (SVG com
+   stroke-dasharray animado), na cor definida pela mesma regra de segundos
+   da intro.
+
+   O gatilho de clique (10 cliques no FUNDO da pagina) NAO mora mais aqui:
+   quem conta os cliques e sorteia qual minigame abrir e o roteador central
+   (game-trigger.js). Este arquivo so expoe startGame via window.TicTacToe
+   / window.startTicTacToe para o roteador chamar quando for sorteado.
    ========================================================================= */
 (function () {
   'use strict';
@@ -11,8 +15,6 @@
   // ---------------------------------------------------------------------
   // Configuracao
   // ---------------------------------------------------------------------
-  var CLICKS_TO_TRIGGER = 10;
-  var CLICK_GAP_RESET_MS = 1500; // se demorar mais que isso entre cliques, zera a contagem
   var BOARD_SIZE = 240; // largura/altura do tabuleiro (px)
   var BOARD_MARGIN = 24; // margem extra considerada ao checar espaco livre
   var CELL = BOARD_SIZE / 3;
@@ -21,10 +23,8 @@
   var END_GAME_LINGER_MS = 1800; // tempo que o resultado fica na tela antes de fechar sozinho
 
   // ---------------------------------------------------------------------
-  // Estado do contador de cliques no fundo
+  // Estado do jogo
   // ---------------------------------------------------------------------
-  var bgClickCount = 0;
-  var lastBgClickTime = 0;
   var gameActive = false;
   var pageShiftWrapper = null;
 
@@ -79,27 +79,6 @@
     var wrapper = ensurePageShiftWrapper();
     wrapper.style.transform = px ? 'translateX(' + px + 'px)' : '';
   }
-
-  document.addEventListener(
-    'click',
-    function (e) {
-      if (gameActive) return;
-      if (!isBackgroundClick(e.target)) return;
-
-      var now = performance.now();
-      if (now - lastBgClickTime > CLICK_GAP_RESET_MS) {
-        bgClickCount = 0;
-      }
-      lastBgClickTime = now;
-      bgClickCount++;
-
-      if (bgClickCount >= CLICKS_TO_TRIGGER) {
-        bgClickCount = 0;
-        startGame(e.clientX, e.clientY);
-      }
-    },
-    true
-  );
 
   // ---------------------------------------------------------------------
   // Cor da caneta -- mesma regra da intro (intro.js)
@@ -703,4 +682,15 @@
     shiftPageBy(0);
     gameActive = false;
   }
+
+  // ---------------------------------------------------------------------
+  // Exposto para o roteador central de easter eggs (game-trigger.js), que
+  // conta os cliques de fundo e sorteia qual minigame cadastrado abrir.
+  // ---------------------------------------------------------------------
+  window.startTicTacToe = startGame;
+  window.TicTacToe = {
+    start: startGame,
+    isActive: function () { return gameActive; }
+  };
+  window.isBackgroundClick = isBackgroundClick;
 })();
