@@ -11,10 +11,15 @@
 <style>
   body{ background:#f4f1ea; min-height:100vh; }
   .admin-wrap{ max-width:980px; margin:0 auto; padding:2.5rem 1.5rem 5rem; }
-  .admin-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem; flex-wrap:wrap; gap:12px; }
-  .admin-top h1{ font-family:var(--font-display); font-size:1.6rem; color:var(--color-blue); margin:0; }
-  .admin-back{ color:var(--color-blue); font-weight:600; text-decoration:none; font-size:0.9rem; }
-  .admin-back:hover{ text-decoration:underline; }
+  .admin-top{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1.5rem; width:100%; gap:8px; }
+  .admin-top h1{ font-family:var(--font-display); font-size:1.6rem; color:var(--color-blue); margin:0; line-height:1.2; text-align:center; }
+  .admin-title-sub-br { display: none; }
+  @media (max-width:600px) {
+    .admin-wrap { padding-top: 1.5rem; }
+    .admin-top h1 { font-size:1.45rem; margin-top:2px; }
+    .admin-title-separator { display: none; }
+    .admin-title-sub-br { display: block; }
+  }
   .admin-card{ background:#fff; border:2px solid var(--color-blue); border-radius:14px; padding:1.75rem; margin-bottom:1.75rem; box-shadow:-6px 6px 0 rgba(0,78,181,0.12); }
   .admin-card h2{ font-family:var(--font-display); font-size:1.1rem; color:var(--color-blue); margin:0 0 0.35rem; }
   .admin-card .admin-desc{ color:#6b6b6b; font-size:0.85rem; margin:0 0 1.1rem; }
@@ -42,7 +47,7 @@
   .abtn.ghost{ background:transparent; border-color:#d8d3c4; color:#6b6b6b; }
   .abtn.small{ padding:6px 12px; font-size:0.75rem; }
   .abtn:disabled{ opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; filter: grayscale(100%); }
-  .admin-status{ font-size:0.8rem; margin-top:8px; }
+  .admin-status{ font-size:0.85rem; margin-top:8px; text-align:center; }
   .admin-status.ok{ color:#0a8a3f; }
   .admin-status.err{ color:#c0392b; }
   .skill-list{ display:flex; flex-direction:column; gap:12px; margin-bottom:1.25rem; }
@@ -192,8 +197,12 @@
   .prompt-box.empty { border-color:#ccc; background:#f9f9f9; }
   .prompt-box[hidden]{ display:none; }
   .prompt-box-inner{ padding:14px; }
-  .prompt-box-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; gap:10px; flex-wrap:wrap; }
-  .prompt-box-title-group{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .prompt-box-head{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; margin-bottom:12px; }
+  .prompt-box-title-group{ display:flex; align-items:center; gap:8px; justify-content:flex-start; }
+  @media (max-width:600px) {
+    .prompt-box-head{ display:flex; flex-direction:column; align-items:stretch; gap:12px; }
+    .prompt-box-title-group{ justify-content:space-between; }
+  }
   .prompt-box-title-group span{ font-weight:700; color:var(--color-blue); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.03em; transition:color 0.2s ease; }
   .prompt-box.empty .prompt-box-title-group span { color:#888; }
   .prompt-box textarea#genPromptText{ width:100%; min-height:140px; border:1px solid #d0d0d0; border-radius:8px; padding:12px; font-family:'Inter',sans-serif; font-size:0.88rem; color:#2b2b2b; background:#f4f4f4; resize:vertical; transition:border-color .2s ease, box-shadow .2s ease; }
@@ -268,6 +277,25 @@
   .gen-choice-actions.gen-choice-row{ flex-direction:row; flex-wrap:wrap; }
   .gen-choice-actions.gen-choice-row .abtn{ flex:1; min-width: 140px; }
   .chatgpt-mark{ width:17px; height:17px; flex-shrink:0; }
+
+  /* Sparkles Animation (posicionamento feito via JS/requestAnimationFrame, sem @keyframes) */
+  .spark {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+  @keyframes checkboxGlow {
+    0% { filter: drop-shadow(0 0 0 transparent); }
+    50% { filter: drop-shadow(0 0 8px rgba(255, 209, 0, 0.8)); }
+    100% { filter: drop-shadow(0 0 0 transparent); }
+  }
+  .checkbox-glow {
+    animation: checkboxGlow 500ms ease-out;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .checkbox-glow { animation: none; }
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -307,61 +335,62 @@
     <button class="modal-close-btn" id="genChoiceClose" type="button" aria-label="Fechar">&times;</button>
     <div id="genChoiceScreen1">
       <h2 id="genChoiceTitle">Onde deseja gerar este conteúdo?</h2>
+      
+      <div id="genChoiceClaudeWarning" style="display:none; margin-bottom:16px; padding:12px; background:#fff3f3; border:1px solid #f5c2c7; border-radius:8px; font-size:0.9rem; color:#842029; text-align:left;">
+        <p style="margin:0 0 8px 0;">
+          <span style="color:#d93025; text-decoration:underline; font-weight:bold;">Claude não gera imagens.</span> 
+          Mas ele é capaz de melhorar o prompt gerador de imagens para garantir uma maior qualidade de resultado.
+        </p>
+        <p style="margin:0; text-align:center;">
+          <span style="text-decoration:underline;">Clique novamente no Claude para continuar.</span>
+        </p>
+      </div>
+
       <div class="gen-choice-actions gen-choice-row">
         <button class="abtn" id="genChoiceApi" type="button">Via API</button>
-        <button class="abtn secondary" id="genChoiceChatgpt" type="button" style="display:inline-flex; align-items:center; gap:8px;">
+        <button class="abtn secondary" id="genChoiceChatgpt" type="button" style="display:inline-flex; align-items:center; justify-content:center; gap:8px;">
           <img src="../icon_chatgpt.webp" alt="ChatGPT" style="width:20px; height:20px; object-fit:contain; border-radius:50%;">
           ChatGPT
-          <svg class="ext-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-left:auto;">
+          <svg class="ext-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
             <polyline points="15 3 21 3 21 9"></polyline>
             <line x1="10" y1="14" x2="21" y2="3"></line>
           </svg>
         </button>
-        <button class="abtn secondary" id="genChoiceClaude" type="button" style="display:inline-flex; align-items:center; gap:8px; transition:all .2s ease;">
+        <button class="abtn secondary" id="genChoiceClaude" type="button" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:all .2s ease;">
           <img src="../icon_claude.webp" alt="Claude" style="width:20px; height:20px; object-fit:contain; border-radius:50%;">
           Claude
-          <svg class="ext-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-left:auto;">
+          <svg class="ext-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
             <polyline points="15 3 21 3 21 9"></polyline>
             <line x1="10" y1="14" x2="21" y2="3"></line>
           </svg>
         </button>
-        <button class="abtn secondary" id="genChoiceGemini" type="button" style="display:inline-flex; align-items:center; gap:8px; transition:all .2s ease;">
+        <button class="abtn secondary" id="genChoiceGemini" type="button" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:all .2s ease;">
           <img src="../icon_gemini.webp" alt="Gemini" style="width:20px; height:20px; object-fit:contain; border-radius:50%;">
           Gemini
-          <svg class="ext-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-left:auto;">
+          <svg class="ext-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
             <polyline points="15 3 21 3 21 9"></polyline>
             <line x1="10" y1="14" x2="21" y2="3"></line>
           </svg>
-        </button>
-      </div>
-    </div>
-    <div id="genChoiceScreen2" hidden>
-      <h2 style="color:var(--color-blue); margin-bottom:12px; margin-top:0;">Claude e Imagens</h2>
-      <p style="margin-bottom:16px;">Claude não gera imagens, mas ele é capaz de melhorar o prompt gerador de imagem para garantir uma maior qualidade de resultado.</p>
-      <div class="gen-choice-actions" style="display:flex; flex-direction:column; gap:10px;">
-        <button class="abtn secondary" id="genChoiceClaudeOptimize" type="button" style="justify-content:flex-start; text-align:left;">
-          <img src="../icon_claude.webp" alt="Claude" style="width:24px; height:24px; border-radius:50%; margin-right:8px; flex-shrink:0;">
-          <span>Clique novamente no Claude caso queira otimizar o prompt gerador de imagem</span>
-        </button>
-        <button class="abtn secondary" id="genChoiceChatGPTFallback" type="button" style="justify-content:flex-start; text-align:left;">
-          <img src="../icon_chatgpt.webp" alt="ChatGPT" style="width:24px; height:24px; border-radius:50%; margin-right:8px; flex-shrink:0;">
-          <span>Clique no ChatGPT para gerar a imagem no ChatGPT</span>
         </button>
       </div>
     </div>
     <div id="genChoiceScreen3" hidden>
       <h2 style="color:var(--color-blue); margin-bottom:12px; margin-top:0;">Gerar no Gemini</h2>
-      <p style="margin-bottom:16px;">Gemini não recebe o prompt automaticamente na sua página. Clique no botão abaixo [Copiar] depois clique novamente no botão [Gemini] para que dentro da página do Gemini você possa colar o prompt gerado.</p>
-      <div class="gen-choice-actions" style="display:flex; flex-direction:column; gap:10px;">
-        <button class="abtn secondary" id="genChoiceGeminiCopy" type="button" style="justify-content:flex-start; text-align:left;">
-          <span style="display:inline-block; width:24px; text-align:center; margin-right:8px;">📋</span>
+      <p style="margin-bottom:16px;">
+        Gemini não recebe o prompt automaticamente na sua página.<br>
+        Clique no botão abaixo [Copiar prompt gerado];<br>
+        Depois clique novamente no botão [Gemini] para que dentro da página do Gemini você possa colar o prompt gerado.
+      </p>
+      <div class="gen-choice-actions" style="display:flex; flex-direction:column; gap:10px; margin:0 auto; width:max-content;">
+        <button class="abtn secondary" id="genChoiceGeminiCopy" type="button" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%;">
+          <img src="../icon_copy.webp" alt="Copiar" style="width:20px; height:20px; object-fit:contain;">
           Copiar prompt gerado
         </button>
-        <button class="abtn secondary" id="genChoiceGeminiOpen" type="button" style="justify-content:flex-start; text-align:left;">
-          <img src="../icon_gemini.webp" alt="Gemini" style="width:24px; height:24px; border-radius:50%; margin-right:8px; flex-shrink:0;">
+        <button class="abtn secondary" id="genChoiceGeminiOpen" type="button" disabled style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%;">
+          <img src="../icon_gemini.webp" alt="Gemini" style="width:20px; height:20px; border-radius:50%; object-fit:contain;">
           Gemini
         </button>
       </div>
@@ -372,10 +401,13 @@
 <div class="admin-wrap" id="adminRoot" style="display:none;">
 
   <div class="admin-top">
-    <h1>Painel Admin &middot; Sala de Estudo</h1>
-    <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-      <a href="index.html" class="admin-back">&larr; Voltar ao site</a>
+    <div style="flex: 0 0 40px; display:flex; justify-content:flex-start;">
+      <a href="index.html" id="btnPanelBack" class="abtn small" title="Voltar ao site" style="padding:6px 8px;">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </a>
     </div>
+    <h1 style="flex: 1; text-align:center;">Painel Admin <span class="admin-title-separator">&middot;</span><br class="admin-title-sub-br"> <span class="admin-title-sub">Sala de Estudo</span></h1>
+    <div id="panelTopWidget" style="flex: 0 0 40px; display:flex; justify-content:flex-end; gap:10px;"></div>
   </div>
 
   <!-- GERADOR (primeiro) -->
@@ -404,34 +436,36 @@
 
     <div class="admin-row" style="margin-top:12px;">
       <div class="admin-field" style="flex:2;">
-        <label for="genTema">Tema / assunto do post</label>
+        <label for="genTema">Assunto do post</label>
         <input type="text" id="genTema" placeholder="Ex: importância da rotina de estudos no ENEM">
       </div>
     </div>
 
-    <div style="text-align:center; margin-top:16px; margin-bottom:16px;">
+    <div style="text-align:center; margin-top:16px; margin-bottom:16px; display:flex; justify-content:center; align-items:center; gap:12px;">
       <button class="abtn" id="btnGenerate" type="button" style="display:inline-block; text-align:center; padding:8px 24px; font-size:1.05rem;">
         <span><span style="font-weight:400;">Gerar</span><strong style="text-transform:uppercase;">PROMPT</strong></span>
       </button>
+      <label for="chkOtimizar" title="Otimizar prompt" style="cursor:pointer; display:flex; align-items:center; user-select:none;">
+        <input type="checkbox" id="chkOtimizar" style="display:none;">
+        <img id="iconOtimizar" src="../icon_magic_wand2.webp" alt="Otimizar prompt" style="width:28px; height:28px; object-fit:contain; opacity:0.7; transition: opacity 0.2s;">
+      </label>
     </div>
 
     <div class="admin-status" id="genStatus" aria-live="polite"></div>
 
     <div class="prompt-box empty" id="genPromptBox">
       <div class="prompt-box-inner" id="genPromptBoxInner">
-        <div class="prompt-box-head" style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; margin-bottom:12px;">
-          <div class="prompt-box-title-group" style="display:flex; align-items:center; gap:8px; justify-content:flex-start;">
+        <div class="prompt-box-head">
+          <div class="prompt-box-title-group">
             <span>PROMPT</span>
-            <button class="abtn secondary small" id="btnCopyPrompt" type="button" disabled>Copiar</button>
+            <button class="abtn secondary small" id="btnCopyPrompt" type="button" disabled style="display:inline-flex; align-items:center; gap:6px;"><img src="../icon_copy.webp" alt="Copiar" style="width:16px; height:16px; object-fit:contain;"> Copiar</button>
           </div>
           <div style="display:flex; justify-content:center;">
             <button class="abtn small" id="btnExecutePrompt" type="button" disabled>
               <span><span style="font-weight:400;">Gerar</span><strong id="btnExecutePromptLabel" style="text-transform:uppercase;">TEXTO</strong></span>
             </button>
           </div>
-          <div style="display:flex; justify-content:flex-end;">
-            <button class="abtn small blue" id="btnSavePrompt" type="button" style="visibility:hidden;">Salvar PROMPT</button>
-          </div>
+          <button class="abtn small blue" id="btnSavePrompt" type="button" style="display:none; justify-self:end;">Salvar PROMPT</button>
         </div>
         <textarea id="genPromptText" placeholder="Seu prompt aparecerá aqui..."></textarea>
       </div>
@@ -466,7 +500,7 @@
     <div class="gen-result-box" id="genResultBox" hidden>
       <div class="gen-result-head">
         <span id="genResultLabel">Resultado gerado</span>
-        <button class="abtn secondary small" id="btnCopyResult" type="button" hidden>Copiar resultado</button>
+        <button class="abtn secondary small" id="btnCopyResult" type="button" hidden style="display:inline-flex; align-items:center; gap:6px;"><img src="../icon_copy.webp" alt="Copiar" style="width:16px; height:16px; object-fit:contain;"> Copiar resultado</button>
       </div>
       <div id="genResultContent"></div>
     </div>
@@ -536,11 +570,11 @@
 
   <!-- HISTÓRICO -->
   <div class="admin-card">
-    <button class="hist-toggle" id="histToggle" type="button" aria-expanded="true" aria-controls="histCollapse">
+    <button class="hist-toggle" id="histToggle" type="button" aria-expanded="false" aria-controls="histCollapse">
       <h2>Histórico de gerações</h2>
       <span class="chev">&#9662;</span>
     </button>
-    <div class="hist-collapse" id="histCollapse">
+    <div class="hist-collapse closed" id="histCollapse">
       <div class="hist-collapse-inner">
         <p class="admin-desc">Textos e imagens gerados ficam salvos no histórico do projeto, do mais recente para o mais antigo.</p>
 
@@ -656,12 +690,6 @@
 
 
   <div class="admin-row" style="margin-top:20px; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:40px;">
-    <a class="abtn secondary" href="https://gemini.google.com/" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px;">
-      Abrir Gemini 
-      <svg class="ext-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:14px; height:14px;">
-        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
-      </svg>
-    </a>
     <a class="abtn secondary" href="https://chatgpt.com/" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px;">
       <img src="../icon_chatgpt.webp" alt="ChatGPT" style="width:16px; height:16px; object-fit:contain; border-radius:50%;">
       Abrir ChatGPT
@@ -676,12 +704,27 @@
         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
       </svg>
     </a>
+    <a class="abtn secondary" href="https://gemini.google.com/" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px;">
+      <img src="../icon_gemini.webp" alt="Gemini" style="width:16px; height:16px; object-fit:contain; border-radius:50%;">
+      Abrir Gemini
+      <svg class="ext-link-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:14px; height:14px;">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>
+      </svg>
+    </a>
   </div>
 
 </div>
 
 <script src="provider-manager.js"></script>
 <script>
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+window.scrollTo(0, 0);
+window.addEventListener('load', function() {
+  window.scrollTo(0, 0);
+});
+
 // ================= SUPABASE CONFIG =================
 const SUPABASE_URL = 'https://fesejrbindspzafiyssm.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_mGEU6ouQVdIt1G97ENAq_w_tX8uknCK';
@@ -713,6 +756,13 @@ const ICON_GEAR_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="non
 const LS_THEMES = 'se_admin_themes'; // legacy key, read-only, used for one-time migration
 
 const DEFAULT_THEMES = [
+  {
+    id: "p0_otimizador",
+    nome: "Otimizador de prompt",
+    templateTexto: "Atue como um especialista em engenharia de prompts.\n\nVou fornecer um prompt abaixo. Sua tarefa é analisá-lo e produzir uma versão otimizada, mantendo exatamente o objetivo e a intenção original.\n\nAo otimizar:\n\n1. Identifique ambiguidades, contradições, redundâncias ou instruções pouco claras.\n2. Torne as instruções mais específicas, objetivas e difíceis de interpretar incorretamente.\n3. Organize o prompt em uma estrutura lógica e fácil de seguir.\n4. Preserve todos os requisitos importantes do prompt original.\n5. Não invente novos requisitos que alterem o resultado pretendido.\n6. Elimine repetições desnecessárias.\n7. Quando útil, transforme instruções implícitas em regras explícitas.\n8. Defina claramente:\n\n   * objetivo;\n   * contexto;\n   * entradas;\n   * tarefa;\n   * regras;\n   * restrições;\n   * formato de saída esperado.\n9. Antecipe possíveis interpretações erradas do modelo e ajuste o prompt para evitá-las.\n10. Priorize instruções de acordo com sua importância quando houver risco de conflito.\n\nAntes de apresentar a versão final, faça uma análise breve contendo:\n\n* problemas encontrados;\n* ambiguidades;\n* redundâncias;\n* informações que poderiam melhorar o prompt.\n\nDepois apresente:\n\n## Prompt otimizado\n\nEntregue o prompt completo, pronto para copiar e usar.\n\nNão execute a tarefa descrita no prompt. Apenas analise e otimize o prompt.\n\nPROMPT ORIGINAL:\n\n{tema}",
+    templateImagem: "",
+    origem: "padrao"
+  },
   {
     id: "p01",
     nome: "Oferta Geral de Reforço Escolar",
@@ -976,7 +1026,7 @@ async function renderThemeList(){
             '<div class="subblock-head">' +
               '<span class="skill-tag texto">texto</span>' +
               '<div class="prompt-actions">' +
-                '<button type="button" data-copy-prompt="' + theme.id + '" data-prompt-field="templateTexto"' + (theme.templateTexto ? '' : ' disabled') + '>Copiar</button>' +
+                '<button type="button" data-copy-prompt="' + theme.id + '" data-prompt-field="templateTexto"' + (theme.templateTexto ? '' : ' disabled') + ' style="display:inline-flex; align-items:center; gap:6px;"><img src="../icon_copy.webp" style="width:14px; height:14px; object-fit:contain;"> Copiar</button>' +
                 '<button type="button" class="use-prompt" data-use-prompt="' + theme.id + '" data-use-type="texto"' + (theme.templateTexto ? '' : ' disabled') + '>+ Usar</button>' +
               '</div>' +
             '</div>' +
@@ -986,7 +1036,7 @@ async function renderThemeList(){
             '<div class="subblock-head">' +
               '<span class="skill-tag imagem">imagem</span>' +
               '<div class="prompt-actions">' +
-                '<button type="button" data-copy-prompt="' + theme.id + '" data-prompt-field="templateImagem"' + (theme.templateImagem ? '' : ' disabled') + '>Copiar</button>' +
+                '<button type="button" data-copy-prompt="' + theme.id + '" data-prompt-field="templateImagem"' + (theme.templateImagem ? '' : ' disabled') + ' style="display:inline-flex; align-items:center; gap:6px;"><img src="../icon_copy.webp" style="width:14px; height:14px; object-fit:contain;"> Copiar</button>' +
                 '<button type="button" class="use-prompt" data-use-prompt="' + theme.id + '" data-use-type="imagem"' + (theme.templateImagem ? '' : ' disabled') + '>+ Usar</button>' +
               '</div>' +
             '</div>' +
@@ -1705,19 +1755,20 @@ function openGenChoiceModal(){
     const closeBtn = document.getElementById('genChoiceClose');
     
     const screen1 = document.getElementById('genChoiceScreen1');
-    const screen2 = document.getElementById('genChoiceScreen2');
     const screen3 = document.getElementById('genChoiceScreen3');
     
-    const btnOptimize = document.getElementById('genChoiceClaudeOptimize');
-    const btnFallback = document.getElementById('genChoiceChatGPTFallback');
     const btnGeminiCopy = document.getElementById('genChoiceGeminiCopy');
     const btnGeminiOpen = document.getElementById('genChoiceGeminiOpen');
 
     const isImage = currentPromptState && currentPromptState.type === 'imagem';
     
     screen1.hidden = false;
-    screen2.hidden = true;
     screen3.hidden = true;
+    btnGeminiOpen.disabled = true;
+    
+    let claudeWarningShown = false;
+    const claudeWarning = document.getElementById('genChoiceClaudeWarning');
+    claudeWarning.style.display = 'none';
     
     if (isImage) {
       claudeBtn.style.filter = 'grayscale(100%)';
@@ -1734,8 +1785,6 @@ function openGenChoiceModal(){
       claudeBtn.removeEventListener('click', onClaude);
       geminiBtn.removeEventListener('click', onGemini);
       closeBtn.removeEventListener('click', onClose);
-      btnOptimize.removeEventListener('click', onOptimize);
-      btnFallback.removeEventListener('click', onFallback);
       btnGeminiCopy.removeEventListener('click', onGeminiCopy);
       btnGeminiOpen.removeEventListener('click', onGeminiOpen);
       modal.removeEventListener('click', onOverlayClick);
@@ -1747,8 +1796,14 @@ function openGenChoiceModal(){
     function onChatgpt(){ cleanup('chatgpt'); }
     function onClaude(){
       if (isImage) {
-        screen1.hidden = true;
-        screen2.hidden = false;
+        if (!claudeWarningShown) {
+          claudeWarningShown = true;
+          claudeWarning.style.display = 'block';
+          claudeBtn.style.filter = 'none';
+          claudeBtn.style.opacity = '1';
+        } else {
+          cleanup('claude-optimize');
+        }
       } else {
         cleanup('claude');
       }
@@ -1757,10 +1812,9 @@ function openGenChoiceModal(){
       screen1.hidden = true;
       screen3.hidden = false;
     }
-    function onOptimize(){ cleanup('claude-optimize'); }
-    function onFallback(){ cleanup('chatgpt'); }
     function onGeminiCopy(){
       if(currentPromptState) copyText(currentPromptState.prompt);
+      btnGeminiOpen.disabled = false;
     }
     function onGeminiOpen(){ cleanup('gemini'); }
     
@@ -1773,8 +1827,6 @@ function openGenChoiceModal(){
     claudeBtn.addEventListener('click', onClaude);
     geminiBtn.addEventListener('click', onGemini);
     closeBtn.addEventListener('click', onClose);
-    btnOptimize.addEventListener('click', onOptimize);
-    btnFallback.addEventListener('click', onFallback);
     btnGeminiCopy.addEventListener('click', onGeminiCopy);
     btnGeminiOpen.addEventListener('click', onGeminiOpen);
     modal.addEventListener('click', onOverlayClick);
@@ -1856,7 +1908,7 @@ function showGeneratedPrompt(text, type){
   box.classList.remove('empty');
   document.getElementById('btnCopyPrompt').disabled = false;
   document.getElementById('btnExecutePrompt').disabled = false;
-  document.getElementById('btnSavePrompt').style.visibility = 'hidden';
+  document.getElementById('btnSavePrompt').style.display = 'none';
 
   document.getElementById('btnExecutePromptLabel').textContent = type.toUpperCase();
 }
@@ -1868,12 +1920,12 @@ document.getElementById('genPromptText').addEventListener('input', function(){
     box.classList.add('empty');
     document.getElementById('btnCopyPrompt').disabled = true;
     document.getElementById('btnExecutePrompt').disabled = true;
-    document.getElementById('btnSavePrompt').style.visibility = 'hidden';
+    document.getElementById('btnSavePrompt').style.display = 'none';
   } else {
     box.classList.remove('empty');
     document.getElementById('btnCopyPrompt').disabled = false;
     document.getElementById('btnExecutePrompt').disabled = false;
-    document.getElementById('btnSavePrompt').style.visibility = 'visible';
+    document.getElementById('btnSavePrompt').style.display = 'block';
     if (currentPromptState) {
       currentPromptState.prompt = this.value;
     }
@@ -2044,6 +2096,434 @@ document.getElementById('btnExecutePrompt').addEventListener('click', async func
   }
 });
 
+const chkOtimizar = document.getElementById('chkOtimizar');
+const iconOtimizar = document.getElementById('iconOtimizar');
+if (chkOtimizar && iconOtimizar) {
+  let sparkLayer = document.getElementById('sparkLayer');
+  if (!sparkLayer) {
+    sparkLayer = document.createElement('div');
+    sparkLayer.id = 'sparkLayer';
+    // position:absolute (nao fixed) ancorado no documento inteiro, para que o espalhamento
+    // possa de fato alcancar qualquer ponto da PAGINA (rolagem incluida), nao so o viewport visivel.
+    sparkLayer.style.cssText = 'position:absolute; top:0; left:0; z-index:2147483647; pointer-events:none;';
+    document.body.appendChild(sparkLayer);
+  }
+
+  function syncSparkLayerSize() {
+    sparkLayer.style.width = document.documentElement.scrollWidth + 'px';
+    sparkLayer.style.height = document.documentElement.scrollHeight + 'px';
+  }
+  syncSparkLayerSize();
+  window.addEventListener('resize', syncSparkLayerSize);
+
+  // ---- Estado do "acumulo de espalhamento" (itens 1-8 do combo de reativacao) ----
+  const BASE_MAX_DISTANCE = 110; // maior valor possivel de "40 + Math.random()*70"
+  const GROWTH_SECONDS_TO_MAX = 6;  // 6s de cliques rapidos continuos -> teto (mais facil de sentir o efeito)
+  const DECAY_SECONDS_FROM_MAX = 20; // 20s parado (apos estar no teto) -> quase 1.0x
+  const FAST_MS = 800;   // <=800ms => intensidade de crescimento maxima (1.0) -- ritmo humano normal ja conta
+  const SLOW_MS = 4000;  // >=4000ms => intensidade de crescimento minima (0.0)
+
+  let spreadMultiplier = 1.0;
+  let lastSpreadUpdateTime = performance.now();
+  let lastDeactivationTime = null;
+  let lastAnyActivityTime = performance.now(); // ultima vez que o checkbox foi clicado (ligado ou desligado) -- usado pelas particulas "permanentes"
+
+  function currentMaxSpreadMultiplier() {
+    // Teto = a animacao no maximo precisa alcancar a diagonal da PAGINA INTEIRA
+    // (documento completo, incluindo o que só aparece rolando), nao apenas do viewport visivel.
+    const pageWidth = document.documentElement.scrollWidth;
+    const pageHeight = document.documentElement.scrollHeight;
+    const diagonal = Math.hypot(pageWidth, pageHeight);
+    return diagonal / BASE_MAX_DISTANCE;
+  }
+
+  function growthIntensity(deltaMs) {
+    if (deltaMs <= FAST_MS) return 1;
+    if (deltaMs >= SLOW_MS) return 0;
+    return 1 - (deltaMs - FAST_MS) / (SLOW_MS - FAST_MS);
+  }
+
+  // Aplica o decaimento de TODOS os estagios (sempre, baseado em tempo real decorrido) e devolve o teto atual
+  // "factor" (0..1) controla quanto do decaimento realmente se aplica nesse intervalo:
+  // factor=0 (clique bem rapido, intensity=1) -> decaimento praticamente zero, nao compete com o crescimento.
+  // factor=1 (clique bem lento / tempo parado, intensity=0) -> decaimento cheio, como um tempo realmente ocioso.
+  function applyDecay(now, factor) {
+    if (factor === undefined) factor = 1;
+    const maxSpread = currentMaxSpreadMultiplier();
+    const elapsedSec = ((now - lastSpreadUpdateTime) / 1000) * factor;
+
+    const decayRate = (maxSpread - 1) / DECAY_SECONDS_FROM_MAX; // por segundo
+    spreadMultiplier = Math.max(1, spreadMultiplier - decayRate * elapsedSec);
+
+    stainProgress = Math.max(0, stainProgress - elapsedSec / STAGE2_DECAY_SECONDS);
+    glitchProgress = Math.max(0, glitchProgress - elapsedSec / STAGE3_DECAY_SECONDS);
+
+    lastSpreadUpdateTime = now;
+    return maxSpread;
+  }
+
+  // ---- Estagio 2 (item 9): manchas de "alvejante" -- so cresce quando o estagio 1 ja esta no teto ----
+  const STAGE2_GROWTH_SECONDS = 60;
+  const STAGE2_DECAY_SECONDS = 120;
+  const MAX_STAINS = 26;
+  let stainProgress = 0; // 0..1
+  let stainBlobs = null;
+
+  function ensureStainBlobs() {
+    if (stainBlobs) return stainBlobs;
+    let stainLayer = document.getElementById('stainLayer');
+    if (!stainLayer) {
+      stainLayer = document.createElement('div');
+      stainLayer.id = 'stainLayer';
+      stainLayer.style.cssText = 'position:fixed; inset:0; z-index:2147483645; pointer-events:none; mix-blend-mode:color-burn;';
+      document.body.appendChild(stainLayer);
+    }
+    // Cores propositalmente fora da paleta do site (azul/dourado/creme): branco "estourado" no centro,
+    // anel "queimado"/oxidado, e borda em cor toxica (verde acido / magenta eletrico).
+    const stainPalettes = [
+      ['#FFFDE7', '#8B6F47', '#CCFF00'],
+      ['#FFFFFF', '#A67C52', '#FF00E5'],
+      ['#FFF9E0', '#7A5C3A', '#39FF14'],
+    ];
+    stainBlobs = [];
+    for (let i = 0; i < MAX_STAINS; i++) {
+      const [c1, c2, c3] = stainPalettes[i % stainPalettes.length];
+      const size = 120 + Math.random() * 260;
+      const el = document.createElement('div');
+      el.style.cssText = `
+        position:absolute;
+        left:${Math.random() * 100}%;
+        top:${Math.random() * 100}%;
+        width:${size}px; height:${size}px;
+        margin-left:${-size / 2}px; margin-top:${-size / 2}px;
+        border-radius:50%;
+        background: radial-gradient(circle, ${c1} 0%, ${c2} 55%, ${c3} 85%, transparent 100%);
+        filter: blur(${6 + Math.random() * 10}px);
+        opacity:0;
+        transition: opacity 1.4s ease;
+        transform: rotate(${Math.random() * 360}deg);
+      `;
+      stainLayer.appendChild(el);
+      stainBlobs.push(el);
+    }
+    return stainBlobs;
+  }
+
+  function updateStainVisual() {
+    const blobs = ensureStainBlobs();
+    const activeCount = Math.round(stainProgress * MAX_STAINS);
+    for (let i = 0; i < blobs.length; i++) {
+      blobs[i].style.opacity = i < activeCount ? String(0.35 + 0.5 * stainProgress) : '0';
+    }
+  }
+
+  // ---- Estagio 3 (item 10): glitch RGB/scanlines -- so cresce quando o estagio 2 ja esta no maximo ----
+  const STAGE3_GROWTH_SECONDS = 60;
+  const STAGE3_DECAY_SECONDS = 120;
+  const DRAMATIC_SUSTAIN_MS = 30000;      // 30s de glitch no maximo, sustentado, ate o flash dramatico comecar
+  const DRAMATIC_FLASH_INTERVAL_MS = 10000;
+  const DRAMATIC_FLASH_DURATION_MS = 220;
+
+  let glitchProgress = 0; // 0..1
+  let glitchLayerEls = null;
+  let glitchJitterHandle = null;
+  let glitchMaxSinceTime = null;
+  let dramaticIntervalHandle = null;
+
+  function ensureGlitchLayer() {
+    if (glitchLayerEls) return glitchLayerEls;
+    const layer = document.createElement('div');
+    layer.id = 'glitchLayer';
+    layer.style.cssText = 'position:fixed; inset:0; z-index:2147483646; pointer-events:none;';
+    document.body.appendChild(layer);
+
+    const redGhost = document.createElement('div');
+    redGhost.style.cssText = 'position:absolute; inset:0; background:rgba(255,0,60,0); mix-blend-mode:screen;';
+    const cyanGhost = document.createElement('div');
+    cyanGhost.style.cssText = 'position:absolute; inset:0; background:rgba(0,255,255,0); mix-blend-mode:screen;';
+    const scanlines = document.createElement('div');
+    scanlines.style.cssText = 'position:absolute; inset:-4px; opacity:0; background:repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 1px, transparent 1px, transparent 3px);';
+
+    layer.appendChild(redGhost);
+    layer.appendChild(cyanGhost);
+    layer.appendChild(scanlines);
+    glitchLayerEls = { layer, redGhost, cyanGhost, scanlines };
+    return glitchLayerEls;
+  }
+
+  function updateGlitchVisual() {
+    const { redGhost, cyanGhost, scanlines } = ensureGlitchLayer();
+    scanlines.style.opacity = String(0.5 * glitchProgress);
+
+    if (glitchProgress <= 0) {
+      redGhost.style.background = 'rgba(255,0,60,0)';
+      cyanGhost.style.background = 'rgba(0,255,255,0)';
+      if (glitchJitterHandle) { clearInterval(glitchJitterHandle); glitchJitterHandle = null; }
+      return;
+    }
+
+    const alpha = 0.22 * glitchProgress;
+    const offset = 6 * glitchProgress;
+    redGhost.style.background = `rgba(255,0,60,${alpha})`;
+    cyanGhost.style.background = `rgba(0,255,255,${alpha})`;
+
+    if (!glitchJitterHandle) {
+      glitchJitterHandle = setInterval(() => {
+        const jx = (Math.random() - 0.5) * 2 * offset;
+        const jy = (Math.random() - 0.5) * 2 * offset;
+        redGhost.style.transform = `translate(${jx}px, ${jy}px)`;
+        cyanGhost.style.transform = `translate(${-jx}px, ${-jy}px)`;
+      }, 90);
+    }
+  }
+
+  // Flash "dramatico": inversao de cor via mix-blend-mode (nao mexe em filter/transform do body,
+  // entao nao quebra o posicionamento das camadas fixed de sparks/manchas/glitch).
+  function triggerDramaticFlash() {
+    const flash = document.createElement('div');
+    flash.style.cssText = 'position:fixed; inset:0; z-index:2147483647; pointer-events:none; background:#fff; mix-blend-mode:difference;';
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), DRAMATIC_FLASH_DURATION_MS);
+  }
+
+  function updateDramaticStage(now) {
+    if (glitchProgress >= 0.999) {
+      if (glitchMaxSinceTime === null) glitchMaxSinceTime = now;
+      const sustainedMs = now - glitchMaxSinceTime;
+      if (sustainedMs >= DRAMATIC_SUSTAIN_MS && !dramaticIntervalHandle) {
+        dramaticIntervalHandle = setInterval(triggerDramaticFlash, DRAMATIC_FLASH_INTERVAL_MS);
+      }
+    } else {
+      glitchMaxSinceTime = null;
+      if (dramaticIntervalHandle) { clearInterval(dramaticIntervalHandle); dramaticIntervalHandle = null; }
+    }
+  }
+
+  function resetSpread() {
+    spreadMultiplier = 1.0;
+    lastDeactivationTime = null;
+    lastSpreadUpdateTime = performance.now();
+    stainProgress = 0;
+    glitchProgress = 0;
+    glitchMaxSinceTime = null;
+    if (dramaticIntervalHandle) { clearInterval(dramaticIntervalHandle); dramaticIntervalHandle = null; }
+    updateStainVisual();
+    updateGlitchVisual();
+  }
+
+  function createSparkles(element, spreadMultiplierArg) {
+    const spread = Math.max(1, spreadMultiplierArg || 1);
+    syncSparkLayerSize(); // a pagina pode ter crescido/mudado desde o ultimo burst
+    const rect = element.getBoundingClientRect();
+    // rect.left/top sao relativos ao viewport; como o sparkLayer agora e' position:absolute
+    // ancorado no documento, somamos o scroll atual para converter para coordenadas do documento.
+    const centerX = rect.left + rect.width / 2 + window.scrollX;
+    const centerY = rect.top + rect.height / 2 + window.scrollY;
+    const colors = ["#FFD100", "#FFF4A3", "#004EB5", "#5398FF", "#FFFFFF"];
+    const BASE_DURATION = 1200; // ms
+    // Duracao escala proporcionalmente ao espalhamento, mas com teto para nao virar uma animacao
+    // absurdamente longa quando o espalhamento cobre a tela inteira (item 2 + ajuste de bom senso).
+    const DURATION = Math.min(BASE_DURATION * spread, BASE_DURATION * 3);
+    // mais particulas conforme o espalhamento cresce, pra nao ficar "vazio" no centro; teto de 90 evita excesso de elementos no DOM
+    const PARTICLE_COUNT = Math.min(90, Math.round(30 * (1 + (spread - 1) * 0.3)));
+    const STICKY_RATIO = 0.50; // ~50% das particulas "grudam" na tela em vez de sumir por completo
+    const STICKY_FLOOR_OPACITY = 0.4; // opacidade em que a particula grudenta fica parada
+    const STICKY_LINGER_TIERS_MS = [8000, 20000, 50000]; // das grudentas, 1/3 some em 8s, 1/3 em 20s, 1/3 em 50s
+    const STICKY_FADE_MS = 600; // duracao do fade final da particula grudenta
+    const PERMANENT_RATIO = 0.10; // +10% adicional (alem dos 50% grudentos) que so comeca a sumir quando o usuario parar de clicar
+    const PERMANENT_IDLE_MS = 15000; // tempo parado (sem nenhum clique, ligar ou desligar) para essas particulas comecarem a sumir
+    const PERMANENT_FADE_MS = 1200; // duracao do fade dessas particulas quando o tempo parado e atingido
+
+    const stickyCount = Math.round(PARTICLE_COUNT * STICKY_RATIO);
+    const stickyIndices = new Set();
+    while (stickyIndices.size < stickyCount) {
+      stickyIndices.add(Math.floor(Math.random() * PARTICLE_COUNT));
+    }
+    // distribui as particulas grudentas em 3 grupos iguais, cada um com um tempo de permanencia diferente
+    const stickyShuffled = Array.from(stickyIndices);
+    for (let i = stickyShuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [stickyShuffled[i], stickyShuffled[j]] = [stickyShuffled[j], stickyShuffled[i]];
+    }
+    const stickyLingerByIndex = new Map();
+    stickyShuffled.forEach((idx, pos) => {
+      stickyLingerByIndex.set(idx, STICKY_LINGER_TIERS_MS[pos % STICKY_LINGER_TIERS_MS.length]);
+    });
+
+    // +10% adicional, distinto das grudentas, que nao tem tempo fixo -- so comeca a sumir com inatividade
+    const permanentCount = Math.round(PARTICLE_COUNT * PERMANENT_RATIO);
+    const permanentIndices = new Set();
+    while (permanentIndices.size < permanentCount) {
+      const idx = Math.floor(Math.random() * PARTICLE_COUNT);
+      if (!stickyIndices.has(idx)) permanentIndices.add(idx);
+    }
+
+    const particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const distance = (40 + Math.random() * 70) * spread;
+      const size = 6 + Math.random() * 10;
+
+      const el = document.createElement("div");
+      el.className = "spark";
+      el.style.width = `${size}px`;
+      el.style.height = `${size}px`;
+      el.style.left = `${centerX}px`;
+      el.style.top = `${centerY}px`;
+      el.style.background = colors[Math.floor(Math.random() * colors.length)];
+      el.style.boxShadow = `0 0 8px 2px ${colors[Math.floor(Math.random() * colors.length)]}`;
+      el.style.transform = "translate(-50%, -50%) scale(0)";
+      el.style.opacity = "1";
+      sparkLayer.appendChild(el);
+
+      particles.push({
+        el,
+        angleX: Math.cos(angle) * distance,
+        angleY: Math.sin(angle) * distance,
+        startTime: performance.now() + Math.random() * 80, // pequeno atraso escalonado entre particulas
+        sticky: stickyIndices.has(i),
+        lingerMs: stickyLingerByIndex.get(i) || STICKY_LINGER_TIERS_MS[0],
+        permanent: permanentIndices.has(i),
+      });
+    }
+
+    function tick(now) {
+      let anyAlive = false;
+
+      for (const p of particles) {
+        const elapsed = now - p.startTime;
+        if (elapsed < 0) { anyAlive = true; continue; }
+
+        const t = Math.min(elapsed / DURATION, 1);
+
+        // ease-out: rapido no comeco, desacelera no fim
+        const eased = 1 - Math.pow(1 - t, 3);
+        const scale = t < 0.15 ? (t / 0.15) : (1 - (t - 0.15) / 0.85) * 1; // cresce rapido, encolhe devagar
+        const dx = p.angleX * eased;
+        const dy = p.angleY * eased;
+        p.el.style.transform = `translate(-50%, -50%) translate(${dx}px, ${dy}px) scale(${Math.max(scale, 0)})`;
+
+        if (p.permanent) {
+          // trajetoria normal ate assentar numa opacidade baixa; a partir dai, so comeca a sumir
+          // quando o USUARIO PARAR DE CLICAR (atividade global) por tempo suficiente -- enquanto ele
+          // continuar clicando (mesmo devagar), essas particulas se acumulam indefinidamente.
+          if (t < 0.7) {
+            p.el.style.opacity = '1';
+          } else {
+            const settleT = Math.min((t - 0.7) / 0.3, 1);
+            p.el.style.opacity = `${Math.max(1 - (1 - STICKY_FLOOR_OPACITY) * settleT, STICKY_FLOOR_OPACITY)}`;
+          }
+          if (t < 1) { anyAlive = true; continue; }
+
+          const idleMs = now - lastAnyActivityTime;
+          if (idleMs < PERMANENT_IDLE_MS) {
+            p.el.style.opacity = `${STICKY_FLOOR_OPACITY}`;
+            anyAlive = true;
+          } else {
+            const fadeT = Math.min((idleMs - PERMANENT_IDLE_MS) / PERMANENT_FADE_MS, 1);
+            p.el.style.opacity = `${Math.max(STICKY_FLOOR_OPACITY * (1 - fadeT), 0)}`;
+            if (fadeT >= 1) { p.el.remove(); } else { anyAlive = true; }
+          }
+          continue;
+        }
+
+        if (!p.sticky) {
+          // comportamento normal: some por completo ao fim da animacao
+          const opacity = t < 0.7 ? 1 : 1 - (t - 0.7) / 0.3;
+          p.el.style.opacity = `${Math.max(opacity, 0)}`;
+          anyAlive = anyAlive || t < 1;
+          if (t >= 1) { p.el.remove(); }
+          continue;
+        }
+
+        // particula "grudenta": termina o trajeto normal, mas ao inves de sumir,
+        // fica parada numa opacidade baixa por um bom tempo antes do fade final.
+        const lingerElapsed = elapsed - DURATION; // tempo desde que o trajeto normal terminou
+        if (lingerElapsed < 0) {
+          const opacity = t < 0.7 ? 1 : 1 - (1 - STICKY_FLOOR_OPACITY) * (t - 0.7) / 0.3;
+          p.el.style.opacity = `${Math.max(opacity, STICKY_FLOOR_OPACITY)}`;
+          anyAlive = true;
+        } else if (lingerElapsed < p.lingerMs) {
+          p.el.style.opacity = `${STICKY_FLOOR_OPACITY}`;
+          anyAlive = true;
+        } else {
+          const fadeT = Math.min((lingerElapsed - p.lingerMs) / STICKY_FADE_MS, 1);
+          p.el.style.opacity = `${Math.max(STICKY_FLOOR_OPACITY * (1 - fadeT), 0)}`;
+          if (fadeT >= 1) {
+            p.el.remove();
+          } else {
+            anyAlive = true;
+          }
+        }
+      }
+
+      if (anyAlive) {
+        requestAnimationFrame(tick);
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  chkOtimizar.addEventListener('change', function() {
+    iconOtimizar.src = this.checked ? '../icon_magic_wand1.webp' : '../icon_magic_wand2.webp';
+    iconOtimizar.style.opacity = this.checked ? '1' : '0.7';
+
+    const now = performance.now();
+    lastAnyActivityTime = now; // qualquer clique (ligar ou desligar) conta como atividade
+
+    if (this.checked) {
+      let intensity = 0;
+      let gapSec = 0;
+      if (lastDeactivationTime !== null) {
+        const deltaMs = now - lastDeactivationTime;
+        intensity = growthIntensity(deltaMs);
+        gapSec = deltaMs / 1000;
+      }
+
+      // decaimento so leva em conta a parcela "lenta" desse intervalo -- um clique rapido
+      // (intensity alta) praticamente nao decai, entao nao compete mais com o proprio crescimento.
+      const maxSpread = applyDecay(now, 1 - intensity);
+
+      if (lastDeactivationTime !== null) {
+        const growthRate1 = (maxSpread - 1) / GROWTH_SECONDS_TO_MAX; // por segundo, na intensidade maxima
+        spreadMultiplier = Math.min(maxSpread, spreadMultiplier + intensity * growthRate1 * gapSec);
+
+        // Estagio 2 (manchas) so cresce quando o estagio 1 ja esta praticamente no teto
+        if (spreadMultiplier >= maxSpread - 0.001) {
+          const growthRate2 = 1 / STAGE2_GROWTH_SECONDS;
+          stainProgress = Math.min(1, stainProgress + intensity * growthRate2 * gapSec);
+        }
+
+        // Estagio 3 (glitch) so cresce quando o estagio 2 (manchas) ja esta no maximo
+        if (stainProgress >= 0.999) {
+          const growthRate3 = 1 / STAGE3_GROWTH_SECONDS;
+          glitchProgress = Math.min(1, glitchProgress + intensity * growthRate3 * gapSec);
+        }
+      }
+
+      updateStainVisual();
+      updateGlitchVisual();
+      updateDramaticStage(now);
+
+      createSparkles(iconOtimizar, spreadMultiplier);
+      iconOtimizar.classList.remove('checkbox-glow');
+      void iconOtimizar.offsetWidth;
+      iconOtimizar.classList.add('checkbox-glow');
+      setTimeout(() => iconOtimizar.classList.remove('checkbox-glow'), 500);
+    } else {
+      applyDecay(now, 1); // tempo realmente parado (desativado) sempre decai em cheio
+      lastDeactivationTime = now;
+    }
+  });
+
+  // Item 5: clicar em GerarPROMPT reseta o acumulo de espalhamento por completo
+  const btnGenerateForSparkReset = document.getElementById('btnGenerate');
+  if (btnGenerateForSparkReset) {
+    btnGenerateForSparkReset.addEventListener('click', resetSpread);
+  }
+}
+
 document.getElementById('btnGenerate').addEventListener('click', async function(){
   const themeId = document.getElementById('genTheme').value;
   const genType = document.getElementById('genType').value;
@@ -2064,10 +2544,17 @@ document.getElementById('btnGenerate').addEventListener('click', async function(
     return;
   }
   if(!tema){ 
-    statusEl.innerHTML = '<span style="font-size:1.1rem; font-weight:bold; text-decoration:underline;">Descreva o tema do post.</span>'; 
+    statusEl.textContent = 'Descreva o assunto do post.';
     statusEl.className = 'admin-status err'; 
     
-    const promptPlaceholder = template.replace(/\{tema\}/gi, '[[[ TEMA DO POST ]]]');
+    let promptPlaceholder = template.replace(/\{tema\}/gi, '[[[ ASSUNTO DO POST ]]]');
+    const chkOti = document.getElementById('chkOtimizar');
+    if (chkOti && chkOti.checked) {
+      const otimizador = (await getThemes()).find(function(t){ return t.nome === 'Otimizador de prompt'; });
+      if (otimizador && otimizador.templateTexto) {
+        promptPlaceholder = otimizador.templateTexto.replace(/\{tema\}/gi, promptPlaceholder);
+      }
+    }
     currentPromptState = { prompt: promptPlaceholder, type: genType, tema: '', theme: theme };
     showGeneratedPrompt(promptPlaceholder, genType);
     
@@ -2083,17 +2570,25 @@ document.getElementById('btnGenerate').addEventListener('click', async function(
 
     setTimeout(() => {
       const textarea = document.getElementById('genPromptText');
-      const idx = promptPlaceholder.indexOf('[[[ TEMA DO POST ]]]');
+      const idx = promptPlaceholder.indexOf('[[[ ASSUNTO DO POST ]]]');
       if (idx !== -1) {
         textarea.focus();
-        textarea.setSelectionRange(idx, idx + '[[[ TEMA DO POST ]]]'.length);
+        textarea.setSelectionRange(idx, idx + '[[[ ASSUNTO DO POST ]]]'.length);
       }
     }, 50);
 
     return; 
   }
 
-  const prompt = template.replace(/\{tema\}/gi, tema);
+  let prompt = template.replace(/\{tema\}/gi, tema);
+  const chkOti = document.getElementById('chkOtimizar');
+  if (chkOti && chkOti.checked) {
+    const otimizador = (await getThemes()).find(function(t){ return t.nome === 'Otimizador de prompt'; });
+    if (otimizador && otimizador.templateTexto) {
+      prompt = otimizador.templateTexto.replace(/\{tema\}/gi, prompt);
+    }
+  }
+
   currentPromptState = { prompt: prompt, type: genType, tema: tema, theme: theme };
   showGeneratedPrompt(prompt, genType);
   
@@ -2323,15 +2818,14 @@ async function forceLogoutToLoginFlow(){
 // session countdown/logout icon (only while a TOTP session with a TTL is being tracked) ----------
 function ensureTopRightWidget(){
   let el = document.getElementById('panelTopWidget');
-  if(el) return el;
-  el = document.createElement('div');
-  el.id = 'panelTopWidget';
-  el.style.cssText = 'position:fixed; top:16px; right:16px; z-index:50; display:flex; align-items:center; gap:10px; background:#fff; border:2px solid var(--color-blue); border-radius:10px; padding:6px 10px; box-shadow:-4px 4px 0 rgba(0,78,181,0.12);';
+  if(!el) return null;
+  if(el.innerHTML.trim() !== '') return el;
+  
   el.innerHTML =
     '<span id="panelSessionCountdown" style="font-family:monospace; font-weight:700; color:var(--color-blue); font-size:0.85rem; display:none;"></span>' +
     '<button class="abtn small" id="btnPanelLogout" type="button" title="Sair" style="display:none; padding:6px 8px;">' + ICON_LOGOUT_SVG + '</button>' +
     '<button class="abtn small" id="btnPanelSettings" type="button" title="Configurações" style="padding:6px 8px;">' + ICON_GEAR_SVG + '</button>';
-  document.body.appendChild(el);
+  
   document.getElementById('btnPanelLogout').addEventListener('click', function(){
     forceLogoutToLoginFlow();
   });
@@ -2770,9 +3264,27 @@ function renderInlineEnrollForToggle(container, toggleCheckbox, outerStatusEl){
   });
 }
 
+async function ensureOtimizadorPrompt() {
+  if (localStorage.getItem('otimizador_prompt_added')) return;
+  const { data, error } = await sb.from('themes').select('id').eq('nome', 'Otimizador de prompt');
+  if (error) return;
+  if (!data || data.length === 0) {
+    const newTheme = {
+      id: 'p0_otimizador_' + Date.now(),
+      nome: 'Otimizador de prompt',
+      template_texto: "Atue como um especialista em engenharia de prompts.\n\nVou fornecer um prompt abaixo. Sua tarefa é analisá-lo e produzir uma versão otimizada, mantendo exatamente o objetivo e a intenção original.\n\nAo otimizar:\n\n1. Identifique ambiguidades, contradições, redundâncias ou instruções pouco claras.\n2. Torne as instruções mais específicas, objetivas e difíceis de interpretar incorretamente.\n3. Organize o prompt em uma estrutura lógica e fácil de seguir.\n4. Preserve todos os requisitos importantes do prompt original.\n5. Não invente novos requisitos que alterem o resultado pretendido.\n6. Elimine repetições desnecessárias.\n7. Quando útil, transforme instruções implícitas em regras explícitas.\n8. Defina claramente:\n\n   * objetivo;\n   * contexto;\n   * entradas;\n   * tarefa;\n   * regras;\n   * restrições;\n   * formato de saída esperado.\n9. Antecipe possíveis interpretações erradas do modelo e ajuste o prompt para evitá-las.\n10. Priorize instruções de acordo com sua importância quando houver risco de conflito.\n\nAntes de apresentar a versão final, faça uma análise breve contendo:\n\n* problemas encontrados;\n* ambiguidades;\n* redundâncias;\n* informações que poderiam melhorar o prompt.\n\nDepois apresente:\n\n## Prompt otimizado\n\nEntregue o prompt completo, pronto para copiar e usar.\n\nNão execute a tarefa descrita no prompt. Apenas analise e otimize o prompt.\n\nPROMPT ORIGINAL:\n\n{tema}",
+      template_imagem: "",
+      origem: "padrao"
+    };
+    await sb.from('themes').insert([newTheme]);
+  }
+  localStorage.setItem('otimizador_prompt_added', 'true');
+}
+
 // ---------- init do painel (após aal2) ----------
 async function initAdminApp(){
   await seedThemesIfEmpty();
+  await ensureOtimizadorPrompt();
 
   const { data: settingsRow, error: settingsErr } = await sb.from('settings').select('*').eq('id', true).maybeSingle();
   if(settingsErr) console.error('Erro ao buscar settings:', settingsErr);

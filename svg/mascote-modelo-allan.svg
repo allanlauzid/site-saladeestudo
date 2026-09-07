@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51.821 62.332" role="img" aria-labelledby="title desc">
+  <title id="title">Modelo articulado do mascote criado por Allan</title>
+  <desc id="desc">Mascote em seis peças lógicas, com cotovelos e joelhos como subarticulações.</desc>
+  <style>
+    .rig-part { transform-box: view-box; transform-origin: 0 0; }
+    .pivot-guides { display: none; fill: #fff; stroke: #172b4d; stroke-width: .28; }
+    .show-pivots .pivot-guides { display: inline; }
+    .single-color [data-piece] { fill: #0055d4 !important; }
+  </style>
+
+  <g id="character-rig-allan" aria-label="Rig do mascote de Allan">
+    <g id="leg-right" class="rig-part" data-piece="leg-right" data-pivot="42 39" fill="#b54708">
+      <g transform="translate(-.05954427 .06186627)">
+        <rect id="thigh-right-shape" width="30.202835" height="6.1170297" x="15.577614" y="36.945862" ry="3.0585148"/>
+        <g id="shin-right" class="rig-part" data-pivot="19 40">
+          <rect id="shin-right-shape" width="24.90505" height="6.3354945" x="37.318317" y="-21.3368" ry="3.1677473" transform="rotate(90)"/>
+        </g>
+      </g>
+    </g>
+
+    <g id="arm-right" class="rig-part" data-piece="arm-right" data-pivot="30 17" fill="#12b76a">
+      <g transform="translate(.34281678 -.26305937)">
+        <rect id="upper-arm-right-shape" width="20.4797" height="5.4616385" x="-6.7301807" y="29.900042" ry="2.7308192" transform="matrix(.72538523 -.68834313 .68809853 .72561727 0 0)"/>
+        <g id="forearm-right" class="rig-part" data-pivot="19 24.5">
+          <rect id="forearm-right-shape" width="16.98567" height="5.461638" x="14.979391" y="12.289076" ry="2.730819" transform="matrix(.89260858 .45083248 -.45128102 .89238189 0 0)"/>
+        </g>
+      </g>
+    </g>
+
+    <g id="torso" class="rig-part" data-piece="torso" data-pivot="40 39" fill="#0055d4">
+      <rect id="torso-shape-allan" width="32.614868" height="9.4505987" x="26.314297" y="-23.206427" ry="4.7252994" transform="matrix(.49249286 .87031648 -.87422639 .4855185 0 0)"/>
+    </g>
+
+    <g id="leg-left" class="rig-part" data-piece="leg-left" data-pivot="42 39" fill="#ee46bc">
+      <rect id="thigh-left-shape" width="30.202835" height="6.1170297" x="15.577614" y="36.945862" ry="3.0585148"/>
+      <g id="shin-left" class="rig-part" data-pivot="19 40">
+        <rect id="shin-left-shape" width="24.90505" height="6.3354945" x="37.318317" y="-21.3368" ry="3.1677473" transform="rotate(90)"/>
+      </g>
+    </g>
+
+    <g id="arm-left" class="rig-part" data-piece="arm-left" data-pivot="30 17" fill="#f04438">
+      <rect id="upper-arm-left-shape" width="20.4797" height="5.4616385" x="-6.7301807" y="29.900042" ry="2.7308192" transform="matrix(.72538523 -.68834313 .68809853 .72561727 0 0)"/>
+      <g id="forearm-left" class="rig-part" data-pivot="19 24.5">
+        <rect id="forearm-left-shape" width="16.98567" height="5.461638" x="14.979391" y="12.289076" ry="2.730819" transform="matrix(.89260858 .45083248 -.45128102 .89238189 0 0)"/>
+      </g>
+    </g>
+
+    <g id="head" class="rig-part" data-piece="head" data-pivot="27.033459 12.087769" fill="#7a5af8">
+      <circle id="head-shape-allan" cx="27.033459" cy="6.4922686" r="5.5955"/>
+    </g>
+
+    <g class="pivot-guides" aria-hidden="true">
+      <circle cx="30" cy="17" r=".72"/><circle cx="19" cy="24.5" r=".72"/><circle cx="9" cy="20.5" r=".72"/>
+      <circle cx="42" cy="39" r=".72"/><circle cx="19" cy="40" r=".72"/><circle cx="19" cy="58" r=".72"/>
+    </g>
+  </g>
+</svg>

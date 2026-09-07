@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 51.820999 62.332001"
+  role="img"
+  aria-labelledby="mascote-title mascote-desc"
+>
+  <title id="mascote-title">Aluno estudando</title>
+  <desc id="mascote-desc">Mascote articulado da Sala de Estudo, sentado diante de uma mesa.</desc>
+
+  <defs>
+    <!-- Os quatro contornos abaixo são cópias exatas dos únicos paths visíveis
+         do SVG original. O corpo é reutilizado pelos recortes do rig. -->
+    <path id="source-chair" d="m 178.97765,205.43589 c 0.0344,-6.78249 -0.0875,-13.57794 0.0555,-20.36508 0.63232,0.0417 1.2593,0.0469 1.88738,0.071 -0.0172,11.70264 0.0138,23.4005 -0.0138,35.10266 -6.45254,0 -12.90072,0 -19.34792,0 -0.0103,-0.78657 0.0103,-1.57315 0.0379,-2.3568 5.80303,0.0417 11.60176,0 17.40031,0.0417 -0.0276,-3.37487 -0.0789,-6.74941 0.0241,-10.12022 -4.41708,0 -8.83839,0 -13.25981,0 -1.42337,0 -2.85536,0.0758 -4.27126,-0.12955 0.0417,-0.73641 0.0837,-1.47806 0.10922,-2.21447 5.79008,0 11.58543,0 17.37554,0 z"/>
+    <path id="source-desk" d="m 137.83294,193.61985 c 7.25211,0.13403 14.50732,-0.0417 21.75516,0.0758 0,0.64838 -0.0138,1.30234 -0.0103,1.94665 -5.47178,0.0582 -10.94463,0.0417 -16.41635,0 0.0207,7.49409 -0.0344,14.9971 0.0276,22.49129 1.69994,0 3.39562,0 5.09984,-0.0417 v 2.11789 c -2.35701,0 -4.71391,0 -7.06771,0 -0.0241,-8.17286 0.10095,-16.3586 -0.0613,-24.52715 -1.10191,-0.17985 -2.22415,0 -3.3335,0.0417 0.0103,-0.70743 0.0103,-1.41496 0.0103,-2.12326 z"/>
+    <path id="source-head" d="m 158.87209,169.0262 c 2.05577,-0.75301 4.43854,0.31423 5.36776,2.25774 1.04299,1.96794 0.72883,4.6676 -0.98397,6.17047 -1.61205,1.72131 -4.70212,1.51537 -6.18872,-0.2722 -2.357,-2.35818 -1.43519,-7.10113 1.80493,-8.15687 z"/>
+    <path id="source-body" d="m 137.92931,177.90229 c 0.36464,-0.29735 0.72463,-0.60231 1.08909,-0.90328 1.98817,2.29778 3.66782,4.86472 5.70642,7.11271 0.80822,0.28873 1.77933,0 2.55416,0.46094 1.95081,1.08878 3.87265,2.23124 5.75697,3.43724 1.96787,-1.61205 3.67956,-3.49209 5.60571,-5.14604 1.50379,-1.28941 2.77611,-2.86715 4.50066,-3.87686 0.88853,-0.46852 2.14366,-0.42204 2.85223,0.34742 1.15114,1.18098 1.83384,2.71726 2.63774,4.13309 2.62066,4.73541 5.24132,9.47078 7.91231,14.18031 1.10184,1.79215 0.93797,4.38387 -0.63129,5.86202 -0.77499,0.87868 -2.00215,1.08462 -3.11584,1.07624 -5.77295,0 -11.55125,-0.21775 -17.32527,-0.10887 0.0544,4.12892 0.0138,8.25654 0.0241,12.38537 -0.0241,0.97112 0.0417,2.07306 -0.64958,2.85536 -0.95383,1.23164 -3.0397,1.16841 -4.00221,0 -0.37301,-0.53164 -0.62381,-1.1671 -0.5948,-1.82512 0.1423,-4.94066 -0.0172,-9.88503 0.0875,-14.82596 0.0593,-1.66574 1.22715,-3.43725 2.96038,-3.65497 5.14594,-0.0417 10.29933,0.0417 15.44527,-0.0417 -2.38705,-4.14474 -4.93591,-8.20256 -7.24347,-12.39371 -0.34283,0.0875 -0.69461,0.1926 -0.93359,0.47803 -1.65388,1.60795 -3.31214,3.21542 -4.98631,4.80618 -0.51549,0.54463 -1.2561,0.73768 -1.95182,0.94235 -3.1105,-1.62508 -5.99484,-3.66799 -9.18993,-5.12903 -1.0258,-0.55717 -0.63673,-1.84228 -0.80815,-2.78035 -1.85857,-2.48663 -3.87261,-4.86913 -5.70228,-7.38587 z"/>
+
+    <!-- Recortes em coordenadas do contorno original. As pequenas sobreposições
+         ficam dentro da própria silhueta e evitam frestas nas articulações. -->
+    <clipPath id="clip-book" clipPathUnits="userSpaceOnUse">
+      <polygon points="136.5,175.0 141.0,175.0 147.0,184.7 145.0,188.0 139.0,183.2"/>
+    </clipPath>
+    <clipPath id="clip-forearm" clipPathUnits="userSpaceOnUse">
+      <polygon points="141.5,181.0 151.5,181.0 158.5,187.5 155.5,196.0 142.0,191.5"/>
+    </clipPath>
+    <clipPath id="clip-upper-arm" clipPathUnits="userSpaceOnUse">
+      <polygon points="149.0,181.5 161.0,175.0 169.0,179.0 166.5,190.0 156.0,197.0 149.0,191.5"/>
+    </clipPath>
+    <clipPath id="clip-torso" clipPathUnits="userSpaceOnUse">
+      <polygon points="158.0,175.0 169.0,175.0 180.0,199.0 178.0,207.5 158.0,207.5 154.0,196.0"/>
+    </clipPath>
+    <clipPath id="clip-thigh" clipPathUnits="userSpaceOnUse">
+      <polygon points="151.0,196.0 176.5,196.0 178.0,207.5 151.0,210.0"/>
+    </clipPath>
+    <clipPath id="clip-shin" clipPathUnits="userSpaceOnUse">
+      <polygon points="147.0,201.0 158.0,201.0 158.0,223.0 147.0,223.0"/>
+    </clipPath>
+  </defs>
+
+  <style>
+    .rig-part {
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+  </style>
+
+  <!-- Mundo horizontal: a câmera move este grupo inteiro. -->
+  <g id="hangman-world">
+  <!-- Mantém a mesma cadeia de transformações do arquivo original. -->
+  <g id="mascot-scene" fill="#0055d4" transform="translate(0 -87)">
+    <g id="mascot-layout" transform="translate(-92.900589 -49.512697)">
+      <g id="mascot-coordinate-space" transform="matrix(1.202516 0 0 1.202516 -72.838041 -66.452115)">
+        <g id="furniture" aria-label="Mesa e cadeira">
+          <use id="chair" href="#source-chair"/>
+          <use id="desk" href="#source-desk"/>
+        </g>
+
+        <g id="rest-character" aria-label="Silhueta original do mascote">
+          <!-- Os membros traseiros coincidem com os dianteiros nesta pose lateral. -->
+          <g id="rest-arm-right" class="rig-part" data-pivot="162.5 182.0">
+            <use href="#source-body" clip-path="url(#clip-upper-arm)"/>
+            <g id="rest-forearm-right" class="rig-part" data-pivot="153.2 189.0">
+              <use href="#source-body" clip-path="url(#clip-forearm)"/>
+            </g>
+          </g>
+
+          <g id="rest-leg-right" class="rig-part" data-pivot="159.0 201.5">
+            <use href="#source-body" clip-path="url(#clip-thigh)"/>
+            <g id="rest-shin-right" class="rig-part" data-pivot="152.8 204.5">
+              <use href="#source-body" clip-path="url(#clip-shin)"/>
+            </g>
+          </g>
+
+          <g id="rest-torso" class="rig-part" data-pivot="162.0 199.5">
+            <use href="#source-body" clip-path="url(#clip-torso)"/>
+          </g>
+
+          <g id="rest-leg-left" class="rig-part" data-pivot="159.0 201.5">
+            <use href="#source-body" clip-path="url(#clip-thigh)"/>
+            <g id="rest-shin-left" class="rig-part" data-pivot="152.8 204.5">
+              <use href="#source-body" clip-path="url(#clip-shin)"/>
+            </g>
+          </g>
+
+          <g id="rest-arm-left" class="rig-part" data-pivot="162.5 182.0">
+            <use href="#source-body" clip-path="url(#clip-upper-arm)"/>
+            <g id="rest-forearm-left" class="rig-part" data-pivot="153.2 189.0">
+              <use href="#source-body" clip-path="url(#clip-forearm)"/>
+              <g id="rest-book" class="rig-part" data-pivot="144.8 185.0">
+                <use href="#source-body" clip-path="url(#clip-book)"/>
+              </g>
+            </g>
+          </g>
+
+          <g id="rest-head" class="rig-part" data-pivot="161.0 179.0">
+            <use href="#source-head"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- Rig articulado preenchido usado durante o movimento. A silhueta original
+       permanece acima como pose estática exata e troca para este rig ao iniciar. -->
+  <g id="character-travel">
+  <g id="character-rig" opacity="0" fill="#0055d4" stroke="#0055d4" stroke-linecap="round" stroke-linejoin="round" aria-label="Rig móvel do mascote">
+    <g id="leg-right" class="rig-part" data-pivot="42 39">
+      <line x1="42" y1="39" x2="19" y2="39" fill="none" stroke-width="6.2"/>
+    </g>
+    <g id="shin-right" class="rig-part" data-pivot="19 39">
+      <line x1="19" y1="39" x2="19" y2="58" fill="none" stroke-width="5.2"/>
+    </g>
+    <g id="arm-right" class="rig-part" data-pivot="31 18">
+      <line x1="31" y1="18" x2="18.5" y2="24.5" fill="none" stroke-width="4.8"/>
+    </g>
+    <g id="forearm-right" class="rig-part" data-pivot="18.5 24.5">
+      <line x1="18.5" y1="24.5" x2="9" y2="20" fill="none" stroke-width="4.2"/>
+    </g>
+    <g id="torso" class="rig-part" data-pivot="42 39">
+      <line x1="31" y1="18" x2="42" y2="39" fill="none" stroke-width="0"/>
+      <path id="torso-shape" d="M27,20 L38,42 Q45,45 47,38 L35,16 Q29,13 27,20 Z" stroke="none"/>
+    </g>
+    <g id="leg-left" class="rig-part" data-pivot="42 39">
+      <line x1="42" y1="39" x2="19" y2="39" fill="none" stroke-width="6.2"/>
+    </g>
+    <g id="shin-left" class="rig-part" data-pivot="19 39">
+      <line x1="19" y1="39" x2="19" y2="58" fill="none" stroke-width="5.2"/>
+    </g>
+    <g id="arm-left" class="rig-part" data-pivot="31 18">
+      <line x1="31" y1="18" x2="18.5" y2="24.5" fill="none" stroke-width="4.8"/>
+    </g>
+    <g id="forearm-left" class="rig-part" data-pivot="18.5 24.5">
+      <line x1="18.5" y1="24.5" x2="9" y2="20" fill="none" stroke-width="4.2"/>
+    </g>
+    <g id="book" class="rig-part" data-pivot="9 20">
+      <line x1="9" y1="20" x2="3" y2="12" fill="none" stroke-width="1.8"/>
+    </g>
+    <g id="head" class="rig-part" data-pivot="27 11">
+      <circle cx="27" cy="6" r="5.2" stroke="none"/>
+    </g>
+  </g>
+  </g>
+  </g>
+</svg>

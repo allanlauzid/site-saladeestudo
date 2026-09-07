@@ -144,6 +144,13 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
     overflow: hidden;
 }
 
+/* Easter egg da forca: durante a animação do mascote, o corpo pode se
+   estender além da moldura original enquanto caminha/gira/desmonta.
+   Esta classe é ligada e desligada por hangman-animation.js. */
+.hero.hangman-active {
+    overflow: visible;
+}
+
 .hero-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -664,3 +671,31 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
 .fi:focus { outline: none; border-color: var(--color-blue); box-shadow: 0 0 0 3px rgba(0,51,160,0.1); }
 .fb { padding: 10px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--color-yellow); color: var(--color-blue); transition: all 0.2s; }
 .fb:hover { filter: brightness(0.95); }
+
+/* Impede selecionar texto/imagem na pagina (clique duplo, arrastar, etc.), exceto em campos de formulario */
+html, body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-touch-callout: none;
+}
+input, textarea, select, [contenteditable="true"] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Remove o destaque azul/cinza ("tap highlight") que aparece ao tocar em botoes/links, principalmente no celular */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+button, a, .abtn, .btn-nav, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
