@@ -176,6 +176,202 @@
   var activeParts = null;
 
   var WORD_BANK_URL = 'hangman-words.json';
+  // Banco reserva, embutido no proprio arquivo (nao depende de fetch): usado quando
+  // a pagina e aberta offline (file://) e o fetch do hangman-words.json e bloqueado
+  // pelo navegador. Cobre os 13 topicos, entao o sorteio duplo continua variando
+  // mesmo offline, so que dentro de um banco bem menor.
+  var OFFLINE_FALLBACK_BANK = [
+  {
+    "topico": "Matérias escolares",
+    "palavra": "artes",
+    "charada": "Todo mundo me acha fácil até alguém pedir pra desenhar um cavalo de frente."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "biologia",
+    "charada": "Todo mundo decorou o nome de uma organela só pra fazer meme, e ninguém mais lembra pra que ela serve."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "espanhol",
+    "charada": "Todo brasileiro acha que me fala fluentemente só de colocar um 'ito' no final das palavras."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "filosofia",
+    "charada": "Deixo um adolescente de 16 anos numa crise existencial só de perguntar 'o que é o ser'."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "física",
+    "charada": "Explico por que seu celular, entre todas as posições possíveis, sempre escolhe cair com a tela pra baixo."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "geografia",
+    "charada": "Você sabe a capital de um país que nunca vai visitar, mas esquece onde estacionou o carro."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "história",
+    "charada": "Alguém decepcionado vive dizendo que eu me repito, mas ninguém repete a prova sobre mim se colar direito."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "inglês",
+    "charada": "Te deixo cantar um hit inteiro com pronúncia perfeita e travar solenemente na hora de pedir satisfação no aeroporto."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "literatura",
+    "charada": "Fingir que te leu inteira antes da prova é praticamente uma segunda matéria à parte."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "matemática",
+    "charada": "Toda vida adulta promete que você nunca mais vai precisar achar o valor de x, e a vida adulta mente descaradamente."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "português",
+    "charada": "A única matéria em que 'mim fazer isso' está errado, mas sai natural na hora de falar."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "química",
+    "charada": "Sou a razão do professor falar 'não façam isso em casa' logo depois de fazer bem na sua frente."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "redação",
+    "charada": "Ninguém nunca viu um 1000 de verdade em mim, só ouviu falar, que nem disco voador."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "sociologia",
+    "charada": "Te ensinei a dizer 'isso é uma construção social' pra ganhar qualquer discussão no almoço de domingo."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "altura",
+    "charada": "A desculpa clássica de quem não alcança a prateleira de cima do mercado."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "ângulo",
+    "charada": "Toda selfie busca o melhor de mim antes de postar."
+  },
+  {
+    "topico": "Física",
+    "palavra": "aceleração",
+    "charada": "O que todo mundo faz no último quilômetro só pra não perder o compromisso que já está atrasado."
+  },
+  {
+    "topico": "Física",
+    "palavra": "atração",
+    "charada": "Faz dois corpos se aproximarem, e também é a desculpa de qualquer paquera capenga."
+  },
+  {
+    "topico": "Química",
+    "palavra": "ácido",
+    "charada": "A razão do seu estômago reclamar depois daquele lanche às 2 da manhã."
+  },
+  {
+    "topico": "Química",
+    "palavra": "água",
+    "charada": "Prometem que você deveria beber mais de mim o dia inteiro, e ninguém cumpre."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "animal",
+    "charada": "Categoria que inclui você, mesmo que sua timeline discorde."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "bactéria",
+    "charada": "Vive numa maçaneta que ninguém nunca limpa direito."
+  },
+  {
+    "topico": "História",
+    "palavra": "batalha",
+    "charada": "Aquele confronto que os livros descrevem em páginas inteiras, mas que na vida real dura só alguns minutos."
+  },
+  {
+    "topico": "História",
+    "palavra": "colônia",
+    "charada": "Território emprestado que o dono original nunca mais devolveu de bom grado."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "ambiente",
+    "charada": "Tudo ao redor que a gente promete cuidar melhor, geralmente depois de assistir um documentário."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "bússola",
+    "charada": "Aponto sempre pro norte, ao contrário de qualquer decisão que você tenta tomar sozinho."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "adjetivo",
+    "charada": "Dou qualidade a um substantivo, tipo aquele elogio que sua mãe manda com segunda intenção."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "antônimo",
+    "charada": "O oposto exato de uma palavra, igual você e aquele parente que discorda de tudo só por discordar."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "argumento",
+    "charada": "Aquilo que todo mundo jura ter na discussão de grupo de família, mas poucos realmente trazem."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "citação",
+    "charada": "Uma frase de outra pessoa que você usa pra parecer mais culto do que realmente é."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "conhecimento",
+    "charada": "A única coisa que ninguém consegue tirar de você, exceto na hora da prova que você não estudou."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "consciência",
+    "charada": "Aquela voz que fala 'você devia estar estudando' bem na hora do episódio mais interessante da série."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "cidadania",
+    "charada": "Os direitos e deveres que todo mundo lembra dos direitos e esquece os deveres."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "cidadão",
+    "charada": "A pessoa que reclama do imposto e também reclama quando falta asfalto na rua."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "alfabeto",
+    "charada": "Vinte e seis letrinhas que decidem toda discussão sobre como se escreve certo."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "bilíngue",
+    "charada": "Quem fala dois idiomas, e ainda assim trava igual todo mundo na hora de pedir a conta no restaurante."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "artista",
+    "charada": "Quem transforma sentimento em obra, e também qualquer pessoa que decora o próprio bolo de aniversário torto com orgulho."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "ator",
+    "charada": "Finge sentir emoção profissionalmente, coisa que todo mundo já fez pelo menos uma vez numa festa chata."
+  }
+];
   var wordBankPromise = null;
   var wordBankCache = null;
 
@@ -872,10 +1068,10 @@
     var style = document.createElement('style');
     style.id = 'hangman-topic-reveal-styles';
     style.textContent =
-      '#hangman-topic-reveal{position:absolute;right:34px;top:50%;' +
-      'transform:translateY(-50%);z-index:3;color:#d1273f;font-family:Montserrat,Arial,sans-serif;' +
-      'font-weight:800;text-decoration:underline;text-underline-offset:4px;' +
-      'font-size:clamp(12px,1.6vw,16px);white-space:nowrap;pointer-events:none;' +
+      '#hangman-topic-reveal{position:absolute;right:6px;top:50%;' +
+      'transform:translateY(-50%);z-index:3;color:#d1273f;font-family:"Caveat",cursive;' +
+      'font-weight:700;text-decoration:underline;text-underline-offset:6px;' +
+      'font-size:clamp(22px,3.4vw,34px);white-space:nowrap;pointer-events:none;' +
       'clip-path:inset(0 100% 0 0);}';
     document.head.appendChild(style);
   }
@@ -1510,7 +1706,7 @@
   function loadWordBank() {
     if (wordBankPromise) return wordBankPromise;
     if (typeof fetch !== 'function') {
-      wordBankCache = [];
+      wordBankCache = OFFLINE_FALLBACK_BANK.slice();
       wordBankPromise = Promise.resolve(wordBankCache);
       return wordBankPromise;
     }
@@ -1524,8 +1720,8 @@
         return wordBankCache;
       })
       .catch(function (err) {
-        console.warn('A forca não conseguiu carregar ' + WORD_BANK_URL + ':', err);
-        wordBankCache = [];
+        console.warn('A forca não conseguiu carregar ' + WORD_BANK_URL + ' (usando banco reserva offline):', err);
+        wordBankCache = OFFLINE_FALLBACK_BANK.slice();
         return wordBankCache;
       });
     return wordBankPromise;
