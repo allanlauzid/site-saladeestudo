@@ -157,6 +157,7 @@
   var gallowsSwayAngle = 0;
 
   var activeTimeline = null;
+  var fastForwardUnlockTime = 0;
   var pageCamera = null;
   var fastForwardListenersAttached = false;
   var exitControl = null;
@@ -390,6 +391,11 @@
       event.preventDefault();
       event.stopPropagation();
     }
+
+    /* Antes do segundo espaço vazio da palavra aparecer na cena, o clique
+       (teclado, mouse ou toque na tela) é apenas engolido acima -- ainda
+       não acelera nada. */
+    if (activeTimeline.time() < fastForwardUnlockTime) return;
 
     if (activeTimeline.timeScale() < FAST_FORWARD_SCALE) {
       activeTimeline.timeScale(FAST_FORWARD_SCALE);
@@ -1068,20 +1074,21 @@
     var style = document.createElement('style');
     style.id = 'hangman-topic-reveal-styles';
     style.textContent =
-      '#hangman-topic-reveal{position:absolute;right:6px;top:50%;' +
-      'transform:translateY(-50%);z-index:3;color:#d1273f;font-family:"Caveat",cursive;' +
+      '#hangman-topic-reveal{position:absolute;left:50%;top:50%;' +
+      'transform:translate(-50%,-50%);z-index:3;color:#d1273f;font-family:"Caveat",cursive;' +
       'font-weight:700;text-decoration:underline;text-underline-offset:6px;' +
-      'font-size:clamp(22px,3.4vw,34px);white-space:nowrap;pointer-events:none;' +
+      'font-size:clamp(44px,6.8vw,68px);white-space:nowrap;pointer-events:none;' +
       'clip-path:inset(0 100% 0 0);}';
     document.head.appendChild(style);
   }
 
-  /* O texto do topico mora dentro do <nav>, perto da ponta da seta amarela
-     do menu (mesma area onde fica o botao "Agendar Diagnostico"). Ele e
-     revelado progressivamente enquanto o boneco caminha, usando a mesma
-     janela de tempo (walkStart / totalWalkDuration) do resto da caminhada
-     -- o mesmo principio da forca, que ja esta desenhada e so entra no
-     enquadramento pelo movimento da cena. */
+  /* O texto do topico mora dentro do <nav>, centralizado horizontalmente
+     (mesmo eixo central usado pela palavra "Dica:" no HUD do jogo), sem
+     ancora fixa na seta amarela. Ele e revelado progressivamente enquanto
+     o boneco caminha, usando a mesma janela de tempo (walkStart /
+     totalWalkDuration) do resto da caminhada -- o mesmo principio da
+     forca, que ja esta desenhada e so entra no enquadramento pelo
+     movimento da cena. */
   function ensureTopicReveal() {
     var el = document.getElementById('hangman-topic-reveal');
     if (el) return el;
@@ -1484,15 +1491,26 @@
     /* Cada espaço surge logo depois que o mascote passa por ele. */
     var slotNodes = Array.prototype.slice.call(parts.slots.querySelectorAll('.hangman-slot'));
     timeline.set(parts.slots, { autoAlpha: 1 }, walkStart);
+    var slotAppearTimes = [];
     slotNodes.forEach(function (slot) {
       var slotCenter = (Number(slot.getAttribute('x1')) + Number(slot.getAttribute('x2'))) / 2;
       var passProgress = Math.max(0.12, Math.min(0.98, (slotCenter - 47) / layout.travelX));
+      var appearAt = walkStart + totalWalkDuration * passProgress;
+      slotAppearTimes.push(appearAt);
       timeline.to(slot, {
         strokeDashoffset: 0,
         duration: 0.2,
         ease: 'power1.out'
-      }, walkStart + totalWalkDuration * passProgress);
+      }, appearAt);
     });
+
+    /* Só libera o clique-para-acelerar depois que o segundo espaço vazio
+       da palavra aparece na cena -- antes disso o clique (teclado, mouse
+       ou toque) não tem efeito nenhum (ver handleFastForwardInput). */
+    slotAppearTimes.sort(function (a, b) { return a - b; });
+    fastForwardUnlockTime = slotAppearTimes.length >= 2
+      ? slotAppearTimes[1] + 0.2
+      : 0;
 
     /* Primeiro termina a passada e assume a pose neutra de chegada. */
     tweenFrame(
