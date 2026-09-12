@@ -23,6 +23,7 @@
   var helpEliminateUsed = 0;
   var HELP_ELIMINATE_MAX = 3;
   var helpChoiceUsed = false;
+  var helpEliminateBusy = false;
   var activeTweens = [];
   var roundEndTimer = null;
   var roundEndListenersAttached = false;
@@ -249,6 +250,7 @@
       '.hangman-glitter{position:absolute;z-index:2147482600;width:7px;height:7px;border-radius:2px;pointer-events:none}',
       '.hangman-revealed-letter{fill:' + BLUE + ';font-family:Montserrat,Arial,sans-serif;font-size:13px;font-weight:900;text-anchor:middle}',
       'body.hangman-keyboard-open #hangman-page-camera > :not(#hangman-gameplay-ui):not(#hangman-topic-reveal){filter:blur(7px)}',
+      'body.hangman-help-open #hangman-page-camera > :not(#hangman-gameplay-ui):not(#hangman-topic-reveal){filter:blur(7px)}',
       '#hangman-page-camera{transition:filter .28s ease}',
       '.hangman-round-eraser{position:absolute;z-index:2147482900;pointer-events:none;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.9) 18%,#fff 42%,#fff 58%,rgba(255,255,255,.9) 82%,transparent 100%);box-shadow:0 0 34px rgba(255,255,255,.9)}',
       '.hangman-missing-letter{fill:' + WRONG_COLOR + ';opacity:.7;font-family:Montserrat,Arial,sans-serif;font-size:13px;font-weight:900;text-anchor:middle}',
@@ -262,6 +264,7 @@
     clearTweens();
     cancelRoundEnd();
     document.body.classList.remove('hangman-keyboard-open');
+    document.body.classList.remove('hangman-help-open');
     if (ui && ui.helpModalOverlay && ui.helpModalOverlay.parentNode) {
       ui.helpModalOverlay.parentNode.removeChild(ui.helpModalOverlay);
     }
@@ -273,6 +276,7 @@
     instructionDismissed = false;
     helpEliminateUsed = 0;
     helpChoiceUsed = false;
+    helpEliminateBusy = false;
   }
 
   function setStatus(message) {
@@ -312,18 +316,24 @@
     });
   }
 
-  function animateMarks(letter, result) {
+  function animateMarks(letter, result, options) {
     if (!window.gsap || !ui) return;
     var selector = result === 'correct' ? '.hangman-mark-check' : '.hangman-mark-cross';
-    ui.root.querySelectorAll('[data-game-letter="' + letter + '"] ' + selector).forEach(function (path, index) {
+    var customDuration = options && typeof options.duration === 'number' ? options.duration : null;
+    var paths = Array.prototype.slice.call(ui.root.querySelectorAll(
+      '[data-game-letter="' + letter + '"] ' + selector
+    ));
+    paths.forEach(function (path, index) {
       window.gsap.set(path, { opacity: 1, strokeDashoffset: 1 });
       track(window.gsap.to(path, {
         strokeDashoffset: 0,
-        duration: reducedMotion() ? 0.08 : 0.34,
+        duration: reducedMotion() ? 0.08 : (customDuration || 0.34),
         delay: index * 0.025,
-        ease: 'power2.out'
+        ease: 'power2.out',
+        onComplete: (options && options.onComplete && index === paths.length - 1) ? options.onComplete : undefined
       }));
     });
+    if (!paths.length && options && options.onComplete) options.onComplete();
   }
 
   function openKeyboard() {
@@ -380,7 +390,7 @@
     if (!ui) return;
     if (ui.eliminateToggle) {
       var canEliminate = helpEliminateUsed < HELP_ELIMINATE_MAX && getWrongLetterCandidates().length > 0;
-      ui.eliminateToggle.disabled = !canEliminate || guessInProgress || ui.gameOver;
+      ui.eliminateToggle.disabled = !canEliminate || guessInProgress || ui.gameOver || helpEliminateBusy;
       ui.eliminateToggle.textContent = 'X' + Math.max(0, HELP_ELIMINATE_MAX - helpEliminateUsed);
     }
     if (ui.helpMenuToggle) {
@@ -406,17 +416,37 @@
     if (allLettersRevealed()) finishWin();
   }
 
+  /* Sequencia pedida: abre o teclado, espera 1s, so ENTAO marca o X (com
+     a animacao de "riscar" durando 2s), espera mais 1s depois de marcado,
+     e fecha o teclado. Nada alem disso (nao mexe em erro/vida do jogador). */
   function eliminateWrongLetterHelper() {
-    if (!ui || !round || guessInProgress || ui.gameOver) return;
+    if (!ui || !round || guessInProgress || ui.gameOver || helpEliminateBusy) return;
     if (helpEliminateUsed >= HELP_ELIMINATE_MAX) return;
     var candidates = getWrongLetterCandidates();
     if (!candidates.length) return;
-    openKeyboard();
-    var letter = candidates[Math.floor(Math.random() * candidates.length)];
-    usedLetters.set(letter, 'wrong');
-    syncLetterState(letter, 'wrong');
-    animateMarks(letter, 'wrong');
+
+    helpEliminateBusy = true;
     helpEliminateUsed += 1;
+    updateHelpButtonsState();
+
+    var letter = candidates[Math.floor(Math.random() * candidates.length)];
+    openKeyboard();
+
+    window.setTimeout(function () {
+      if (!ui) { helpEliminateBusy = false; return; }
+      usedLetters.set(letter, 'wrong');
+      syncLetterState(letter, 'wrong');
+      animateMarks(letter, 'wrong', {
+        duration: reducedMotion() ? 0.2 : 2,
+        onComplete: function () {
+          window.setTimeout(function () {
+            closeKeyboard();
+            helpEliminateBusy = false;
+            updateHelpButtonsState();
+          }, 1000);
+        }
+      });
+    }, 1000);
   }
 
   function showSpeechBubble(text) {
@@ -443,6 +473,7 @@
   }
 
   function closeHelpModal() {
+    document.body.classList.remove('hangman-help-open');
     if (!ui || !ui.helpModalOverlay) return;
     if (ui.helpModalOverlay.parentNode) ui.helpModalOverlay.parentNode.removeChild(ui.helpModalOverlay);
     ui.helpModalOverlay = null;
@@ -550,7 +581,11 @@
     modal.appendChild(closeBtn);
 
     overlay.appendChild(modal);
-    (getPageCamera() || document.body).appendChild(overlay);
+    /* Igual ao teclado: fica no <body> (nunca dentro da camera com
+       transform do GSAP, senao o position:fixed quebra e o overlay so
+       cobre um pedaco da tela) e usa a mesma classe de desfoque do fundo. */
+    document.body.appendChild(overlay);
+    document.body.classList.add('hangman-help-open');
     ui.helpModalOverlay = overlay;
   }
 
@@ -594,6 +629,7 @@
     if (extraHints.length) {
       var hintCycle = [baseHintText].concat(extraHints);
       var hintCycleIndex = 0;
+      var hudOffsetY = 0;
       var hint2Toggle = document.createElement('button');
       hint2Toggle.type = 'button';
       hint2Toggle.className = 'hangman-hint2-toggle';
@@ -606,8 +642,21 @@
 
       hint2Toggle.addEventListener('click', function (event) {
         event.stopPropagation();
+        var heightBefore = hint.getBoundingClientRect().height;
         hintCycleIndex = (hintCycleIndex + 1) % hintCycle.length;
         hintText.textContent = hintCycle[hintCycleIndex];
+        /* A pilula (e o proprio botao vermelho, que fica ancorado nela)
+           nao pode se mexer por cima quando o texto muda de tamanho -- so
+           a base da pilula deve crescer/encolher. Como o grupo inteiro
+           (.hangman-game-hud) fica ancorado pelo "bottom", crescer a
+           pilula empurra tudo pra cima; aqui compensamos deslocando o hud
+           pra baixo na mesma medida, cancelando o movimento no topo. */
+        var heightAfter = hint.getBoundingClientRect().height;
+        var delta = heightAfter - heightBefore;
+        if (delta && window.gsap) {
+          hudOffsetY += delta;
+          window.gsap.set(hud, { y: hudOffsetY });
+        }
       });
       hint.appendChild(hint2Toggle);
     }

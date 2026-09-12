@@ -471,6 +471,11 @@
   var activeRound = null;
   var floatingAnimations = [];
   var floatingInteractionsAttached = false;
+  /* "Peças penduradas" (ver movePieceToGallows): em vez de animar a mesma
+     peça flutuante voando até a pose final na forca, ela some no lugar e
+     surge uma cópia já plantada na posição certa. Essas cópias ficam
+     guardadas aqui para serem removidas quando a rodada terminar/reiniciar. */
+  var hungGhosts = [];
   var activeParts = null;
   var pageScrollLock = null;
 
@@ -1251,8 +1256,8 @@
         gallowsSwayAngle = angle;
         gsap.set(parts.gallows, { rotation: angle, transformOrigin: '290px 194px' });
         floatingPieceStates.forEach(function (state) {
-          if (!state.hung) return;
-          gsap.set(state.piece, { rotation: state.rotation + angle * (state.pieceId === attached ? 0.9 : 0.65) });
+          if (!state.hung || !state.ghost) return;
+          gsap.set(state.ghost, { rotation: (state.hungRotation || 0) + angle * (state.pieceId === attached ? 0.9 : 0.65) });
         });
       }
     });
@@ -1271,9 +1276,19 @@
     floatingPieceStates.forEach(function (state) {
       if (state.reactionTimeline) state.reactionTimeline.kill();
       if (gsap) gsap.killTweensOf(state);
-      if (state.piece) state.piece.style.willChange = '';
+      if (state.piece) {
+        state.piece.style.willChange = '';
+        state.piece.style.visibility = '';
+        state.piece.style.pointerEvents = '';
+        if (gsap) gsap.set(state.piece, { opacity: 1 });
+      }
     });
     floatingPieceStates = [];
+
+    hungGhosts.forEach(function (ghost) {
+      if (ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost);
+    });
+    hungGhosts = [];
 
     if (floatingInteractionsAttached) {
       window.removeEventListener('pointerdown', handleFloatingSlotInput, true);
@@ -1504,6 +1519,14 @@
     return true;
   }
 
+  /* Em vez de animar a MESMA peça flutuante voando até a pose final (a
+     trajetória nunca ficou alinhada direito com a pose pendurada), a peça
+     flutuante some com um fade rápido no lugar onde estava, e uma cópia
+     dela nasce já plantada certinha na posição final (os mesmos valores de
+     x/y/rotação/escala que a pose sorteada define), revelada com um
+     pop + flash azul. Pro jogador parece uma peça só se teletransportando;
+     na prática são duas elementos diferentes -- a "gambiarra" combinada
+     com o Allan. */
   function movePieceToGallows(identifier, parts) {
     var gsap = window.gsap;
     var state = findFloatingPiece(identifier);
@@ -1515,34 +1538,76 @@
     if (state.floatTimeline) state.floatTimeline.kill();
     if (state.reactionTimeline) state.reactionTimeline.kill();
     gsap.killTweensOf(state);
-    state.floatY = 0;
-    state.waveY = 0;
-    state.reactY = 0;
-    state.emotionX = 0;
-    state.emotionY = 0;
-    state.emotionRotation = 0;
-    state.rotation = 0;
-    if (state.piece.parentNode) state.piece.parentNode.appendChild(state.piece);
 
-    var localAnchor = target.localAnchor || { x: 0, y: 0 };
-    state.svgOrigin = localAnchor.x + ' ' + localAnchor.y;
-    var tween = gsap.to(state, {
-      baseX: target.x - TRAVEL_X - localAnchor.x,
-      baseY: target.y - localAnchor.y,
-      rotation: target.rotation,
-      scaleX: target.scaleX === undefined ? 1 : target.scaleX,
-      scaleY: target.scaleY === undefined ? 1 : target.scaleY,
-      duration: prefersReducedMotion() ? 0.25 : 0.9,
-      ease: 'power2.inOut',
-      onUpdate: function () { renderFloatingPiece(state); },
+    var floatingPiece = state.piece;
+
+    /* 1) A peça flutuante original só desaparece (fade), sem se mover. */
+    gsap.to(floatingPiece, {
+      opacity: 0,
+      duration: prefersReducedMotion() ? 0.12 : 0.22,
+      ease: 'power1.in',
       onComplete: function () {
-        renderFloatingPiece(state);
+        floatingPiece.style.visibility = 'hidden';
+        floatingPiece.style.pointerEvents = 'none';
+      }
+    });
+
+    /* 2) Uma cópia dela nasce escondida já na posição final da pose e é
+       revelada com um pop (escala) + flash azul (drop-shadow). */
+    var localAnchor = target.localAnchor || { x: 0, y: 0 };
+    var finalScaleX = target.scaleX === undefined ? 1 : target.scaleX;
+    var finalScaleY = target.scaleY === undefined ? 1 : target.scaleY;
+
+    var ghost = floatingPiece.cloneNode(true);
+    ghost.removeAttribute('id');
+    ghost.removeAttribute('data-hangman-piece');
+    ghost.setAttribute('aria-hidden', 'true');
+    ghost.style.cursor = '';
+    ghost.style.willChange = '';
+    ghost.style.pointerEvents = 'none';
+    if (floatingPiece.parentNode) floatingPiece.parentNode.appendChild(ghost);
+    hungGhosts.push(ghost);
+    state.ghost = ghost;
+    state.hungRotation = target.rotation;
+
+    gsap.set(ghost, {
+      x: target.x - TRAVEL_X - localAnchor.x,
+      y: target.y - localAnchor.y,
+      rotation: target.rotation,
+      scaleX: finalScaleX * 0.7,
+      scaleY: finalScaleY * 0.7,
+      transformOrigin: localAnchor.x + 'px ' + localAnchor.y + 'px',
+      opacity: 0
+    });
+    ghost.style.filter = 'drop-shadow(0 0 0 rgba(0,85,212,0))';
+
+    var reveal = gsap.timeline({
+      onComplete: function () {
         document.dispatchEvent(new CustomEvent('hangman:piece-hung', {
           detail: { index: state.index, pieceId: state.pieceId }
         }));
       }
     });
-    floatingAnimations.push(tween);
+    reveal
+      .to(ghost, {
+        opacity: 1,
+        scaleX: finalScaleX,
+        scaleY: finalScaleY,
+        duration: prefersReducedMotion() ? 0.16 : 0.38,
+        ease: 'back.out(2.2)'
+      }, 0)
+      .to(ghost, {
+        filter: 'drop-shadow(0 0 10px rgba(0,85,212,0.95))',
+        duration: 0.16,
+        ease: 'power1.out'
+      }, 0)
+      .to(ghost, {
+        filter: 'drop-shadow(0 0 0 rgba(0,85,212,0))',
+        duration: 0.35,
+        ease: 'power1.in'
+      }, 0.16);
+
+    floatingAnimations.push(reveal);
     return true;
   }
 
@@ -2100,6 +2165,10 @@
 
     timeline.call(function () {
       detachFastForwardControls();
+      /* Reforco de seguranca: garante que as pecas flutuando comecem
+         sempre em velocidade normal, mesmo que o avanco rapido da
+         caminhada nao tenha sido desfeito antes por algum motivo. */
+      if (activeTimeline) activeTimeline.timeScale(1);
       startFloatingPieces(rowTargets);
       document.dispatchEvent(new CustomEvent('hangman:sequence-complete'));
     });

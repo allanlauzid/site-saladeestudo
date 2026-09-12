@@ -27,6 +27,7 @@
   var GAMES = [
     {
       name: 'jogo-da-velha',
+      weight: 0.4,
       start: function (x, y) {
         if (window.TicTacToe) window.TicTacToe.start(x, y);
       },
@@ -36,6 +37,7 @@
     },
     {
       name: 'forca',
+      weight: 0.6,
       start: function () {
         if (window.HangmanAnimation) window.HangmanAnimation.startRandom();
       },
@@ -49,9 +51,19 @@
     return GAMES.some(function (game) { return game.isActive(); });
   }
 
+  // Sorteio por peso: cada jogo tem sua propria chance (soma dos "weight"
+  // acima), em vez de sortear com a mesma probabilidade entre todos.
   function pickRandomGame() {
-    var index = Math.floor(Math.random() * GAMES.length);
-    return GAMES[index];
+    var totalWeight = GAMES.reduce(function (sum, game) {
+      return sum + (typeof game.weight === 'number' ? game.weight : 1);
+    }, 0);
+    var roll = Math.random() * totalWeight;
+    var cursor = 0;
+    for (var i = 0; i < GAMES.length; i += 1) {
+      cursor += (typeof GAMES[i].weight === 'number' ? GAMES[i].weight : 1);
+      if (roll < cursor) return GAMES[i];
+    }
+    return GAMES[GAMES.length - 1];
   }
 
   document.addEventListener(
