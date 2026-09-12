@@ -136,6 +136,12 @@ function watchArrowOverText(){
     }
     
     // Continua animando enquanto a seta não tiver saído completamente da tela pela direita
+    // Aborta se o elemento foi escondido prematuramente (ex: acionamento do minigame)
+    if (arrowRect.width === 0 && arrowRect.height === 0) {
+        document.body.style.overflow = '';
+        return;
+    }
+
     if (arrowRect.left < window.innerWidth) {
         requestAnimationFrame(check);
     } else {

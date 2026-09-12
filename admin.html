@@ -278,6 +278,47 @@
   .gen-choice-actions.gen-choice-row .abtn{ flex:1; min-width: 140px; }
   .chatgpt-mark{ width:17px; height:17px; flex-shrink:0; }
 
+  /* --- atalho de resolução de exercícios --- */
+  .exercise-launch-btn{ width:34px; height:34px; padding:4px !important; justify-content:center; }
+  .exercise-launch-btn img{ width:24px; height:24px; object-fit:contain; display:block; }
+  .ui-tooltip{
+    position:fixed; left:0; top:0; z-index:10030; width:max-content;
+    max-width:min(240px, calc(100vw - 24px)); padding:7px 10px; border-radius:7px;
+    background:var(--color-blue); color:#fff; font-size:.75rem; font-weight:700;
+    line-height:1.25; text-align:center; pointer-events:none; visibility:hidden; opacity:0;
+    transition:opacity .16s ease, transform .16s ease;
+  }
+  .ui-tooltip.above{ transform:translate(-50%, calc(-100% - 8px)) translateY(4px); }
+  .ui-tooltip.below{ transform:translate(-50%, 8px) translateY(-4px); }
+  .ui-tooltip.is-visible{ visibility:visible; opacity:1; }
+  .ui-tooltip.above.is-visible{ transform:translate(-50%, calc(-100% - 8px)) translateY(0); }
+  .ui-tooltip.below.is-visible{ transform:translate(-50%, 8px) translateY(0); }
+  .ui-tooltip::after{
+    content:""; position:absolute; left:50%; margin-left:-5px; border:5px solid transparent;
+  }
+  .ui-tooltip.above::after{ top:100%; border-top-color:var(--color-blue); }
+  .ui-tooltip.below::after{ bottom:100%; border-bottom-color:var(--color-blue); }
+  .exercise-modal-card{ position:relative; width:min(520px, 100%); }
+  .exercise-main-actions{ display:flex; flex-direction:column; gap:10px; }
+  .exercise-main-actions .abtn{ width:100%; justify-content:center; min-height:44px; }
+  .exercise-service-btn img{ width:22px; height:22px; object-fit:contain; border-radius:50%; }
+  .exercise-warning{ color:#3f3b35; font-size:.9rem; line-height:1.55; margin:0 0 16px; }
+  .exercise-warning strong{ color:var(--color-blue); }
+  .exercise-step-actions{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; }
+  .exercise-copy-confirmation{
+    margin:0 0 16px; padding:11px 12px; border:1px solid #b8d8c5; border-radius:8px;
+    background:#eef9f2; color:#17653d; font-size:.84rem; line-height:1.45;
+  }
+  @media (max-width:600px){
+    #panelTopWidget{ gap:6px !important; }
+    .exercise-modal-card{ padding:1.35rem; }
+    .exercise-step-actions{ flex-direction:column-reverse; }
+    .exercise-step-actions .abtn{ width:100%; justify-content:center; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    .ui-tooltip{ transition:none; }
+  }
+
   /* Sparkles Animation (posicionamento feito via JS/requestAnimationFrame, sem @keyframes) */
   .spark {
     position: absolute;
@@ -318,6 +359,34 @@
   <div class="login-card" id="settingsCard" style="max-width:800px; width:95%;"></div>
 </div>
 
+<!-- RESOLUÇÃO DE EXERCÍCIOS -->
+<div class="modal-overlay" id="exerciseModal" hidden role="presentation">
+  <div class="login-card exercise-modal-card" role="dialog" aria-modal="true" aria-label="Resolução de Exercícios">
+    <button class="modal-close-btn" id="exerciseModalClose" type="button" aria-label="Fechar" data-tooltip="Fechar">&times;</button>
+    <div class="exercise-main-actions" id="exerciseMainActions" aria-busy="false">
+      <button class="abtn secondary exercise-service-btn" id="exerciseChatgpt" type="button">
+        <img src="../icon_chatgpt.webp" alt=""> ChatGPT
+      </button>
+      <button class="abtn secondary exercise-service-btn" id="exerciseClaude" type="button">
+        <img src="../icon_claude.webp" alt=""> Claude
+      </button>
+      <button class="abtn secondary exercise-service-btn" id="exerciseGemini" type="button">
+        <img src="../icon_gemini.webp" alt=""> Gemini
+      </button>
+      <button class="abtn secondary" id="exerciseCopyPrompt" type="button">Copiar prompt</button>
+      <button class="abtn secondary" id="exerciseDownloadPrompt" type="button">Baixar prompt em .md</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="exerciseServiceModal" hidden role="presentation">
+  <div class="login-card exercise-modal-card" role="dialog" aria-modal="true" aria-labelledby="exerciseServiceTitle" aria-describedby="exerciseServiceMessage">
+    <button class="modal-close-btn" id="exerciseServiceClose" type="button" aria-label="Fechar" data-tooltip="Fechar">&times;</button>
+    <h1 id="exerciseServiceTitle"></h1>
+    <div id="exerciseServiceContent"></div>
+  </div>
+</div>
+
 <div class="toast-region" id="providerToastRegion" aria-live="polite" aria-atomic="true"></div>
 <div class="modal-overlay" id="providerDecisionModal" hidden role="presentation">
   <div class="provider-decision-card" role="dialog" aria-modal="true" aria-labelledby="providerDecisionTitle" aria-describedby="providerDecisionMessage">
@@ -332,7 +401,7 @@
 
 <div class="modal-overlay" id="genChoiceModal" hidden role="presentation">
   <div class="provider-decision-card gen-choice-card" role="dialog" aria-modal="true" aria-labelledby="genChoiceTitle">
-    <button class="modal-close-btn" id="genChoiceClose" type="button" aria-label="Fechar">&times;</button>
+    <button class="modal-close-btn" id="genChoiceClose" type="button" aria-label="Fechar" data-tooltip="Fechar">&times;</button>
     <div id="genChoiceScreen1">
       <h2 id="genChoiceTitle">Onde deseja gerar este conteúdo?</h2>
       
@@ -402,7 +471,7 @@
 
   <div class="admin-top">
     <div style="flex: 0 0 40px; display:flex; justify-content:flex-start;">
-      <a href="index.html" id="btnPanelBack" class="abtn small" title="Voltar ao site" style="padding:6px 8px;">
+      <a href="index.html" id="btnPanelBack" class="abtn small" aria-label="Voltar ao site" data-tooltip="Voltar ao site" style="padding:6px 8px;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       </a>
     </div>
@@ -445,7 +514,7 @@
       <button class="abtn" id="btnGenerate" type="button" style="display:inline-block; text-align:center; padding:8px 24px; font-size:1.05rem;">
         <span><span style="font-weight:400;">Gerar</span><strong style="text-transform:uppercase;">PROMPT</strong></span>
       </button>
-      <label for="chkOtimizar" title="Otimizar prompt" style="cursor:pointer; display:flex; align-items:center; user-select:none;">
+      <label for="chkOtimizar" data-tooltip="Otimizar prompt" style="cursor:pointer; display:flex; align-items:center; user-select:none;">
         <input type="checkbox" id="chkOtimizar" style="display:none;">
         <img id="iconOtimizar" src="../icon_magic_wand2.webp" alt="Otimizar prompt" style="width:28px; height:28px; object-fit:contain; opacity:0.7; transition: opacity 0.2s;">
       </label>
@@ -2822,18 +2891,301 @@ function ensureTopRightWidget(){
   if(el.innerHTML.trim() !== '') return el;
   
   el.innerHTML =
-    '<span id="panelSessionCountdown" style="font-family:monospace; font-weight:700; color:var(--color-blue); font-size:0.85rem; display:none;"></span>' +
-    '<button class="abtn small" id="btnPanelLogout" type="button" title="Sair" style="display:none; padding:6px 8px;">' + ICON_LOGOUT_SVG + '</button>' +
-    '<button class="abtn small" id="btnPanelSettings" type="button" title="Configurações" style="padding:6px 8px;">' + ICON_GEAR_SVG + '</button>';
+    '<span id="panelSessionCountdown" aria-label="Tempo restante da sessão" data-tooltip="Tempo restante da sessão" style="font-family:monospace; font-weight:700; color:var(--color-blue); font-size:0.85rem; display:none;"></span>' +
+    '<button class="abtn small" id="btnPanelLogout" type="button" aria-label="Sair do painel" data-tooltip="Sair do painel" style="display:none; padding:6px 8px;">' + ICON_LOGOUT_SVG + '</button>' +
+    '<button class="abtn small exercise-launch-btn" id="btnExerciseResolution" type="button" aria-label="Resolução de Exercícios" data-tooltip="Resolução de Exercícios">' +
+      '<img src="png/resolucao-exercicios.png" alt="">' +
+    '</button>' +
+    '<button class="abtn small" id="btnPanelSettings" type="button" aria-label="Configurações" data-tooltip="Configurações" style="padding:6px 8px;">' + ICON_GEAR_SVG + '</button>';
   
   document.getElementById('btnPanelLogout').addEventListener('click', function(){
     forceLogoutToLoginFlow();
   });
+  setupExerciseLaunchButton();
   document.getElementById('btnPanelSettings').addEventListener('click', function(){
     renderSettingsHome();
     document.getElementById('settingsModal').hidden = false;
   });
   return el;
+}
+
+// ---------- Resolução de Exercícios ----------
+const EXERCISE_PROMPT_PATH = 'prompts/gerador-resolucoes-sala-de-estudo-prof-rubia-lima.md';
+const EXERCISE_PROMPT_FILENAME = '# Gerador de resoluções_sala_de_estudo_prof_rubia_lima.md';
+let exercisePromptText = '';
+let exercisePromptPromise = null;
+
+function loadExercisePrompt(){
+  if(exercisePromptText) return Promise.resolve(exercisePromptText);
+  if(!exercisePromptPromise){
+    exercisePromptPromise = fetch(EXERCISE_PROMPT_PATH, { cache:'no-cache' })
+      .then(function(response){
+        if(!response.ok) throw new Error('Não foi possível carregar o prompt.');
+        return response.text();
+      })
+      .then(function(text){ exercisePromptText = text; return text; })
+      .catch(function(error){ exercisePromptPromise = null; throw error; });
+  }
+  return exercisePromptPromise;
+}
+
+function setExerciseActionsLoading(isLoading){
+  const actions = document.getElementById('exerciseMainActions');
+  if(!actions) return;
+  actions.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+  ['exerciseChatgpt','exerciseClaude','exerciseGemini','exerciseCopyPrompt'].forEach(function(id){
+    const button = document.getElementById(id);
+    if(button) button.disabled = isLoading;
+  });
+}
+
+async function ensureExercisePrompt(){
+  setExerciseActionsLoading(true);
+  try{
+    return await loadExercisePrompt();
+  }catch(error){
+    if(typeof showProviderToast === 'function') showProviderToast('Não foi possível carregar o prompt de resolução.', 'error');
+    else alert('Não foi possível carregar o prompt de resolução.');
+    throw error;
+  }finally{
+    setExerciseActionsLoading(false);
+  }
+}
+
+function openExerciseMainModal(){
+  document.getElementById('exerciseModal').hidden = false;
+  setExerciseActionsLoading(true);
+  loadExercisePrompt()
+    .catch(function(){})
+    .finally(function(){
+      setExerciseActionsLoading(false);
+      document.getElementById('exerciseChatgpt').focus();
+    });
+}
+
+function closeExerciseMainModal(){
+  document.getElementById('exerciseModal').hidden = true;
+  const launchButton = document.getElementById('btnExerciseResolution');
+  if(launchButton) launchButton.focus();
+}
+
+function closeExerciseServiceModal(returnToMain){
+  document.getElementById('exerciseServiceModal').hidden = true;
+  if(returnToMain){
+    document.getElementById('exerciseModal').hidden = false;
+    setTimeout(function(){ document.getElementById('exerciseChatgpt').focus(); }, 0);
+  }
+}
+
+async function copyExercisePrompt(button){
+  const prompt = await ensureExercisePrompt();
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    await navigator.clipboard.writeText(prompt);
+  }else{
+    const textarea = document.createElement('textarea');
+    textarea.value = prompt;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+  }
+  if(button){
+    const original = button.textContent;
+    button.textContent = 'Prompt copiado!';
+    setTimeout(function(){ button.textContent = original; }, 1600);
+  }
+  return prompt;
+}
+
+function downloadExercisePrompt(){
+  const link = document.createElement('a');
+  link.href = EXERCISE_PROMPT_PATH;
+  link.download = EXERCISE_PROMPT_FILENAME;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function exerciseAttachmentWarning(serviceName, className, includeDescriptionId){
+  return '<p class="' + (className || 'exercise-warning') + '"' + (includeDescriptionId === false ? '' : ' id="exerciseServiceMessage"') + '>' +
+    'Antes de continuar, <strong>insira os exercícios como anexo no ' + serviceName + '</strong> ou copie e cole os exercícios dentro do campo do prompt.' +
+  '</p>';
+}
+
+function showExercisePrefillModal(service){
+  const isClaude = service === 'claude';
+  const serviceName = isClaude ? 'Claude' : 'ChatGPT';
+  const serviceModal = document.getElementById('exerciseServiceModal');
+  document.getElementById('exerciseModal').hidden = true;
+  document.getElementById('exerciseServiceTitle').textContent = 'Abrir no ' + serviceName;
+  document.getElementById('exerciseServiceContent').innerHTML =
+    exerciseAttachmentWarning(serviceName, 'exercise-warning', true) +
+    '<div class="exercise-step-actions">' +
+      '<button class="abtn ghost" id="exerciseServiceBack" type="button">Voltar</button>' +
+      '<button class="abtn" id="exerciseServiceOpen" type="button">Abrir ' + serviceName + '</button>' +
+    '</div>';
+  serviceModal.hidden = false;
+  document.getElementById('exerciseServiceBack').addEventListener('click', function(){ closeExerciseServiceModal(true); });
+  document.getElementById('exerciseServiceOpen').addEventListener('click', async function(){
+    try{
+      const prompt = await ensureExercisePrompt();
+      const baseUrl = isClaude ? 'https://claude.ai/new?q=' : 'https://chatgpt.com/?q=';
+      window.open(baseUrl + encodeURIComponent(prompt), '_blank', 'noopener');
+    }catch(error){}
+  });
+  setTimeout(function(){ document.getElementById('exerciseServiceOpen').focus(); }, 0);
+}
+
+function showExerciseGeminiModal(){
+  const serviceModal = document.getElementById('exerciseServiceModal');
+  document.getElementById('exerciseModal').hidden = true;
+  document.getElementById('exerciseServiceTitle').textContent = 'Abrir no Gemini';
+  document.getElementById('exerciseServiceContent').innerHTML =
+    '<p class="exercise-warning" id="exerciseServiceMessage">Para usar no Gemini, primeiro copie o prompt e depois cole-o no campo de mensagem.</p>' +
+    '<div id="exerciseGeminiConfirmation"></div>' +
+    '<div class="exercise-step-actions">' +
+      '<button class="abtn ghost" id="exerciseServiceBack" type="button">Voltar</button>' +
+      '<button class="abtn secondary" id="exerciseGeminiCopy" type="button">Copiar</button>' +
+      '<button class="abtn" id="exerciseGeminiOpen" type="button" disabled>Abrir Gemini</button>' +
+    '</div>';
+  serviceModal.hidden = false;
+  document.getElementById('exerciseServiceBack').addEventListener('click', function(){ closeExerciseServiceModal(true); });
+  document.getElementById('exerciseGeminiCopy').addEventListener('click', async function(){
+    try{
+      await copyExercisePrompt(this);
+      document.getElementById('exerciseGeminiConfirmation').innerHTML = exerciseAttachmentWarning('Gemini', 'exercise-copy-confirmation', false);
+      document.getElementById('exerciseGeminiOpen').disabled = false;
+      document.getElementById('exerciseGeminiOpen').focus();
+    }catch(error){}
+  });
+  document.getElementById('exerciseGeminiOpen').addEventListener('click', function(){
+    window.open('https://gemini.google.com/app', '_blank', 'noopener');
+  });
+  setTimeout(function(){ document.getElementById('exerciseGeminiCopy').focus(); }, 0);
+}
+
+function setupExerciseLaunchButton(){
+  const button = document.getElementById('btnExerciseResolution');
+  if(!button || button.dataset.ready === 'true') return;
+  button.dataset.ready = 'true';
+  button.addEventListener('click', openExerciseMainModal);
+}
+
+function setupExerciseModals(){
+  const mainModal = document.getElementById('exerciseModal');
+  const serviceModal = document.getElementById('exerciseServiceModal');
+  document.getElementById('exerciseModalClose').addEventListener('click', closeExerciseMainModal);
+  document.getElementById('exerciseServiceClose').addEventListener('click', function(){ closeExerciseServiceModal(true); });
+  mainModal.addEventListener('click', function(event){ if(event.target === mainModal) closeExerciseMainModal(); });
+  serviceModal.addEventListener('click', function(event){ if(event.target === serviceModal) closeExerciseServiceModal(true); });
+  document.getElementById('exerciseChatgpt').addEventListener('click', function(){ showExercisePrefillModal('chatgpt'); });
+  document.getElementById('exerciseClaude').addEventListener('click', function(){ showExercisePrefillModal('claude'); });
+  document.getElementById('exerciseGemini').addEventListener('click', showExerciseGeminiModal);
+  document.getElementById('exerciseCopyPrompt').addEventListener('click', async function(){ try{ await copyExercisePrompt(this); }catch(error){} });
+  document.getElementById('exerciseDownloadPrompt').addEventListener('click', downloadExercisePrompt);
+  document.addEventListener('keydown', function(event){
+    if(event.key !== 'Escape') return;
+    if(!serviceModal.hidden) closeExerciseServiceModal(true);
+    else if(!mainModal.hidden) closeExerciseMainModal();
+  });
+}
+
+// ---------- legendas dos controles por ícone ----------
+function setupUITooltips(){
+  let tooltip = document.getElementById('globalUiTooltip');
+  if(!tooltip){
+    tooltip = document.createElement('div');
+    tooltip.id = 'globalUiTooltip';
+    tooltip.className = 'ui-tooltip above';
+    tooltip.setAttribute('role', 'tooltip');
+    document.body.appendChild(tooltip);
+  }
+
+  let activeTarget = null;
+  let holdTimer = null;
+  let longPressTarget = null;
+  let hideTimer = null;
+
+  function positionTooltip(target){
+    const text = target.getAttribute('data-tooltip');
+    if(!text) return;
+    tooltip.textContent = text;
+    tooltip.classList.remove('above', 'below');
+    tooltip.classList.add('above');
+    tooltip.style.visibility = 'hidden';
+    tooltip.classList.add('is-visible');
+    const targetRect = target.getBoundingClientRect();
+    const tooltipWidth = tooltip.offsetWidth;
+    const tooltipHeight = tooltip.offsetHeight;
+    const centerX = targetRect.left + targetRect.width / 2;
+    const safeX = Math.max(tooltipWidth / 2 + 8, Math.min(window.innerWidth - tooltipWidth / 2 - 8, centerX));
+    const placeBelow = targetRect.top < tooltipHeight + 16;
+    tooltip.classList.toggle('below', placeBelow);
+    tooltip.classList.toggle('above', !placeBelow);
+    tooltip.style.left = safeX + 'px';
+    tooltip.style.top = (placeBelow ? targetRect.bottom : targetRect.top) + 'px';
+    tooltip.style.visibility = '';
+  }
+
+  function showTooltip(target){
+    if(!target || !target.isConnected) return;
+    if(hideTimer){ clearTimeout(hideTimer); hideTimer = null; }
+    activeTarget = target;
+    positionTooltip(target);
+  }
+
+  function hideTooltip(target){
+    if(target && activeTarget !== target) return;
+    tooltip.classList.remove('is-visible');
+    activeTarget = null;
+  }
+
+  document.addEventListener('pointerover', function(event){
+    if(event.pointerType === 'touch') return;
+    const target = event.target.closest && event.target.closest('[data-tooltip]');
+    if(target) showTooltip(target);
+  });
+  document.addEventListener('pointerout', function(event){
+    const target = event.target.closest && event.target.closest('[data-tooltip]');
+    if(target && !target.contains(event.relatedTarget)) hideTooltip(target);
+  });
+  document.addEventListener('focusin', function(event){
+    const target = event.target.closest && event.target.closest('[data-tooltip]');
+    if(target) showTooltip(target);
+  });
+  document.addEventListener('focusout', function(event){
+    const target = event.target.closest && event.target.closest('[data-tooltip]');
+    if(target) hideTooltip(target);
+  });
+  document.addEventListener('pointerdown', function(event){
+    if(event.pointerType !== 'touch') return;
+    const target = event.target.closest && event.target.closest('[data-tooltip]');
+    if(!target) return;
+    longPressTarget = null;
+    holdTimer = setTimeout(function(){
+      longPressTarget = target;
+      showTooltip(target);
+      hideTimer = setTimeout(function(){ hideTooltip(target); }, 1800);
+    }, 550);
+  });
+  ['pointerup','pointercancel'].forEach(function(eventName){
+    document.addEventListener(eventName, function(){
+      if(holdTimer){ clearTimeout(holdTimer); holdTimer = null; }
+    });
+  });
+  document.addEventListener('click', function(event){
+    const target = event.target.closest && event.target.closest('[data-tooltip]');
+    if(target && target === longPressTarget){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      longPressTarget = null;
+    }
+  }, true);
+  window.addEventListener('resize', function(){ if(activeTarget) positionTooltip(activeTarget); });
+  window.addEventListener('scroll', function(){ if(activeTarget) positionTooltip(activeTarget); }, true);
 }
 
 function hideSessionCountdownWidget(){
@@ -3307,6 +3659,8 @@ async function initAdminApp(){
 
 setupEnrollModal();
 setupSettingsModal();
+setupExerciseModals();
+setupUITooltips();
 runLoginFlow();
 </script>
 </body>

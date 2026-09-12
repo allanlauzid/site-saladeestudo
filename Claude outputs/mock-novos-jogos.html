@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Mock — Novos Minigames</title>
+<style>
+  :root{
+    --blue:#0055d4;
+    --gold:#ffd400;
+    --red:#d1273f;
+    --correct:#12b76a;
+    --wrong:#ef4444;
+    --bg:#f4f7ff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:Montserrat,Arial,sans-serif;
+    background:var(--bg);
+    color:#07101f;
+    padding:24px 16px 60px;
+  }
+  h1{
+    text-align:center;
+    color:var(--blue);
+    font-size:26px;
+    margin-bottom:4px;
+  }
+  .subtitle{
+    text-align:center;
+    color:#667085;
+    font-size:14px;
+    margin-bottom:24px;
+  }
+  .tabs{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:28px;
+  }
+  .tab-btn{
+    border:3px solid var(--blue);
+    background:#fff;
+    color:var(--blue);
+    font-weight:800;
+    padding:10px 18px;
+    border-radius:999px;
+    cursor:pointer;
+    font-size:14px;
+    box-shadow:0 4px 0 rgba(0,85,212,.18);
+    transition:transform .12s ease, background .15s ease;
+  }
+  .tab-btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,85,212,.18);}
+  .tab-btn.active{background:var(--blue);color:#fff;}
+  .panel{display:none;max-width:640px;margin:0 auto;}
+  .panel.active{display:block;}
+  .card{
+    background:#fff;
+    border:3px solid var(--blue);
+    border-radius:24px;
+    padding:24px 20px;
+    box-shadow:0 14px 40px rgba(0,30,90,.12);
+  }
+  .card h2{
+    color:var(--blue);
+    text-align:center;
+    margin-top:0;
+    font-size:20px;
+  }
+  .card .desc{
+    text-align:center;
+    color:#667085;
+    font-size:13px;
+    margin-bottom:20px;
+  }
+
+  /* ---------- Jogo da memória ---------- */
+  .memory-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    max-width:400px;
+    margin:0 auto;
+  }
+  .memory-card{
+    aspect-ratio:1/1;
+    border-radius:14px;
+    background:var(--blue);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+    cursor:pointer;
+    user-select:none;
+    box-shadow:0 4px 0 rgba(0,85,212,.35);
+    transition:transform .15s ease, background .15s ease;
+  }
+  .memory-card.flipped{background:var(--gold);color:var(--blue);transform:scale(1.03);}
+  .memory-card.matched{background:var(--correct);color:#fff;cursor:default;box-shadow:0 4px 0 rgba(18,183,106,.35);}
+  .memory-status{
+    text-align:center;
+    margin-top:16px;
+    font-weight:800;
+    color:var(--blue);
+    min-height:22px;
+  }
+  .reset-btn{
+    display:block;
+    margin:16px auto 0;
+    border:2px solid var(--blue);
+    background:#f4f8ff;
+    color:var(--blue);
+    font-weight:700;
+    padding:8px 16px;
+    border-radius:12px;
+    cursor:pointer;
+  }
+
+  /* ---------- Pedra, papel e tesoura ---------- */
+  .rps-arena{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:24px;
+    margin:16px 0 20px;
+  }
+  .rps-slot{
+    width:90px;
+    height:90px;
+    border-radius:20px;
+    background:#f4f8ff;
+    border:3px dashed var(--blue);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:42px;
+  }
+  .rps-vs{font-weight:900;color:var(--red);font-size:20px;}
+  .rps-choices{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    margin-bottom:16px;
+  }
+  .rps-choice{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    border:3px solid var(--blue);
+    background:#fff;
+    font-size:30px;
+    cursor:pointer;
+    box-shadow:0 4px 0 rgba(0,85,212,.25);
+    transition:transform .12s ease;
+  }
+  .rps-choice:active{transform:translateY(2px);}
+  .rps-result{
+    text-align:center;
+    font-weight:800;
+    font-size:17px;
+    min-height:26px;
+  }
+  .rps-result.win{color:var(--correct);}
+  .rps-result.lose{color:var(--wrong);}
+  .rps-result.tie{color:#667085;}
+  .rps-score{
+    display:flex;
+    justify-content:center;
+    gap:24px;
+    font-size:13px;
+    color:#667085;
+    margin-top:10px;
+  }
+
+  /* ---------- Campo minado ---------- */
+  .mine-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:5px;
+    max-width:330px;
+    margin:0 auto;
+  }
+  .mine-cell{
+    aspect-ratio:1/1;
+    border-radius:8px;
+    background:var(--blue);
+    box-shadow:0 3px 0 rgba(0,85,212,.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    font-size:14px;
+    cursor:pointer;
+    color:#fff;
+  }
+  .mine-cell.revealed{
+    background:#eef2f7;
+    color:var(--blue);
+    box-shadow:none;
+    cursor:default;
+  }
+  .mine-cell.mine{background:var(--wrong);}
+  .mine-cell.flagged{background:var(--gold);color:var(--blue);}
+  .mine-status{
+    text-align:center;
+    margin-top:16px;
+    font-weight:800;
+    color:var(--blue);
+    min-height:22px;
+  }
+  .mine-hint{
+    text-align:center;
+    color:#667085;
+    font-size:12px;
+    margin-top:6px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Mock — Novos Minigames</h1>
+<div class="subtitle">Preview de como os jogos apareceriam, no mesmo estilo visual da forca</div>
+
+<div class="tabs">
+  <button class="tab-btn active" data-panel="memoria">🧠 Jogo da memória</button>
+  <button class="tab-btn" data-panel="rps">✊ Pedra, papel e tesoura</button>
+  <button class="tab-btn" data-panel="mines">💣 Campo minado</button>
+</div>
+
+<!-- ================= JOGO DA MEMÓRIA ================= -->
+<div class="panel active" id="panel-memoria">
+  <div class="card">
+    <h2>Jogo da memória</h2>
+    <div class="desc">Encontre os pares de símbolos das matérias escolares</div>
+    <div class="memory-grid" id="memoryGrid"></div>
+    <div class="memory-status" id="memoryStatus">Toque em duas cartas pra começar</div>
+    <button class="reset-btn" onclick="initMemory()">Reiniciar</button>
+  </div>
+</div>
+
+<!-- ================= PEDRA PAPEL TESOURA ================= -->
+<div class="panel" id="panel-rps">
+  <div class="card">
+    <h2>Pedra, papel e tesoura</h2>
+    <div class="desc">Vença o mascote da Sala de Estudo</div>
+    <div class="rps-arena">
+      <div class="rps-slot" id="rpsPlayerSlot">❔</div>
+      <div class="rps-vs">VS</div>
+      <div class="rps-slot" id="rpsCpuSlot">❔</div>
+    </div>
+    <div class="rps-choices">
+      <button class="rps-choice" onclick="playRps('pedra')">✊</button>
+      <button class="rps-choice" onclick="playRps('papel')">✋</button>
+      <button class="rps-choice" onclick="playRps('tesoura')">✌️</button>
+    </div>
+    <div class="rps-result" id="rpsResult">Escolha sua jogada</div>
+    <div class="rps-score">
+      <span>Você: <b id="rpsWins">0</b></span>
+      <span>Empates: <b id="rpsTies">0</b></span>
+      <span>Mascote: <b id="rpsLosses">0</b></span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CAMPO MINADO ================= -->
+<div class="panel" id="panel-mines">
+  <div class="card">
+    <h2>Campo minado</h2>
+    <div class="desc">Tabuleiro pequeno (6×6), pra caber num easter egg rápido</div>
+    <div class="mine-grid" id="mineGrid"></div>
+    <div class="mine-status" id="mineStatus">Clique numa célula pra revelar</div>
+    <div class="mine-hint">Clique com o botão direito (ou toque e segure) pra marcar uma bandeira</div>
+    <button class="reset-btn" onclick="initMines()">Reiniciar</button>
+  </div>
+</div>
+
+<script>
+/* ==================== TABS ==================== */
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.panel).classList.add('active');
+  });
+});
+
+/* ==================== JOGO DA MEMÓRIA ==================== */
+const memorySymbols = ['📐','🧪','🧬','📚','🌍','✍️','🎨','💬'];
+let memoryState = { cards: [], flipped: [], matched: 0, locked: false };
+
+function initMemory(){
+  const pairs = [...memorySymbols, ...memorySymbols];
+  for (let i = pairs.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pairs[i], pairs[j]] = [pairs[j], pairs[i]];
+  }
+  memoryState = { cards: pairs, flipped: [], matched: 0, locked: false };
+  const grid = document.getElementById('memoryGrid');
+  grid.innerHTML = '';
+  pairs.forEach((symbol, index) => {
+    const cell = document.createElement('div');
+    cell.className = 'memory-card';
+    cell.dataset.index = index;
+    cell.addEventListener('click', () => flipMemoryCard(index));
+    grid.appendChild(cell);
+  });
+  document.getElementById('memoryStatus').textContent = 'Toque em duas cartas pra começar';
+}
+
+function flipMemoryCard(index){
+  if (memoryState.locked) return;
+  const cell = document.querySelector('.memory-card[data-index="'+index+'"]');
+  if (!cell || cell.classList.contains('flipped') || cell.classList.contains('matched')) return;
+
+  cell.classList.add('flipped');
+  cell.textContent = memoryState.cards[index];
+  memoryState.flipped.push(index);
+
+  if (memoryState.flipped.length === 2){
+    memoryState.locked = true;
+    const [a, b] = memoryState.flipped;
+    const cellA = document.querySelector('.memory-card[data-index="'+a+'"]');
+    const cellB = document.querySelector('.memory-card[data-index="'+b+'"]');
+    if (memoryState.cards[a] === memoryState.cards[b]){
+      setTimeout(() => {
+        cellA.classList.add('matched');
+        cellB.classList.add('matched');
+        memoryState.matched += 1;
+        memoryState.flipped = [];
+        memoryState.locked = false;
+        if (memoryState.matched === memorySymbols.length){
+          document.getElementById('memoryStatus').textContent = 'Parabéns! Você encontrou todos os pares!';
+        }
+      }, 400);
+    } else {
+      setTimeout(() => {
+        cellA.classList.remove('flipped');
+        cellB.classList.remove('flipped');
+        cellA.textContent = '';
+        cellB.textContent = '';
+        memoryState.flipped = [];
+        memoryState.locked = false;
+      }, 700);
+    }
+  }
+}
+initMemory();
+
+/* ==================== PEDRA, PAPEL E TESOURA ==================== */
+const rpsEmoji = { pedra: '✊', papel: '✋', tesoura: '✌️' };
+const rpsBeats = { pedra: 'tesoura', papel: 'pedra', tesoura: 'papel' };
+let rpsScore = { wins: 0, ties: 0, losses: 0 };
+
+function playRps(playerChoice){
+  const options = Object.keys(rpsEmoji);
+  const cpuChoice = options[Math.floor(Math.random() * options.length)];
+
+  document.getElementById('rpsPlayerSlot').textContent = rpsEmoji[playerChoice];
+  document.getElementById('rpsCpuSlot').textContent = rpsEmoji[cpuChoice];
+
+  const resultEl = document.getElementById('rpsResult');
+  resultEl.className = 'rps-result';
+
+  if (playerChoice === cpuChoice){
+    rpsScore.ties += 1;
+    resultEl.textContent = 'Empate!';
+    resultEl.classList.add('tie');
+  } else if (rpsBeats[playerChoice] === cpuChoice){
+    rpsScore.wins += 1;
+    resultEl.textContent = 'Você venceu o mascote!';
+    resultEl.classList.add('win');
+  } else {
+    rpsScore.losses += 1;
+    resultEl.textContent = 'O mascote venceu dessa vez!';
+    resultEl.classList.add('lose');
+  }
+
+  document.getElementById('rpsWins').textContent = rpsScore.wins;
+  document.getElementById('rpsTies').textContent = rpsScore.ties;
+  document.getElementById('rpsLosses').textContent = rpsScore.losses;
+}
+
+/* ==================== CAMPO MINADO ==================== */
+const MINE_SIZE = 6;
+const MINE_COUNT = 6;
+let mineState = { board: [], revealed: [], flagged: [], over: false };
+
+function initMines(){
+  const total = MINE_SIZE * MINE_SIZE;
+  let mines = new Array(total).fill(false);
+  let placed = 0;
+  while (placed < MINE_COUNT){
+    const i = Math.floor(Math.random() * total);
+    if (!mines[i]){ mines[i] = true; placed++; }
+  }
+  mineState = {
+    board: mines,
+    revealed: new Array(total).fill(false),
+    flagged: new Array(total).fill(false),
+    over: false
+  };
+  const grid = document.getElementById('mineGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i < total; i++){
+    const cell = document.createElement('div');
+    cell.className = 'mine-cell';
+    cell.dataset.index = i;
+    cell.addEventListener('click', () => revealMineCell(i));
+    cell.addEventListener('contextmenu', (e) => { e.preventDefault(); toggleFlag(i); });
+    grid.appendChild(cell);
+  }
+  document.getElementById('mineStatus').textContent = 'Clique numa célula pra revelar';
+}
+
+function countAdjacentMines(index){
+  const row = Math.floor(index / MINE_SIZE);
+  const col = index % MINE_SIZE;
+  let count = 0;
+  for (let dr = -1; dr <= 1; dr++){
+    for (let dc = -1; dc <= 1; dc++){
+      if (dr === 0 && dc === 0) continue;
+      const r = row + dr, c = col + dc;
+      if (r >= 0 && r < MINE_SIZE && c >= 0 && c < MINE_SIZE){
+        if (mineState.board[r * MINE_SIZE + c]) count++;
+      }
+    }
+  }
+  return count;
+}
+
+function revealMineCell(index){
+  if (mineState.over || mineState.revealed[index] || mineState.flagged[index]) return;
+  const cell = document.querySelector('.mine-cell[data-index="'+index+'"]');
+  mineState.revealed[index] = true;
+  cell.classList.add('revealed');
+
+  if (mineState.board[index]){
+    cell.classList.add('mine');
+    cell.textContent = '💣';
+    mineState.over = true;
+    document.getElementById('mineStatus').textContent = 'Você pisou numa mina! Fim de jogo.';
+    revealAllMines();
+    return;
+  }
+
+  const count = countAdjacentMines(index);
+  cell.textContent = count > 0 ? count : '';
+
+  const totalSafe = MINE_SIZE * MINE_SIZE - MINE_COUNT;
+  const revealedSafe = mineState.revealed.filter((r, i) => r && !mineState.board[i]).length;
+  if (revealedSafe === totalSafe){
+    mineState.over = true;
+    document.getElementById('mineStatus').textContent = 'Parabéns! Você limpou o campo sem explodir!';
+  }
+}
+
+function toggleFlag(index){
+  if (mineState.over || mineState.revealed[index]) return;
+  mineState.flagged[index] = !mineState.flagged[index];
+  const cell = document.querySelector('.mine-cell[data-index="'+index+'"]');
+  cell.classList.toggle('flagged', mineState.flagged[index]);
+  cell.textContent = mineState.flagged[index] ? '🚩' : '';
+}
+
+function revealAllMines(){
+  mineState.board.forEach((isMine, i) => {
+    if (isMine){
+      const cell = document.querySelector('.mine-cell[data-index="'+i+'"]');
+      cell.classList.add('revealed', 'mine');
+      cell.textContent = '💣';
+    }
+  });
+}
+initMines();
+</script>
+
+</body>
+</html>

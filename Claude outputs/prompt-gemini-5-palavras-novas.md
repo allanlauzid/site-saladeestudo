@@ -1,0 +1,2321 @@
+# Prompt para o Gemini — 5 palavras novas por grupo (jogo da forca)
+
+> Cole tudo a partir de "## PROMPT" numa conversa com o Gemini. O banco completo no final (321 palavras, já com charada, charada2 e charada3) serve pra ele saber o que já existe — tanto pra não repetir palavra quanto pra não repetir piada/cenário.
+
+---
+
+## PROMPT
+
+Você vai expandir o banco de palavras de um jogo da forca educacional (site de aulas particulares, público adolescente/pré-vestibular, matérias do ensino médio). O banco já tem 321 palavras organizadas em 13 grupos (tópicos), cada uma com 3 charadas. Sua tarefa:
+
+Para **cada um dos 13 tópicos** listados abaixo, escolha **5 palavras novas** (que ainda não estão no banco daquele tópico) e crie **3 charadas** para cada uma — no mesmo padrão das que já existem.
+
+### Critério de escolha das palavras novas
+- Priorize as palavras **mais óbvias e centrais** do tópico para um aluno de ensino médio — aquelas que qualquer estudante reconheceria na hora, não termos raros, arcaicos, hiperespecíficos de nicho acadêmico, ou vocabulário que foge do currículo do ensino médio brasileiro.
+- Não pode repetir nenhuma palavra que já existe no banco (a lista completa está no final, por tópico).
+- Se, ao pensar nas 5 mais óbvias, perceber que uma delas já está no banco, pule para a próxima mais óbvia.
+
+### O que é a "charada" neste jogo (recapitulando o estilo)
+A palavra "fala" em 1ª pessoa, descrevendo algo verdadeiro e engraçado/irônico sobre ela (um uso, uma sensação, um clichê, uma situação cotidiana), sem nunca dizer a própria palavra. Tom bem-humorado, meio sarcástico, com observação social/cotidiana (sala de aula, família, redes sociais, trânsito, boteco, etc.). Não é definição de dicionário.
+
+### Regras de qualidade (aprendidas de uma rodada anterior — sigam à risca)
+1. **Tamanho**: cada charada deve ser **uma frase só, de 12 a 25 palavras** (não mais que isso). Na rodada anterior, várias charadas passaram de 30, 35, até quase 40 palavras, virando frases arrastadas e confusas — não repita esse erro. Se a piada não cabe numa frase enxuta, simplifique a ideia.
+2. **Nunca usar a palavra-resposta dentro da própria charada** (nem no singular, plural ou variação óbvia), mesmo dentro de expressões coloquiais (ex.: se a palavra é "átomo", não escreva "nem um átomo de paciência").
+3. **Nada de dica sobre a grafia da palavra.** Evite frases do tipo "sem crase", "sem d", "errado, sem noção", ou qualquer referência à ortografia/escrita da própria palavra — isso não é charada, é given away. A charada tem que funcionar por significado/uso, nunca por ortografia.
+4. **Varie os cenários.** Evite recorrer sempre aos mesmos contextos (fila de banco, geladeira, sofá, ônibus, prova, WhatsApp/zap, celular, churrasco, festa) — na rodada anterior esses cenários se repetiram dezenas de vezes. Para estas 65 palavras novas, tente explorar situações diferentes: trabalho, esporte, tecnologia, internet, viagem, saúde, natureza, rotina de casa variada, etc., sem reciclar sempre o mesmo punhado de imagens.
+5. **Cuidado com temas sensíveis.** Se algum tópico exigir uma palavra ligada a temas históricos/sociais pesados (violência, discriminação, tragédias), NÃO banalize o tema comparando-o com uma reclamação boba do dia a dia (ex.: comparar um sofrimento histórico grave com "ter que lavar louça"). Nesses casos, prefira um ângulo de humor mais leve e respeitoso, ou apenas um humor mais seco/irônico sem comparação ofensiva.
+6. Cada charada é independente das outras duas da mesma palavra — evite repetir a mesma estrutura de frase ou o mesmo "gancho" nas três.
+
+### Regras de saída
+- Devolva **apenas um bloco de código JSON** (nada de texto antes ou depois): uma lista de objetos, um por palavra nova, na ordem dos tópicos abaixo, com os campos:
+  - `"topico"`: exatamente como escrito na lista de tópicos abaixo.
+  - `"palavra"`: a palavra nova escolhida.
+  - `"charada"`, `"charada2"`, `"charada3"`: as três charadas novas.
+- Confira ao final que a lista tem exatamente 65 objetos (13 tópicos × 5 palavras).
+- Antes de finalizar, revise se alguma charada ficou parecida demais com outra charada sua (das 65 novas) ou com qualquer charada já existente no banco abaixo, e reescreva se estiver parecida.
+
+Abaixo estão os 13 tópicos e, para cada um, a lista de palavras que **já existem** (não repetir) seguida do banco completo de charadas já existentes (para calibrar estilo e evitar repetir piada/cenário).
+
+
+### Tópicos e palavras já existentes (não repetir)
+
+- **Matérias escolares** (14 palavras já existentes): artes, biologia, espanhol, filosofia, física, geografia, história, inglês, literatura, matemática, português, química, redação, sociologia
+
+- **Matemática** (40 palavras já existentes): altura, conta, cálculo, círculo, distância, divisão, dobro, equação, escala, estatística, fração, função, geometria, gráfico, juros, largura, medida, metade, moda, multiplicação, média, número, perímetro, peso, polígono, porcentagem, probabilidade, proporção, quadrado, raiz, retângulo, sequência, soma, subtração, tabela, triângulo, volume, vértice, área, ângulo
+
+- **Física** (29 palavras já existentes): aceleração, atração, atrito, calor, campo, circuito, corrente, eco, eletricidade, energia, espaço, força, gravidade, inércia, luz, massa, movimento, onda, potência, pressão, refração, resistência, som, temperatura, tempo, velocidade, vácuo, ímã, óptica
+
+- **Química** (28 palavras já existentes): base, carbono, combustão, composto, concentração, cristal, elemento, ferro, fórmula, gás, hidrogênio, líquido, metal, mistura, molécula, nitrogênio, oxigênio, reação, sal, solução, solvente, substância, sólido, vapor, ácido, água, átomo, íon
+
+- **Biologia** (31 palavras já existentes): animal, bactéria, coração, corpo, célula, cérebro, digestão, doença, ecossistema, espécie, evolução, fotossíntese, fungo, gene, habitat, hormônio, músculo, natureza, osso, planta, proteína, pulmão, reprodução, respiração, sangue, saúde, vacina, vida, vitamina, vírus, órgão
+
+- **História** (27 palavras já existentes): batalha, colônia, conquista, constituição, democracia, ditador, ditadura, eleição, era, escravidão, escravo, evento, golpe, governo, guerra, imigrante, império, independência, monarquia, povo, presidente, rei, república, revolta, revolução, século, tratado
+
+- **Geografia** (30 palavras já existentes): ambiente, bússola, capital, chuva, cidade, clima, continente, deserto, floresta, fronteira, ilha, latitude, litoral, mapa, migração, montanha, oceano, país, planeta, poluição, população, região, relevo, rio, solo, terremoto, território, vale, vento, vulcão
+
+- **Português e Literatura** (30 palavras já existentes): adjetivo, antônimo, autor, clímax, conto, crônica, enredo, escrita, frase, gramática, leitura, livro, metáfora, narrador, palavra, personagem, poema, poesia, pronome, protagonista, rima, romance, sinônimo, substantivo, sujeito, sílaba, texto, verbo, verso, vírgula
+
+- **Redação** (19 palavras já existentes): argumento, citação, clareza, coerência, coesão, conclusão, conectivo, crítica, dissertação, intervenção, introdução, objetividade, opinião, parágrafo, proposta, reflexão, repertório, tema, tese
+
+- **Filosofia** (19 palavras já existentes): conhecimento, consciência, crença, dilema, dúvida, essência, existência, ideia, ilusão, liberdade, lógica, moral, pensamento, questionamento, razão, realidade, sentido, verdade, ética
+
+- **Sociologia** (20 palavras já existentes): cidadania, cidadão, classe, comunidade, costume, cultura, desigualdade, direito, diversidade, estereótipo, família, grupo, identidade, instituição, norma, poder, preconceito, religião, sociedade, tradição
+
+- **Inglês e Espanhol** (16 palavras já existentes): alfabeto, bilíngue, conversa, diálogo, expressão, fala, gíria, idioma, intérprete, legenda, língua, pronúncia, significado, sotaque, tradução, vocabulário
+
+- **Artes** (18 palavras já existentes): artista, ator, cena, cor, dança, desenho, escultura, instrumento, melodia, museu, música, obra, palco, pincel, pintura, retrato, ritmo, teatro
+
+
+### Banco completo atual (321 palavras, para calibrar estilo e evitar repetir piada/cenário)
+
+```json
+[
+  {
+    "topico": "Matérias escolares",
+    "palavra": "artes",
+    "charada": "Todo mundo me acha fácil até alguém pedir pra desenhar um cavalo de frente.",
+    "charada2": "Ninguém estuda pra mim achando que vai ser reprovado, e é exatamente aí que a nota vem baixa.",
+    "charada3": "Todo mundo acha que eu me resumo a sujar a mão de tinta e fazer vaso de argila."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "biologia",
+    "charada": "Todo mundo decorou o nome de uma organela só pra fazer meme, e ninguém mais lembra pra que ela serve.",
+    "charada2": "Bagunço a mesa de exame de sangue e ainda assim explico por que seu pai é careca.",
+    "charada3": "Sou a matéria que explica detalhadamente o porquê de você ter puxado o nariz grande do seu avô."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "espanhol",
+    "charada": "Todo brasileiro acha que me fala fluentemente só de colocar um 'ito' no final das palavras.",
+    "charada2": "Ensino que 'exquisito' não quer dizer esquisito, e ainda assim ninguém aprende essa numa vida inteira.",
+    "charada3": "Deixo todo mundo achando que arrasa na comunicação até precisar perguntar onde fica o banheiro de verdade."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "filosofia",
+    "charada": "Deixo um adolescente de 16 anos numa crise existencial só de perguntar 'o que é o ser'.",
+    "charada2": "Faço um menino de 16 anos duvidar da própria existência, mas nunca duvidar do lanche da cantina.",
+    "charada3": "Faço as perguntas mais difíceis da humanidade só pra você terminar a aula com dor de cabeça."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "física",
+    "charada": "Explico por que seu celular, entre todas as posições possíveis, sempre escolhe cair com a tela pra baixo.",
+    "charada2": "Prevejo a trajetória de qualquer objeto no ar, menos a da sua paciência na aula de manhã cedo.",
+    "charada3": "Te provo matematicamente que o tempo passa mais devagar só quando você está esperando o ônibus no ponto."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "geografia",
+    "charada": "Você sabe a capital de um país que nunca vai visitar, mas esquece onde estacionou o carro.",
+    "charada2": "Sei quantos fusos horários separam você do primo que mora fora, mas não sei prever se vai chover amanhã.",
+    "charada3": "Exijo que você saiba o nome de todas as pedras do chão, mas não te ensino a usar o GPS."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "história",
+    "charada": "Alguém decepcionado vive dizendo que eu me repito, mas ninguém repete a prova sobre mim se colar direito.",
+    "charada2": "Ensino que tudo já aconteceu antes, inclusive você jurar que ia estudar 'com antecedência'.",
+    "charada3": "Fico te lembrando dos piores erros da humanidade pra você fingir que não vai repeti-los na prova."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "inglês",
+    "charada": "Te deixo cantar um hit inteiro com pronúncia perfeita e travar solenemente na hora de pedir satisfação no aeroporto.",
+    "charada2": "Deixo você dublar filme inteiro sozinho no quarto e travar solene na hora de pedir o cardápio em outro país.",
+    "charada3": "Te obrigo a imitar sotaque de filme na frente do espelho pra no fim só balançar a cabeça calado."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "literatura",
+    "charada": "Fingir que te leu inteira antes da prova é praticamente uma segunda matéria à parte.",
+    "charada2": "Transformo affair de personagem fictício em trauma real de leitor no capítulo 12.",
+    "charada3": "Faço você chorar por causa de um papel impresso que narra a vida de alguém que nunca existiu."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "matemática",
+    "charada": "Toda vida adulta promete que você nunca mais vai precisar achar o valor de x, e a vida adulta mente descaradamente.",
+    "charada2": "Prometo que a vida real usa regra de três todo dia, e a vida real nunca comprova isso na sua frente.",
+    "charada3": "Sou o pesadelo que te faz juntar maçãs e melancias só pra perguntar que dia da semana é hoje."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "português",
+    "charada": "A única matéria em que 'mim fazer isso' está errado, mas sai natural na hora de falar.",
+    "charada2": "Ensino a crase que ninguém usa, mas todo mundo finge saber quando cobra do colega.",
+    "charada3": "Tenho mais exceções do que regras, só pra garantir que ninguém nunca saia ileso da prova."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "química",
+    "charada": "Sou a razão do professor falar 'não façam isso em casa' logo depois de fazer bem na sua frente.",
+    "charada2": "Explico reação que muda de cor, mas nunca explico por que o cheiro do laboratório gruda na roupa até de noite.",
+    "charada3": "Passo o ano te fazendo desenhar hexágonos no caderno pra no final explodir alguma coisa na sua mente."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "redação",
+    "charada": "Ninguém nunca viu um 1000 de verdade em mim, só ouviu falar, que nem disco voador.",
+    "charada2": "Cobro conectivo variado, mas aceito 'além disso' repetido cinco vezes se a ideia for boa.",
+    "charada3": "Sou a única folha pautada que te dá suor frio só de olhar para aquelas margens em branco."
+  },
+  {
+    "topico": "Matérias escolares",
+    "palavra": "sociologia",
+    "charada": "Te ensinei a dizer 'isso é uma construção social' pra ganhar qualquer discussão no almoço de domingo.",
+    "charada2": "Ensino que toda mesa de bar vira debate de sociedade, principalmente quando ninguém te pediu opinião.",
+    "charada3": "Sou a culpada por você analisar criticamente até a briga do vizinho por causa do lixo na calçada."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "altura",
+    "charada": "A desculpa clássica de quem não alcança a prateleira de cima do mercado.",
+    "charada2": "Apareço na ficha médica, mas na fila do brinquedo do parque sou eu quem decide se você entra ou não.",
+    "charada3": "Sou a única coisa que faz alguém mentir descaradamente no perfil do aplicativo sem nenhum peso na consciência."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "ângulo",
+    "charada": "Toda selfie busca o melhor de mim antes de postar.",
+    "charada2": "Tenho graus que ninguém sente na pele, ao contrário dos graus do termômetro em fevereiro.",
+    "charada3": "Mudo completamente a visão de quem está segurando o celular só pra tentar disfarçar a papada na selfie."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "área",
+    "charada": "O motivo de duas pessoas discutirem sobre quem tem o quintal maior.",
+    "charada2": "Multiplico dois lados e ainda assim ninguém confia em mim pra saber se o sofá novo vai caber na sala.",
+    "charada3": "Sou aquilo que o corretor de imóveis sempre aumenta um pouquinho pra tentar te vender o apartamento mais caro."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "cálculo",
+    "charada": "Ninguém nunca resolveu um de mim de cabeça sem fingir que já sabia a resposta.",
+    "charada2": "Também sou o nome de uma pedra chata no rim, e nenhuma das duas versões de mim é bem-vinda.",
+    "charada3": "Sou a matéria que faz todo calouro prometer que vai largar o curso já na primeira semana de exatas."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "círculo",
+    "charada": "Não tenho começo nem fim, e mesmo assim toda discussão de família parece terminar do mesmo jeito que eu.",
+    "charada2": "Sou a forma que todo mundo desenha torta na lousa, mesmo usando o compasso.",
+    "charada3": "Sou o grupo de cadeiras que o professor de dinâmica arruma só pra ninguém conseguir se esconder lá atrás."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "conta",
+    "charada": "Sempre chega no fim do mês e nunca fecha do jeito que você espera.",
+    "charada2": "Também sou aquele pedido que ninguém quer pegar primeiro no restaurante.",
+    "charada3": "Faço todo mundo no bar olhar pro teto fingindo que não entendeu quanto falta pra pagar a saideira."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "distância",
+    "charada": "Sempre parece menor no mapa do carro do que quando você está andando a pé.",
+    "charada2": "Separo você do sofá até a geladeira, e mesmo assim pareço longa demais às 23h.",
+    "charada3": "Sou a desculpa perfeita pra você dizer que não vai no aniversário daquele amigo lá do outro lado."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "divisão",
+    "charada": "A pior parte de qualquer conta de restaurante em grupo.",
+    "charada2": "Separo o time do recreio, e nunca sobra ninguém satisfeito com o resultado.",
+    "charada3": "Fico responsável por destruir grandes amizades quando sobra um número ímpar de fatias na mesa da pizzaria."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "dobro",
+    "charada": "O que você promete estudar amanhã depois de não estudar nada hoje.",
+    "charada2": "Peço mais uma hora de sono e você me dá o dobro do soneca.",
+    "charada3": "Sou exatamente o tamanho do esforço que você promete fazer no semestre seguinte depois do boletim desastroso."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "equação",
+    "charada": "Tenho um lado igual ao outro, mas isso não impede ninguém de me errar feio na prova.",
+    "charada2": "Tenho incógnita, mas quem realmente não sabe o que fazer é quem começa a resolver sem ler o enunciado inteiro.",
+    "charada3": "Sou o problema cheio de letras que te faz questionar pra que serve o abecedário afinal de contas."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "escala",
+    "charada": "Reduzo o mundo inteiro pra caber numa folha de papel, mas ninguém confia em mim pra montar móvel.",
+    "charada2": "Também sou aquela que o músico sobe e desce, e ninguém acerta de primeira.",
+    "charada3": "Sou o motivo do seu carrinho de controle remoto parecer enorme na foto e minúsculo na sala de estar."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "estatística",
+    "charada": "Prometo que a maioria concorda com você, mesmo quando ninguém perguntou a ninguém.",
+    "charada2": "Digo que 1 em cada 2 pessoas não confia em mim, e a outra metade nem me leu direito.",
+    "charada3": "Mostro em gráficos lindos que você não tem a menor chance de passar sem estudar, mas você ignora."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "fração",
+    "charada": "Prometo uma parte do bolo, mas ninguém nunca concorda em como cortar direito.",
+    "charada2": "Sou meio a meio, tipo aquele acordo de pizza que nunca é justo.",
+    "charada3": "Faço o pedaço de cima brigar com o debaixo só pra complicar a vida de quem precisa do resultado."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "função",
+    "charada": "Recebo uma entrada, devolvo uma saída, e ainda assim ninguém confia em mim sem conferir duas vezes.",
+    "charada2": "Também sou aquele evento chique que ninguém quer ir, mas todo mundo confirma presença.",
+    "charada3": "Traço um caminho todo torto num plano só pra você esquecer de qual lado fica a reta vertical."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "geometria",
+    "charada": "A parte da matemática que finge que a vida é feita só de formas perfeitas.",
+    "charada2": "Ensino ângulo e área, mas nunca ensino a estacionar o carro dentro da vaga certa.",
+    "charada3": "Faço você passar horas tentando provar com esquadro que a figura é realmente igual à lousa."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "gráfico",
+    "charada": "Consigo fazer qualquer notícia parecer mais dramática só mudando onde o eixo começa.",
+    "charada2": "Também sou a novela que sobe de audiência bem no capítulo que todo mundo já sabia o final.",
+    "charada3": "Sou aquela pizza colorida que o professor usa pra provar no telão que a sua turma é a pior."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "juros",
+    "charada": "A razão de parcelar em 12x parecer uma boa ideia até o extrato chegar.",
+    "charada2": "Cresço sozinho todo mês, sem pedir licença e sem avisar com antecedência.",
+    "charada3": "Sou a força invisível que transforma a blusinha barata num pesadelo de doze meses no seu extrato do mês."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "largura",
+    "charada": "Ninguém nunca mede direito antes de tentar passar o sofá pela porta.",
+    "charada2": "Meço o quanto, mas nunca meço a paciência de quem tá tentando estacionar na vaga apertada.",
+    "charada3": "Sou aquilo que você sempre ignora até entalar de lado na porta giratória do banco com a mochila pesada."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "média",
+    "charada": "A nota que decide se você repete de ano ou faz aquela última prova puxada.",
+    "charada2": "Também sou aquele papo de 'mais ou menos', que ninguém sabe se é elogio ou reclamação.",
+    "charada3": "Sou o número mágico que você passa o semestre calculando só pra saber se pode dormir na última aula."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "medida",
+    "charada": "Sem mim, todo mundo jura que a calça ainda serve.",
+    "charada2": "Provo que a receita da vovó nunca tinha xícara padronizada, só 'olho'.",
+    "charada3": "Fico responsável por estragar a receita do bolo quando você decide usar a xícara de café em vez da certa."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "metade",
+    "charada": "Sempre sobra pro outro quando é hora de dividir a pizza.",
+    "charada2": "Também sou aquele fone que só funciona de um lado, bem na hora que você mais precisa dos dois.",
+    "charada3": "Sou exatamente o que você promete comer do pacote de bolacha antes de devorar as outras unidades sem perceber."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "moda",
+    "charada": "O número que mais aparece, tipo aquela desculpa que todo mundo usa quando se atrasa.",
+    "charada2": "Também sou aquela roupa que sai de linha e, dez anos depois, volta como 'tendência retrô'.",
+    "charada3": "Sou aquilo que todo mundo adota achando que é super original, e no fim fica parecendo uniforme de escola."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "multiplicação",
+    "charada": "A tabuada que ninguém decorou direito, mas todo mundo finge que sim.",
+    "charada2": "Multiplico rápido no papel, mas nunca multiplico o tempo livre do fim de semana.",
+    "charada3": "Transformo o seu pequeno atraso de cinco minutos num problema gigantesco até o final do primeiro tempo do jogo."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "número",
+    "charada": "Existo em quantidade suficiente pra você nunca mais confiar de olho no troco do mercado.",
+    "charada2": "Bato à porta em toda fila de banco, e ninguém nunca gosta de ouvir o meu.",
+    "charada3": "Sou aquele que você jura que anotou certo, mas que te faz mandar mensagem pro zap errado de madrugada."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "perímetro",
+    "charada": "A volta toda que você dá no quarteirão fingindo que está fazendo exercício.",
+    "charada2": "Também sou aquela conversa que dá voltas e voltas sem nunca chegar no assunto principal.",
+    "charada3": "Sou o muro inteiro da fofoca que você tem que contornar pra chegar no assunto que realmente importa na roda."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "peso",
+    "charada": "A única coisa que a balança do banheiro sempre acha uma desculpa pra aumentar.",
+    "charada2": "Também sou aquele climão que ninguém quer carregar depois de uma indireta mal dada.",
+    "charada3": "Sou aquele detalhe que te faz andar igual a uma estátua torta segurando a mala cheia na escada."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "polígono",
+    "charada": "Tenho vários lados, que nem toda discussão de família no grupo do WhatsApp.",
+    "charada2": "Ganho mais um lado a cada nome novo, tipo aquele grupo de família que nunca para de crescer.",
+    "charada3": "Sou a forma trêmula que aparece toda vez que você tenta desenhar sem régua nenhuma figura reta no caderno."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "porcentagem",
+    "charada": "Apareço toda vez que alguém quer fingir que um desconto é maior do que é.",
+    "charada2": "Prometo 100% de chance de chuva, e ainda assim ninguém sai de casa com guarda-chuva.",
+    "charada3": "Sou a desculpa matemática que o mercado usa pra te vender pela mesma quantia no dia da promoção furada."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "probabilidade",
+    "charada": "A razão de todo mundo achar que vai ganhar na loteria dessa vez.",
+    "charada2": "Digo que é pouco provável, e mesmo assim é sempre o que acontece com você.",
+    "charada3": "Mostro que a chance do pão cair virado pra baixo é imensa, e você ainda teima em soltar da mão."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "proporção",
+    "charada": "Ninguém tira foto de comida sem tentar me manipular a favor do prato.",
+    "charada2": "Também sou aquela fofoca que cresce um pouco a cada pessoa que conta pra frente.",
+    "charada3": "Sou a desculpa matemática pra sua avó fazer prato pra dez pessoas mesmo quando só você vai almoçar lá."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "quadrado",
+    "charada": "Tenho quatro lados iguais, e ainda assim chamam alguém sem noção de 'mais quadrado que eu'.",
+    "charada2": "Também sou aquele parente que só sabe falar de boato requentado, sempre do mesmo jeito.",
+    "charada3": "Sou o carimbo oficial de quem não tem gingado nenhum tentando acompanhar a coreografia estourada na balada da turma."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "raiz",
+    "charada": "Debaixo da terra ou dentro de mim, ninguém gosta de ficar cavando até me encontrar.",
+    "charada2": "Sou o motivo de toda calculadora ganhar um botão só pra mim, e mesmo assim ninguém confia de cabeça.",
+    "charada3": "Fico escondida debaixo de um puxadinho rabiscado só pra ver o seu desespero na hora de tentar me tirar."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "retângulo",
+    "charada": "Sou tipo um quadrado que decidiu esticar um pouco os braços.",
+    "charada2": "Também sou o formato de toda tela que você já quebrou pelo menos uma vez na vida.",
+    "charada3": "Sou o formato oficial de todos os potes da cozinha que escondem feijão congelado fingindo ser sobremesa gelada."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "sequência",
+    "charada": "Netflix pergunta se você ainda está assistindo bem no meio de mim.",
+    "charada2": "Também sou aquele áudio de WhatsApp que vem em cinco partes e ninguém escuta na ordem certa.",
+    "charada3": "Sou aquela filinha de episódios que você promete que vai ser curta, mas que consome todo o seu descanso."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "soma",
+    "charada": "Junto duas quantias e sempre sobra alguém no grupo do rango achando que pagou a mais.",
+    "charada2": "Também sou aquele resumo de fim de mês que sempre dá menos do que devia.",
+    "charada3": "Faço as continhas básicas parecerem um monstro quando o caixa te pede uma moedinha e você gagueja na fila."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "subtração",
+    "charada": "O que sobra na carteira depois que você jura que ia economizar esse mês.",
+    "charada2": "Tiro um número do outro, e ainda assim ninguém confia sem contar duas vezes nos dedos.",
+    "charada3": "Sou o que acontece com a sua paciência cada vez que o colega de mesa pega emprestada a mesma caneta."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "tabela",
+    "charada": "Organizo tudo em linhas e colunas, menos a vida de quem promete se organizar.",
+    "charada2": "Também sou aquela planilha que prometem atualizar toda semana e nunca atualizam.",
+    "charada3": "Sou aquele monte de quadrinhos preenchidos que ninguém lê direito, mas que o chefe adora aplaudir na apresentação da firma."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "triângulo",
+    "charada": "Tenho três lados e ainda assim sou o instrumento mais esquecido da banda da escola.",
+    "charada2": "Também sou o desenho que qualquer criança faz pra representar 'casa' sem nem tentar caprichar.",
+    "charada3": "Sou o causador oficial das piores fofocas de escola quando a briga de casal resolve envolver uma terceira pessoa."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "vértice",
+    "charada": "O canto onde dois lados se encontram, tipo você e aquele parente chato na mesma festa.",
+    "charada2": "Também sou aquele momento exato em que a conversa vira discussão, sem ninguém perceber a hora.",
+    "charada3": "Sou a quina exata e dolorosa onde o seu dedinho mindinho encontra o sofá de canto no escuro do quarto."
+  },
+  {
+    "topico": "Matemática",
+    "palavra": "volume",
+    "charada": "Some no controle remoto bem na hora que o comercial começa mais alto que o programa.",
+    "charada2": "Também sou aquele espaço que a mala nunca tem quando a viagem é de duas semanas.",
+    "charada3": "Sou aquilo que a sua mochila decide ter em excesso justo no dia de entrar no transporte público superlotado."
+  },
+  {
+    "topico": "Física",
+    "palavra": "aceleração",
+    "charada": "O que todo mundo faz no último quilômetro só pra não perder o compromisso que já está atrasado.",
+    "charada2": "Aperto o passo quando o sinal fecha, e ainda assim chego atrasado igual todo mundo.",
+    "charada3": "Faço você pisar fundo no último segundo só pra não ser o último a bater o ponto na catraca lenta."
+  },
+  {
+    "topico": "Física",
+    "palavra": "atração",
+    "charada": "Faz dois corpos se aproximarem, e também é a desculpa de qualquer paquera capenga.",
+    "charada2": "Também sou o motivo de dois ímãs vizinhos na geladeira nunca ficarem separados.",
+    "charada3": "Sou a força magnética invisível que sempre faz o seu olho encontrar o prato mais caro do cardápio chique."
+  },
+  {
+    "topico": "Física",
+    "palavra": "atrito",
+    "charada": "A razão de você escorregar justo quando tem gente olhando.",
+    "charada2": "Também sou aquele barulho de sapato novo no chão que todo mundo escuta menos você.",
+    "charada3": "Sou o que faz você derrapar com chinelo de borracha na calçada molhada, levando um susto daqueles na frente dos outros."
+  },
+  {
+    "topico": "Física",
+    "palavra": "calor",
+    "charada": "A desculpa nacional pra não fazer absolutamente nada em janeiro.",
+    "charada2": "Também sou a razão do ventilador virar item essencial de casa em dezembro.",
+    "charada3": "Sou a desculpa clássica pra você trocar três camisas no dia e ainda reclamar que não adiantou nada do suor."
+  },
+  {
+    "topico": "Física",
+    "palavra": "campo",
+    "charada": "Onde o time de futebol do bairro sempre jura que ia ganhar esse ano.",
+    "charada2": "Também sou o time inteiro discordando da escalação, sem ninguém perguntar ao técnico.",
+    "charada3": "Sou aquele gramado que parece infinito quando você precisa correr da bola e não tem preparo físico nenhum."
+  },
+  {
+    "topico": "Física",
+    "palavra": "circuito",
+    "charada": "Preciso estar fechado pra funcionar, que nem aquela roda de amigos que nunca deixa ninguém novo entrar.",
+    "charada2": "Também sou aquele fio de fone que insiste em dar nó sozinho no bolso.",
+    "charada3": "Sou o caminho todo amarrado que o pisca-pisca faz, apagando inteiro se só uma lâmpada resolve queimar."
+  },
+  {
+    "topico": "Física",
+    "palavra": "corrente",
+    "charada": "Passa pelo fio, e também é a razão de você nunca lembrar a senha do wifi de cor.",
+    "charada2": "Também sou aquele grupo de amigos que só se junta de novo quando alguém casa ou morre.",
+    "charada3": "Sou a única energia invisível que você tem pavor de encostar o dedo quando vai trocar o chuveiro pelado."
+  },
+  {
+    "topico": "Física",
+    "palavra": "eco",
+    "charada": "Repito o que você gritou na montanha, mas nunca respondo quando te chamam pra lavar louça.",
+    "charada2": "Também sou a sala vazia depois que a festa acaba e só sobra o barulho da louça.",
+    "charada3": "Sou o fantasma acústico que insiste em repetir os seus foras mais vergonhosos no corredor vazio do apartamento."
+  },
+  {
+    "topico": "Física",
+    "palavra": "eletricidade",
+    "charada": "Falta justo quando o capítulo da novela está no ápice.",
+    "charada2": "Também sou o motivo do prédio inteiro descobrir quem tem gerador.",
+    "charada3": "Sou a mágica que você só valoriza quando o seu celular pisca que vai desligar no meio daquela mensagem séria."
+  },
+  {
+    "topico": "Física",
+    "palavra": "energia",
+    "charada": "Falta justo na hora que você mais precisa dela, tipo numa segunda-feira de manhã.",
+    "charada2": "Também sou aquela que a criança tem de sobra às 22h, bem na hora de dormir.",
+    "charada3": "Sou aquela disposição rara que some magicamente do corpo assim que você bota os pés no portão da firma."
+  },
+  {
+    "topico": "Física",
+    "palavra": "espaço",
+    "charada": "O motivo de você nunca conseguir estacionar o carro igual ao vizinho.",
+    "charada2": "Também sou o motivo da van do transporte escolar sempre jurar que cabe mais um.",
+    "charada3": "Sou o que nunca sobra no cartão de memória quando você decide gravar o melhor momento do show de frente."
+  },
+  {
+    "topico": "Física",
+    "palavra": "força",
+    "charada": "A desculpa de quem não consegue abrir o pote de azeitona sozinho.",
+    "charada2": "Também sou o nome que dão pra qualquer academia que promete resultado em um mês.",
+    "charada3": "Sou o que falta completamente na mão quando você desiste de abrir a lata de conservas dura e vai pro pão."
+  },
+  {
+    "topico": "Física",
+    "palavra": "gravidade",
+    "charada": "A única força que nunca tira folga, nem nos fins de semana.",
+    "charada2": "Também sou a palavra usada quando alguém tenta minimizar um problema sério dizendo 'não é nada demais'.",
+    "charada3": "Sou a dona implacável que garante que a torrada sempre encontre o chão virada pra baixo na sua roupa limpa."
+  },
+  {
+    "topico": "Física",
+    "palavra": "ímã",
+    "charada": "Atrai o metal, e também atrai foto de viagem que ninguém tira mais direito.",
+    "charada2": "Também sou aquele que gruda mais lembrancinha de viagem na geladeira do que espaço realmente sobra.",
+    "charada3": "Sou a pecinha de brinde grudada no fundo da geladeira segurando aquela conta atrasada pra todo mundo da casa chorar."
+  },
+  {
+    "topico": "Física",
+    "palavra": "inércia",
+    "charada": "A vontade de continuar deitado no sofá exatamente como você já estava.",
+    "charada2": "Também sou o motivo de todo mundo prometer academia em janeiro e sumir em fevereiro.",
+    "charada3": "Sou a teoria que explica, sem você dizer uma palavra, a sua falta total de vontade de levantar no domingo frio."
+  },
+  {
+    "topico": "Física",
+    "palavra": "luz",
+    "charada": "Apaga bem na cena mais assustadora do filme, nunca antes.",
+    "charada2": "Também sou a primeira coisa que o vizinho reclama quando fica acesa até tarde.",
+    "charada3": "Sou a primeira coisa a te abandonar no susto quando você finalmente entra no corredor escuro na sexta à noite."
+  },
+  {
+    "topico": "Física",
+    "palavra": "massa",
+    "charada": "A desculpa científica de por que o pão não flutua na sua frente.",
+    "charada2": "Também sou aquela que sobra na mão depois que a receita de pão pede 'sove até ficar lisinha'.",
+    "charada3": "Sou a explicação oficial de quem sobe na balança depois do Natal e jura que a balança está estragada."
+  },
+  {
+    "topico": "Física",
+    "palavra": "movimento",
+    "charada": "Sem mim, a academia perderia a única coisa que justifica a mensalidade.",
+    "charada2": "Também sou o nome de qualquer campanha que promete mudar tudo e vira só figurinha de status.",
+    "charada3": "Sou o que falta na sua rotina depois que a maratona do sofá substituiu a corrida na praça vazia."
+  },
+  {
+    "topico": "Física",
+    "palavra": "onda",
+    "charada": "Chega, some, e sempre te pega de calças curtas justo na praia.",
+    "charada2": "Também sou aquele boato que sobe rápido e ninguém lembra quem começou.",
+    "charada3": "Sou a desculpa molhada do surfista fingido pra faltar na sexta de manhã afirmando que o mar chamou alto demais."
+  },
+  {
+    "topico": "Física",
+    "palavra": "óptica",
+    "charada": "Estudo a luz e as ilusões, tipo aquele espelho de provador que sempre mente pra você.",
+    "charada2": "Também sou o motivo de todo espelho de loja te fazer parecer mais alto que na vida real.",
+    "charada3": "Sou a brincadeira visual que faz o asfalto quente parecer molhado, enganando de longe a sua sede gigante de verão."
+  },
+  {
+    "topico": "Física",
+    "palavra": "potência",
+    "charada": "Quanto mais alta a minha, mais rápido a conta de luz assusta no fim do mês.",
+    "charada2": "Também sou o argumento pra justifycar comprar o carro mais caro da concessionária.",
+    "charada3": "Sou a promessa na caixa da furadeira novinha que chora e falha na primeira parede resistente do apê vizinho."
+  },
+  {
+    "topico": "Física",
+    "palavra": "pressão",
+    "charada": "Sobe quando o chefe manda mensagem sexta às 18h.",
+    "charada2": "Também sou aquela que sobe quando alguém liga perguntando 'cadê o relatório?'",
+    "charada3": "Sou aquela bufada escandalosa que a panela na cozinha solta quando tá na beira de transformar o feijão em carvão."
+  },
+  {
+    "topico": "Física",
+    "palavra": "refração",
+    "charada": "Faço um lápis parecer quebrado dentro d'água, sem nunca quebrar nada de verdade.",
+    "charada2": "Também sou o motivo de o canudo parecer torto assim que entra no copo.",
+    "charada3": "Faço a borda da piscina deixar o braço do nadador tortinho, como se tivesse quebrado em duas partes do nada."
+  },
+  {
+    "topico": "Física",
+    "palavra": "resistência",
+    "charada": "Quanto mais eu tenho, mais difícil a corrente passa, e mais difícil você aceitar um não.",
+    "charada2": "Também sou a última força de vontade antes de repetir o prato no rodízio.",
+    "charada3": "Sou a qualidade que a chapinha de cabelo perde assim que você pisa desavisada na garoa fininha da noite inteira."
+  },
+  {
+    "topico": "Física",
+    "palavra": "som",
+    "charada": "Baixa sozinho assim que o professor começa a falar algo importante.",
+    "charada2": "Também sou o motivo do vizinho ligar o carro de madrugada só pra 'esquentar o motor'.",
+    "charada3": "Sou o estrondo estourado do fone de camelô que jura ser de alta qualidade, mas só devolve zumbido no ouvido fechado."
+  },
+  {
+    "topico": "Física",
+    "palavra": "temperatura",
+    "charada": "Discussão eterna de quem controla o ar-condicionado do escritório.",
+    "charada2": "Também sou a primeira pergunta de qualquer mãe assim que alguém diz 'acho que tô ficando doente'.",
+    "charada3": "Sou a eterna briga dos botões no painel do carro entre quem congela e quem derrete no banco do carona da frente."
+  },
+  {
+    "topico": "Física",
+    "palavra": "tempo",
+    "charada": "Some rápido demais quando é fim de semana, e devagar demais numa reunião chata.",
+    "charada2": "Também sou o assunto reserva de qualquer conversa de elevador quando ninguém tem mais nada a dizer.",
+    "charada3": "Sou a grandeza que se arrasta igual tartaruga quando o micro-ondas mostra o último minuto do esquente da marmita amarrada."
+  },
+  {
+    "topico": "Física",
+    "palavra": "vácuo",
+    "charada": "Lugar onde não existe nada, parecido com sua cabeça segunda de manhã antes do café.",
+    "charada2": "Também sou aquele aparelho de limpar casa que promete facilidade e fica preso embaixo do sofá.",
+    "charada3": "Sou a teoria perfeita do nada que você recebe de volta quando manda aquele cumprimento forçado pro crush lá na roda."
+  },
+  {
+    "topico": "Física",
+    "palavra": "velocidade",
+    "charada": "O motivo de toda lombada existir.",
+    "charada2": "Também sou o motivo de toda internet 'turbo' nunca parecer turbo o suficiente.",
+    "charada3": "Sou a urgência que acorda sua alma na base do grito e faz você correr atrás da condução fechando a porta."
+  },
+  {
+    "topico": "Química",
+    "palavra": "ácido",
+    "charada": "A razão do seu estômago reclamar depois daquele lanche às 2 da manhã.",
+    "charada2": "Também sou o comentário de quem sempre acha um jeito de estragar o clima de qualquer conversa boa.",
+    "charada3": "Sou o toque cortante da balinha que te faz fechar os dois olhos e prometer que não vai comer mais nenhuma verde."
+  },
+  {
+    "topico": "Química",
+    "palavra": "água",
+    "charada": "Prometem que você deveria beber mais de mim o dia inteiro, e ninguém cumpre.",
+    "charada2": "Também sou o motivo de toda garrafinha reutilizável ficar esquecida na bolsa, vazia, há dias.",
+    "charada3": "Sou a salvadora prometida na garrafinha térmica que você volta com ela inteira intocada na mochila pesada da ida e volta."
+  },
+  {
+    "topico": "Química",
+    "palavra": "átomo",
+    "charada": "Tão pequeno que ninguém nunca viu, e mesmo assim vive sendo citado em conversa de bar sobre o universo.",
+    "charada2": "Também sou usado pra descrever qualquer chance mínima, tipo 'nem um átomo de paciência sobrou'.",
+    "charada3": "Sou a gotícula teórica do universo que, junto das outras, faz o chulé do seu pé na meia molhada."
+  },
+  {
+    "topico": "Química",
+    "palavra": "base",
+    "charada": "Meu oposto é ácido, e assim como toda discussão de política, a gente nunca concorda no meio termo.",
+    "charada2": "Também sou aquela camada de maquiagem que promete durar o dia todo e não dura nem até o almoço.",
+    "charada3": "Sou o troço pegajoso que amarga a língua inteira se você não enxaguar a espuma do dente antes de engolir forte."
+  },
+  {
+    "topico": "Química",
+    "palavra": "carbono",
+    "charada": "Estou em todo ser vivo, e também na desculpa de todo mundo pra reduzir a pegada.",
+    "charada2": "Também sou citado toda vez que alguém quer parecer consciente sem mudar nenhum hábito de verdade.",
+    "charada3": "Sou a poeira teórica de lápis velho e churrasco de domingo, enfiado na culpa alheia sobre não reciclar garrafa suja plástica."
+  },
+  {
+    "topico": "Química",
+    "palavra": "combustão",
+    "charada": "Preciso de oxigênio pra acontecer, que nem aquela fofoca que só pega fogo com plateia.",
+    "charada2": "Também sou o motivo de churrasco sempre ter alguém se achando expert em acender carvão.",
+    "charada3": "Sou a fervura na pele que faz seu rosto estourar num vermelho fogo ao escutar seu nome solto alto na sala cheia."
+  },
+  {
+    "topico": "Química",
+    "palavra": "composto",
+    "charada": "Feito de mais de um elemento, que nem aquela receita de família que ninguém sabe explicar direito.",
+    "charada2": "Também sou o nome de qualquer remédio de bula gigante que ninguém lê até o fim.",
+    "charada3": "Sou a jantinha misturada misteriosa que sobrou do final de semana e voltou fervida na panela do fogão como se fosse nova."
+  },
+  {
+    "topico": "Química",
+    "palavra": "concentração",
+    "charada": "Quanto mais eu tenho numa solução, mais forte ela fica, e é exatamente o que falta em você numa reunião de segunda.",
+    "charada2": "Também sou a primeira coisa que qualquer notificação de celular consegue quebrar em meio segundo.",
+    "charada3": "Sou a capacidade rara que foge voando da mente quando o relógio da parede decide parar de fazer o tique-taque baixo da prova."
+  },
+  {
+    "topico": "Química",
+    "palavra": "cristal",
+    "charada": "Organizado até nos átomos, ao contrário do seu quarto.",
+    "charada2": "Também sou o nome chique que dão pro copo caro que ninguém pode usar no dia a dia.",
+    "charada3": "Sou aquela vidraça super delicada guardada na estante de casa que, se você encostar, desaba o mundo inteiro em estilhaços no tapete."
+  },
+  {
+    "topico": "Química",
+    "palavra": "elemento",
+    "charada": "Tenho uma tabela inteira dedicada a mim, e ainda assim ninguém decora além de uns 5.",
+    "charada2": "Também sou usado pra dizer que alguém é 'suspeito' numa festa sem provar nada.",
+    "charada3": "Sou o quadradinho com letras isolado no papel que, num trabalho sério, vira piada pra enfeitar nome de bicho de estimação estranho."
+  },
+  {
+    "topico": "Química",
+    "palavra": "ferro",
+    "charada": "Deixo a roupa lisinha, e também deixo o detector do aeroporto apitando bem na sua vez.",
+    "charada2": "Também sou aquele eletrodoméstico que só sai do armário quando a roupa já tá quase no prazo de usar, amassada mesmo.",
+    "charada3": "Sou aquele pesinho de mão quente da prateleira que, no mínimo deslize, amassa e queima aquela seda nova e sem troca sua."
+  },
+  {
+    "topico": "Química",
+    "palavra": "fórmula",
+    "charada": "Todo mundo decora a minha e esquece pra que ela serve dois dias depois da prova.",
+    "charada2": "Também sou usada pra chamar qualquer plano infalível que nunca funciona igual da segunda vez.",
+    "charada3": "Sou aquela tripa de letrinhas e algarismos no braço suado do aluno fingido, esperando o professor olhar pro outro cantinho dali."
+  },
+  {
+    "topico": "Química",
+    "palavra": "gás",
+    "charada": "Escapo da panela de pressão bem na hora que você tira os olhos dela.",
+    "charada2": "Também sou aquele que acaba do botijão bem no meio do banho mais gelado do ano.",
+    "charada3": "Sou o ar fedorento de repolho invisível que acaba na pressa na hora de fazer a panela do almoço ferver no fogão rápido."
+  },
+  {
+    "topico": "Química",
+    "palavra": "hidrogênio",
+    "charada": "O elemento mais simples da tabela, mas ninguém lembra de mim até a aula sobre a água.",
+    "charada2": "Também dou nome à bomba que ninguém quer ver de perto, nem na aula de história.",
+    "charada3": "Sou a molécula simples da tabelinha que ninguém decora o resto inteiro e só sabe do vizinho balão e da tal da bomba."
+  },
+  {
+    "topico": "Química",
+    "palavra": "íon",
+    "charada": "Um átomo que perdeu ou ganhou elétron, tipo você depois de uma treta no grupo da família.",
+    "charada2": "Também sou usado pra design de nome de carro elétrico querendo parecer futurista.",
+    "charada3": "Sou aquele sujeitinho minúsculo do teste de carga que, de tanto dar e tirar coisa do lado, deixou você de recuperação amarga."
+  },
+  {
+    "topico": "Química",
+    "palavra": "líquido",
+    "charada": "Me ajeito em qualquer copo, ao contrário da sua vida financeira.",
+    "charada2": "Também sou o estado do seu salário por volta do dia 20 de cada mês.",
+    "charada3": "Sou o copão de refrigerante do cantinho do prato que jorra e se espalha certeiro no trabalho escolar imaculado da noite retrasada."
+  },
+  {
+    "topico": "Química",
+    "palavra": "metal",
+    "charada": "Faz o detector de aeroporto apitar justo em você, nunca na pessoa da frente.",
+    "charada2": "Também sou o gênero de música que o adolescente da casa liga bem alto pra incomodar todo mundo.",
+    "charada3": "Sou a superfície fritadeira que, esquecida no sol, te marca bonito a perna distraída no banco do coletivo lá no fervo do calor."
+  },
+  {
+    "topico": "Química",
+    "palavra": "mistura",
+    "charada": "Junto duas coisas sem virar uma terceira, tipo arroz com feijão que nunca vira arroz-feijão de vez.",
+    "charada2": "Também sou aquele grupo de amigos formado só porque todo mundo tinha alguém em comum.",
+    "charada3": "Sou o combo esquisito de refri, suco e bolacha dentro da sua barriga revolta, batendo alto e gritando pra voltar de vez do almoço."
+  },
+  {
+    "topico": "Química",
+    "palavra": "molécula",
+    "charada": "Pequena demais pra você ver, grande o suficiente pra decidir se seu perfume é bom.",
+    "charada2": "Também sou usada em qualquer propaganda de creme pra parecer mais científica do que realmente é.",
+    "charada3": "Sou a ligação frouxa que o professor empurra no quadro gigante, enchendo seu caderno de pauzinho feio que vira teia de aranha solta."
+  },
+  {
+    "topico": "Química",
+    "palavra": "nitrogênio",
+    "charada": "Sou a maior parte do ar que você respira, e ainda assim ninguém nunca fala de mim numa conversa de elevador.",
+    "charada2": "Também sou usado pra deixar sorvete de restaurante chique parecendo experimento de laboratório.",
+    "charada3": "Sou o balde de névoa no copo enfeitado do barmen, custando o triplo na sua mesa só porque espalha gelo no ar em volta de tudo."
+  },
+  {
+    "topico": "Química",
+    "palavra": "oxigênio",
+    "charada": "A única coisa que todo mundo concorda que é essencial, e mesmo assim ninguém agradece por ela.",
+    "charada2": "Também sou a desculpa clássica pra sair andando rápido de qualquer climão familiar: 'vou tomar um ar'.",
+    "charada3": "Sou a brisa necessária que você esquece de puxar quando trava feio a perna pra tirar a foto segurando o fôlego sem parar."
+  },
+  {
+    "topico": "Química",
+    "palavra": "reação",
+    "charada": "O motivo de todo experimento de escola prometer fumaça e nunca entregar.",
+    "charada2": "Também sou o nome de qualquer vídeo de internet onde alguém só assiste outro vídeo e comenta.",
+    "charada3": "Sou aquilo surpreso e instintivo que a mão faz estalando no seu rosto quando o primo decide contar o final estragado do seu filme."
+  },
+  {
+    "topico": "Química",
+    "palavra": "sal",
+    "charada": "Aquele que sempre falta bem na hora que a comida já está pronta.",
+    "charada2": "Também sou aquele que satura completamente qualquer pipoca de cinema.",
+    "charada3": "Sou o vilão cristalizado que, no fundo quente do pacote da lanchonete, decide secar a saliva do desavisado numa golada de poeira só."
+  },
+  {
+    "topico": "Química",
+    "palavra": "sólido",
+    "charada": "A única coisa que seu argumento numa discussão de família raramente é.",
+    "charada2": "Também sou usado pra elogiar plano de vida que na prática ninguém seguiu até o fim do mês.",
+    "charada3": "Sou a consistência indesejada do arroz encaroçado que o novato deixa queimar sozinho, duro e seco, no fundo da panela do fogão do grupo."
+  },
+  {
+    "topico": "Química",
+    "palavra": "solução",
+    "charada": "Sempre pareço óbvia depois que alguém já te falou qual sou.",
+    "charada2": "Também sou aquela resposta óbvia que só aparece depois que você já brigou horas sobre o problema.",
+    "charada3": "Sou o truque simples com barbante e chiclete que o seu amigo folgado jura que vai consertar o retrovisor balançando do carro batido no poste."
+  },
+  {
+    "topico": "Química",
+    "palavra": "solvente",
+    "charada": "Dissolvo qualquer coisa, menos aquela mancha teimosa que já virou parte da camisa.",
+    "charada2": "Também sou usado em qualquer removedor de esmalte que deixa cheiro forte no cômodo inteiro.",
+    "charada3": "Sou o pote mal cheiroso da embalagem que arde a narina do quarteirão inteiro, tudo pra limpar uns pingos de mancha azul sem sucesso de nada."
+  },
+  {
+    "topico": "Química",
+    "palavra": "substância",
+    "charada": "Toda embalagem de produto de limpeza me esconde atrás de um nome que ninguém consegue pronunciar.",
+    "charada2": "Também sou usada pra elogiar argumento de alguém, tipo 'isso tem substância', o resto normalmente não tem.",
+    "charada3": "Sou a gororoba verde neon que a propaganda jurava te fazer rejuvenescer doze anos de pele de seda macia lavando o rosto no banho raso."
+  },
+  {
+    "topico": "Química",
+    "palavra": "vapor",
+    "charada": "Saio da panela e embaço o espelho bem na hora que você mais precisa se ver antes de sair.",
+    "charada2": "Também sou a razão do espelho do banheiro nunca deixar você se ver direito logo depois do banho quente.",
+    "charada3": "Sou o bafo superquente do chuveirão elétrico, que não avisa e gruda inteiro no espelho sem deixar você achar a ponta solta da toalha dali."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "animal",
+    "charada": "Categoria que inclui você, mesmo que sua timeline discorde.",
+    "charada2": "Também sou usado pra xingar alguém que corta fila sem pedir licença.",
+    "charada3": "Sou a xingada clássica entre os dois irmãos irritantes correndo pela sala de casa esbarrando com tudo e tombando cadeira frouxa na frente da tia de longe."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "bactéria",
+    "charada": "Vive numa maçaneta que ninguém nunca limpa direito.",
+    "charada2": "Também sou a razão do celular do banheiro público parecer o objeto mais sujo do planeta.",
+    "charada3": "Sou a coisinha encardida grudada há um semestre atrás da pia velha da geladeira, pronta pra causar desarranjo em quem beber no garrafão sujo alheio dela por ali."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "célula",
+    "charada": "Tão pequena que ninguém vê, e mesmo assim sou citada em toda propaganda de creme anti-idade.",
+    "charada2": "Também sou o nome de qualquer cadeia, presídio ou aquele quartinho de bagunça lá de casa.",
+    "charada3": "Sou a unidade formiguinha preguiçosa que, no dia útil da folga da faxina toda do organismo, trava inteira e te deixa empacado no chão duro."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "cérebro",
+    "charada": "Trabalha o dia inteiro sem parar, e mesmo assim esquece onde você colocou a chave de casa.",
+    "charada2": "Também sou o apelido de quem sempre resolve o problema técnico da família de graça.",
+    "charada3": "Sou a maquininha interna barulhenta que ferve só de olhar de novo os slides, mas que apaga no mesmo milissegundo depois que bate a janta gigante à meia luz."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "coração",
+    "charada": "Dispara sozinho quando o crush curte sua última foto.",
+    "charada2": "Também sou o emoji mais usado pra fingir concordar com uma foto que você nem olhou direito.",
+    "charada3": "Sou o troço dentro da caixa que galopa igual cavalo indomável toda vez que você tenta puxar aquele papo constrangedor pela janela minúscula do caixa eletrônico sem senha à toa."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "corpo",
+    "charada": "A coisa que você promete cuidar melhor toda segunda-feira de janeiro.",
+    "charada2": "Também sou o motivo de toda roupa nova parecer mais apertada depois do fim de semana.",
+    "charada3": "Sou o peso-morto arrastado que chora e protesta alto de manhã cedo assim que pisa pela primeira vez no dia no tatame sujo e molhado da esteira velha."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "digestão",
+    "charada": "A razão de ninguém querer correr logo depois do almoço de domingo.",
+    "charada2": "Também sou usada como desculpa pra tirar uma soneca logo depois do almoço.",
+    "charada3": "Sou a usina entupida e lenta que decide dar as caras, cheia de azia braba e sonolenta, no exato minuto em que o chefe te convoca à sala trancada perto dali."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "doença",
+    "charada": "Sempre aparece na sexta-feira à noite, nunca durante a semana de trabalho.",
+    "charada2": "Também sou o motivo de todo grupo de trabalho ficar sem resposta numa sexta-feira.",
+    "charada3": "Sou a praga sorrateira que se instala sem dó na sua garganta bem na quinta à noite pro seu fim de semana na festa top furar de vez."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "ecossistema",
+    "charada": "Um equilíbrio que se desfaz completamente quando um mosquito entra no seu quarto às 3 da manhã.",
+    "charada2": "Também sou usado pra descrever qualquer grupo de amigos com uma dinâmica complicada demais de explicar.",
+    "charada3": "Sou a dinâmica natural bagunçada da sua república de estudantes, onde até as embalagens de pizza do mês passado formam uma vizinhança harmoniosa e perigosa no canto do sofá."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "espécie",
+    "charada": "Categoria que agrupa seres tão diferentes quanto você e seu primo que só aparece no Natal.",
+    "charada2": "Também sou usada pra classificar aquele tipo raro de pessoa que responde mensagem na hora.",
+    "charada3": "Sou a caixinha inventada de nome complicado pra cientista brigar e debater sobre onde se enquadra aquele pernilongo mutante gigante que não obedece nem à chinelada forte."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "evolução",
+    "charada": "Levei milhões de anos pra chegar no polegar, e você ainda erra ao digitar no celular.",
+    "charada2": "Também sou o nome de qualquer atualização de celular que promete melhorar e deixa mais lento.",
+    "charada3": "Sou o grande salto de orgulho das cavernas até você, que se enroscou com o fone e agora está caído no meio da calçada."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "fotossíntese",
+    "charada": "O processo que faz a planta comer luz do sol, coisa que você nunca conseguiu fazer nem com café.",
+    "charada2": "Também sou citada toda vez que alguém tenta explicar por que devia ter mais plantas em casa e nunca rega nenhuma.",
+    "charada3": "Sou a magia secreta que sua horta do fundo de quintal estaria fazendo se você não tivesse deixado tudo ali pra murchar no escuro total."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "fungo",
+    "charada": "Cresço em qualquer lugar úmido, inclusive naquele pote de comida esquecido na geladeira.",
+    "charada2": "Também sou a razão do pão de forma esquecido virar arte moderna em três dias.",
+    "charada3": "Sou a mancha cinza no cantinho daquele requeijão abandonado, mostrando que até a sua prateleira tem vida cultural esquecida."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "gene",
+    "charada": "A desculpa perfeita pra herdar o mau humor de manhã da família.",
+    "charada2": "Também sou usado pra justificar por que a família inteira chega atrasada em tudo.",
+    "charada3": "Sou o código oculto da sua família que justifica perfeitamente o seu mau gosto incorrigível pra piada ruim de pavê."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "habitat",
+    "charada": "O lugar onde cada bicho vive, e também o motivo de reclamarem quando você invade o quarto do outro sem bater.",
+    "charada2": "Também sou usado pra descrever o quarto de quem nunca deixa ninguém entrar sem avisar antes.",
+    "charada3": "Sou aquele abismo caótico do seu quarto juvenil trancado onde nem a vassoura mágica da sua mãe ousa pisar."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "hormônio",
+    "charada": "A desculpa perfeita pra explicar qualquer mudança de humor repentina.",
+    "charada2": "Também sou culpado por aquela vontade repentina de doce às 23h de uma terça qualquer.",
+    "charada3": "Sou a farra química no sangue que te faz odiar todo o planeta sem motivo nenhum no meio do café da tarde."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "músculo",
+    "charada": "Prometido em janeiro, esquecido em fevereiro, junto com a inscrição da academia.",
+    "charada2": "Também sou o motivo de toda foto de academia vir acompanhada de legenda motivacional.",
+    "charada3": "Sou a carne dolorida da perna que jura protestar por três dias seguidos depois de um mísero lance de escada."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "natureza",
+    "charada": "Chama você pra um passeio e depois te lembra que existe wi-fi em casa.",
+    "charada2": "Também sou o cenário perfeito de toda foto que esconde o quanto o passeio foi cansativo.",
+    "charada3": "Sou o programa roots do feriado que promete cachoeira limpa, mas entrega arranhão e um monte de picada de abelha."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "órgão",
+    "charada": "Cada um de nós tem uma função, menos aquele que ninguém sabe pra que serve até o médico explicar.",
+    "charada2": "Também sou usado pra chamar qualquer autoridade que ninguém sabe bem o que decide de verdade.",
+    "charada3": "Sou a peça invisível da sua máquina interna que te faz questionar pra que serve depois de um escorregão na rua."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "osso",
+    "charada": "Aguento o corpo inteiro de pé, e ainda assim ninguém me agradece até doer.",
+    "charada2": "Também sou usado pra dizer que alguém 'não dá o braço a torcer' nem depois de perder a discussão.",
+    "charada3": "Sou a barra de sustento escondida na sua canela que insiste em bater de frente na quina daquela gaveta da cozinha da avó assustada."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "planta",
+    "charada": "Prometem que sou fácil de cuidar, e mesmo assim toda suculenta da sua casa já morreu.",
+    "charada2": "Também sou usada pra decorar reunião de trabalho, sempre de plástico, sempre empoeirada.",
+    "charada3": "Sou a colega verde fingida do lado do sofá que você comprou de plástico só pra não ter o trabalho de botar gota de torneira nela."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "proteína",
+    "charada": "Prometo músculo pra quem toma, mas o shaker sujo na pia é a única coisa que realmente aparece.",
+    "charada2": "Também sou o primeiro assunto de qualquer conversa sobre dieta que dura só até sexta-feira.",
+    "charada3": "Sou o famoso milagre do whey de pote que seu amigo devora com gosto de farinha e areia na fé do bíceps bombado."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "pulmão",
+    "charada": "Trabalho o tempo todo sem parar, e mesmo assim sou o primeiro a reclamar quando você sobe uma escada.",
+    "charada2": "Também sou usado pra descrever quem grita o time inteiro do campo desde a arquibancada.",
+    "charada3": "Sou o par de fole frouxo e ofegante que apita alto só de você tentar inflar a boia de piscina grande no verão."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "reprodução",
+    "charada": "O assunto da aula que fazia todo mundo olhar pro teto fingindo interesse no ventilador.",
+    "charada2": "Também sou o nome do botão que todo mundo aperta de novo achando que vai mudar o final do episódio.",
+    "charada3": "Sou o segredo feio da multiplicação oculta dos boletos, que geram mais boletos enquanto você assiste televisão em paz."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "respiração",
+    "charada": "Automática até alguém te lembrar dela, e então você não consegue parar de pensar nela.",
+    "charada2": "Também sou a primeira coisa que esquecem de fazer direito na fila do banco quando o número não anda.",
+    "charada3": "Sou o fôlego automático e silencioso que, quando você presta atenção, vira manual e irrita completamente o seu sossego."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "sangue",
+    "charada": "Sobe na cabeça bem na hora que alguém mexe com você no grupo da família.",
+    "charada2": "Também sou usado pra descrever qualquer disputa boba de jogo de tabuleiro em família.",
+    "charada3": "Sou a gotinha vermelha escandalosa na ponta do dedo que faz o cara mais valentão da roda desmaiar na mesa da lanchonete suja."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "saúde",
+    "charada": "Só vira prioridade de verdade depois que alguém te dá um susto no consultório.",
+    "charada2": "Também sou o brinde mais repetido em qualquer aniversário de família, mesmo sem ninguém erguer a taça de verdade.",
+    "charada3": "Sou a ausência divina de coriza e da tosse que você não deu a mínima até pegar aquele sereno maldito no rosto frio."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "vacina",
+    "charada": "Uma picadinha rápida que sempre vem acompanhada de choro, seu ou de alguém do lado.",
+    "charada2": "Também sou motivo de discussão de grupo de zap que ninguém consegue encerrar.",
+    "charada3": "Sou a pequena marca do furo no ombro que a enfermeira aplica sem dó e faz até adulto maromba fechar o olho pra não chorar na sala."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "vida",
+    "charada": "A única coisa que ninguém consegue devolver depois de reclamar dela o dia inteiro.",
+    "charada2": "Também sou o nome do jogo de tabuleiro que sempre acaba em discussão antes do fim.",
+    "charada3": "Sou a contagem chata do boleto do mês, e a correria bizarra atrás de pão, sem que ninguém tenha recebido o tutorial disso."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "vírus",
+    "charada": "Se espalha mais rápido que fofoca de grupo de WhatsApp da família.",
+    "charada2": "Também sou usado pra descrever aquele vídeo de gato que todo mundo compartilha no mesmo dia.",
+    "charada3": "Sou o monstrinho sorrateiro do pen drive do amigo de sala que derrubou em cinco minutos todo o sistema operacional do seu notebook novinho."
+  },
+  {
+    "topico": "Biologia",
+    "palavra": "vitamina",
+    "charada": "Existo na fruta, mas todo mundo prefere me tomar em comprimido mesmo assim.",
+    "charada2": "Também sou usada pra vender suco de caixinha como se fosse remédio milagroso.",
+    "charada3": "Sou o comprimido grande demais que arranha a garganta toda, engolido no desespero matinal, pra compensar todo o estrago do pastel da feira de ontem de tarde."
+  },
+  {
+    "topico": "História",
+    "palavra": "batalha",
+    "charada": "Aquele confronto que os livros descrevem em páginas inteiras, mas que na vida real dura só alguns minutos.",
+    "charada2": "Também sou usada pra descrever a fila do banco às vésperas do feriado.",
+    "charada3": "Sou a labuta incansável contra a tampinha chata e vedada daquele vidro velho que escorrega da sua mão em todo almoço apertado de domingo."
+  },
+  {
+    "topico": "História",
+    "palavra": "colônia",
+    "charada": "Território emprestado que o dono original nunca mais devolveu de bom grado.",
+    "charada2": "Também sou o nome de qualquer perfume que promete durar o dia inteiro e não dura.",
+    "charada3": "Sou o passado enroscado do chão da sua terra que teima em ser romantizado pelo livro, enquanto cobravam um preço salgado do lado de cá e de longe."
+  },
+  {
+    "topico": "História",
+    "palavra": "conquista",
+    "charada": "Tomar posse de um território, ou aquela sensação de finalmente estacionar numa vaga difícil.",
+    "charada2": "Também sou usada quando alguém finalmente arruma a gaveta que estava bagunçada há meses.",
+    "charada3": "Sou o sentimento de orgulho exagerado que você tem quando finalmente consegue abrir o pote de palmito sem pedir socorro para ninguém."
+  },
+  {
+    "topico": "História",
+    "palavra": "constituição",
+    "charada": "O documento que organiza as regras do país, tipo aquele regulamento do condomínio que ninguém lê até dar problema.",
+    "charada2": "Também sou usada pra descrever o físico de quem treina há um mês e já se acha atleta.",
+    "charada3": "Sou o famoso calhamaço de deveres e regrinhas esquecidas no fundo da gaveta que todo advogado na TV jura defender aos berros no tribunal de novela."
+  },
+  {
+    "topico": "História",
+    "palavra": "democracia",
+    "charada": "Onde todo mundo vota, e depois metade reclama do resultado do mesmo jeito.",
+    "charada2": "Também sou o método usado pra escolher o restaurante do grupo, mesmo sabendo que ninguém vai ficar satisfeito.",
+    "charada3": "Sou o processo maravilhoso que permite ao síndico fazer o que bem entende depois que só cinco velhinhos participaram daquela reunião de condomínio vazia no andar do térreo fedorento."
+  },
+  {
+    "topico": "História",
+    "palavra": "ditador",
+    "charada": "A pessoa que numa reunião de amigos decide o restaurante sem perguntar pra ninguém.",
+    "charada2": "Também sou o apelido de quem sempre escolhe o filme sem perguntar a mais ninguém.",
+    "charada3": "Sou o irmão mandão que escondeu o controle da TV, trancou todo mundo da própria família, e fez a lei absurda do videogame até a mãe chegar."
+  },
+  {
+    "topico": "História",
+    "palavra": "ditadura",
+    "charada": "Quando uma pessoa só decide tudo, tipo aquele parente que manda no controle remoto.",
+    "charada2": "Também sou o nome informal de qualquer chefia que decide escala de férias sem consultar ninguém.",
+    "charada3": "Sou a regra incontestável do seu pai segurando a chave do carro, decretando, sem apelação e no grito, que a viagem longa é ouvindo apenas as músicas cafonas da adolescência dele."
+  },
+  {
+    "topico": "História",
+    "palavra": "eleição",
+    "charada": "O dia em que todo mundo lembra que tem opinião política forte, só esse dia.",
+    "charada2": "Também sou usada pra escolher quem lava a louça, sempre no grito, nunca por voto de verdade.",
+    "charada3": "Sou a votação tensa no grupo do fim de semana que sempre termina empatada e sem ninguém ir a lugar nenhum."
+  },
+  {
+    "topico": "História",
+    "palavra": "era",
+    "charada": "Um pedacinho enorme do tempo que os livros adoram nomear com uma palavra só.",
+    "charada2": "Também sou usada pra descrever qualquer geração culpando a anterior por tudo.",
+    "charada3": "Sou a palavra chique pra nomear aqueles três meses em que você jurou que ia ser fã de banda alternativa e usar boina."
+  },
+  {
+    "topico": "História",
+    "palavra": "escravidão",
+    "charada": "A página mais pesada de qualquer livro didático, e a que menos tempo de aula recebe.",
+    "charada2": "Também sou citada quando alguém exagera reclamando de ter que lavar um prato só.",
+    "charada3": "Sou o fardo injusto que os seus pais juram que te deram quando pedem pra você lavar as louças do jantar pela primeira vez no mês."
+  },
+  {
+    "topico": "História",
+    "palavra": "escravo",
+    "charada": "A prova mais dolorosa de que o passado de um país nunca sai completamente das contas do presente.",
+    "charada2": "Também sou usado, errado e sem noção nenhuma, pra reclamar de qualquer tarefa chata de casa.",
+    "charada3": "Sou a expressão dramática do adolescente que é obrigado a arrumar o próprio quarto antes do passeio do sábado com os amigos."
+  },
+  {
+    "topico": "História",
+    "palavra": "evento",
+    "charada": "Aquilo que todo mundo marca no calendário e esquece de verdade duas semanas antes.",
+    "charada2": "Também sou aquele que todo mundo confirma presença e cancela em cima da hora.",
+    "charada3": "Sou o churrascão de sábado que promete cem pessoas, e no final só aparece o primo, o papagaio e duas latinhas quentes na geladeira."
+  },
+  {
+    "topico": "História",
+    "palavra": "golpe",
+    "charada": "Quando alguém toma o poder sem pedir licença, ou aquela dor no dedão quando bate na quina da cama.",
+    "charada2": "Também sou o nome de qualquer mensagem de banco falso pedindo seus dados no celular.",
+    "charada3": "Sou aquela mensagem de número desconhecido chamando de 'mãe' e pedindo pix de mil reais numa terça-feira qualquer no horário de expediente."
+  },
+  {
+    "topico": "História",
+    "palavra": "governo",
+    "charada": "Sempre culpado no bar, elogiado nunca.",
+    "charada2": "Também sou culpado quando o sinal de trânsito demora mais que o normal pra abrir.",
+    "charada3": "Sou a palavra solta que o seu tio usa para culpar todos os males do mundo, desde a gasolina cara até o pneu furado do carro."
+  },
+  {
+    "topico": "História",
+    "palavra": "guerra",
+    "charada": "Começo por um motivo pequeno e termino virando capítulo de livro que ninguém quer estudar pra prova.",
+    "charada2": "Também sou usada pra descrever qualquer discussão boba de jogo de videogame em família.",
+    "charada3": "Sou a disputa armada com travesseiros que começa como uma brincadeira fofa e termina com a lâmpada do teto quebrada em mil pedaços."
+  },
+  {
+    "topico": "História",
+    "palavra": "imigrante",
+    "charada": "Quem sai de um lugar em busca de uma vida melhor, e ainda assim é o primeiro a defender o time local de futebol.",
+    "charada2": "Também sou aquele que chega numa cidade nova e diz que lá o pão era melhor.",
+    "charada3": "Sou o mosquitinho chato que viaja de carona no para-brisa do seu carro só pra conhecer a outra ponta da rodovia intermunicipal."
+  },
+  {
+    "topico": "História",
+    "palavra": "império",
+    "charada": "Tão grande que até hoje apareço em nome de restaurante querendo parecer chique.",
+    "charada2": "Também sou usado no nome de qualquer academia que promete resultado em 30 dias.",
+    "charada3": "Sou a fortaleza de caixas de papelão que o seu gato constrói no meio da sala, exigindo lealdade de todos os humanos da casa."
+  },
+  {
+    "topico": "História",
+    "palavra": "independência",
+    "charada": "O dia em que um país decide que não precisa mais pedir permissão pra ninguém.",
+    "charada2": "Também sou o dia em que o adolescente finalmente decide lavar a própria roupa sem pedir.",
+    "charada3": "Sou a doce ilusão que você sente no momento em que paga seu primeiro boleto sem precisar de ajuda e já quer voltar pros pais."
+  },
+  {
+    "topico": "História",
+    "palavra": "monarquia",
+    "charada": "Governo de família que passa o cargo de pai pra filho, tipo herança de bar de esquina.",
+    "charada2": "Também sou usada pra descrever a família em que só uma pessoa decide o cardápio do Natal, sempre.",
+    "charada3": "Sou o reinado absoluto do bebê caçula que dita a que horas todo mundo pode dormir e o que vai passar na TV."
+  },
+  {
+    "topico": "História",
+    "palavra": "povo",
+    "charada": "A galera inteira, incluindo você reclamando do trânsito hoje de manhã.",
+    "charada2": "Também sou usado pra dizer que 'todo mundo' concordou com algo que na real ninguém foi consultado.",
+    "charada3": "Sou aquele grupo barulhento do fundão do ônibus que canta alto e jura que a viagem é um desfile de carnaval ambulante."
+  },
+  {
+    "topico": "História",
+    "palavra": "presidente",
+    "charada": "A pessoa que todo mundo culpa no boteco, mesmo sem saber direito o que ela faz.",
+    "charada2": "Também sou o apelido de quem sempre se mete a organizar o churrasco sem ninguém pedir.",
+    "charada3": "Sou o título pomposo do aluno que lidera o trabalho do grupo, mas no fundo só quer o nome lá no alto da cartolina."
+  },
+  {
+    "topico": "História",
+    "palavra": "rei",
+    "charada": "Nasci com o cargo garantido, sem nunca precisar mandar currículo.",
+    "charada2": "Também sou o título que todo pai se dá quando conquista o controle remoto de volta.",
+    "charada3": "Sou o jogador que coloca a coroa de papel no burguer-king e se acha o dono da praça de alimentação inteira na frente dos amigos."
+  },
+  {
+    "topico": "História",
+    "palavra": "república",
+    "charada": "O tipo de governo que faz todo mundo brigar em grupo de família no dia da eleição.",
+    "charada2": "Também sou o nome de qualquer casa de estudante com regra de limpeza que nunca é seguida.",
+    "charada3": "Sou a casa de estudantes bagunceiros onde a pia tem mais copos sujos e vida inteligente do que a geladeira quebrada do corredor."
+  },
+  {
+    "topico": "História",
+    "palavra": "revolta",
+    "charada": "Começo com um grupo cansado de aguentar calado, tipo o vizinho depois do terceiro churrasco barulhento seguido.",
+    "charada2": "Também sou o sentimento de quem descobre que o cinema aumentou o preço da pipoca de novo.",
+    "charada3": "Sou a fúria cega que domina a sala inteira quando o professor marca uma prova surpresa na véspera do feriado prolongado."
+  },
+  {
+    "topico": "História",
+    "palavra": "revolução",
+    "charada": "Todo mundo promete fazer uma na segunda-feira, e a academia continua vazia.",
+    "charada2": "Também sou o nome de qualquer produto de propaganda que promete mudar sua vida em uma semana.",
+    "charada3": "Sou a promessa de mudança profunda que você faz de arrumar o guarda-roupa, mas acaba jogando tudo debaixo da cama mesmo."
+  },
+  {
+    "topico": "História",
+    "palavra": "século",
+    "charada": "Cem anos, ou o tempo que parece ter passado desde a última vez que o wifi de casa funcionou direito.",
+    "charada2": "Também sou usado pra exagerar o tempo que você esperou por uma resposta de mensagem.",
+    "charada3": "Sou a medida de tempo perfeita pra definir o quanto o micro-ondas demora quando falta só um minuto pra comida esquentar."
+  },
+  {
+    "topico": "História",
+    "palavra": "tratado",
+    "charada": "Um papel assinado prometendo paz, que nem aquele combinado de família que dura até o próximo Natal.",
+    "charada2": "Também sou usado pra chamar qualquer acordo de família sobre quem paga a conta do restaurante.",
+    "charada3": "Sou o acordo de paz não escrito de nunca mais tocar no assunto daquela viagem de família que deu tudo errado no meio do caminho."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "ambiente",
+    "charada": "Tudo ao redor que a gente promete cuidar melhor, geralmente depois de assistir um documentário.",
+    "charada2": "Também sou usado pra descrever qualquer escritório com clima estranho depois de uma reunião ruim.",
+    "charada3": "Sou o cheiro de tensão que paira no ar quando alguém solta um comentário ácido sobre a sobremesa ruim da tia."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "bússola",
+    "charada": "Aponto sempre pro norte, ao contrário de qualquer decisão que você tenta tomar sozinho.",
+    "charada2": "Também sou o app de GPS que insiste em recalcular a rota mesmo você seguindo certinho.",
+    "charada3": "Sou aquele mapinha mental perdido que te manda virar à esquerda quando o restaurante, claramente, estava na rua da direita."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "capital",
+    "charada": "A cidade que todo mundo sabe o nome mesmo sem nunca ter visitado.",
+    "charada2": "Também sou usada pra descrever aquele dinheiro guardado que some rápido assim que aparece uma promoção.",
+    "charada3": "Sou aquela grande cidade cheia de oportunidades que todo mundo idolatra no cinema, mas que só te devolve trânsito lento e barulho."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "chuva",
+    "charada": "Sempre decido cair bem na hora que você esqueceu o guarda-chuva em casa.",
+    "charada2": "Também sou a desculpa perfeita pra cancelar qualquer plano de última hora.",
+    "charada3": "Sou a desculpa perfeita que cai do céu pra você não ter que calçar tênis e ir suar na academia à noite."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "cidade",
+    "charada": "Cheia de gente, e mesmo assim você sente falta de alguém pra conversar.",
+    "charada2": "Também sou o assunto de quem se muda e não para de comparar tudo com o lugar antigo.",
+    "charada3": "Sou a selva de concreto e semáforos que te faz cruzar com dezenas de estranhos sem saber o nome de ninguém na calçada."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "clima",
+    "charada": "Sempre o primeiro assunto de conversa quando ninguém tem mais nada pra falar.",
+    "charada2": "Também sou usado pra descrever o ambiente estranho depois de uma indireta mal recebida.",
+    "charada3": "Sou o assunto de segurança que salva qualquer elevador silencioso do tédio antes de cada um sair no seu andar e desaparecer."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "continente",
+    "charada": "Grande o suficiente pra caber um país inteiro que você nem sabia que existia.",
+    "charada2": "Também sou usado, errado, pra exagerar distância de qualquer bairro mais afastado da cidade.",
+    "charada3": "Sou a imensidão de terras que você acha pequena até precisar fazer as malas pra cruzar de avião no meio da classe econômica."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "deserto",
+    "charada": "O lugar mais seco do mundo, e ainda assim mais organizado que sua geladeira no fim do mês.",
+    "charada2": "Também sou usado pra descrever a geladeira dias antes de ir ao mercado.",
+    "charada3": "Sou a paisagem árida que descreve exatamente o estado da sua carteira no meio do mês depois dos boletos caírem todos juntos."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "floresta",
+    "charada": "Cheia de árvores que produzem o oxigênio que você respira sem nunca agradecer.",
+    "charada2": "Também sou o nome de qualquer parque que a prefeitura promete reformar todo ano.",
+    "charada3": "Sou o aglomerado de mato que a cidade inteira ama visitar em fotos, mas foge em pânico na primeira aparição de um bicho solto."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "fronteira",
+    "charada": "A linha que dois países discutem, mas que o GPS do celular já decidiu sozinho.",
+    "charada2": "Também sou usada pra marcar até onde vai a paciência de qualquer pai numa viagem longa de carro.",
+    "charada3": "Sou a linha invisível desenhada com giz no banco de trás do carro pra evitar que os irmãos briguem durante a viagem longa."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "ilha",
+    "charada": "Cercada de água por todo lado, que nem você depois de cancelar todos os compromissos do fim de semana.",
+    "charada2": "Também sou o nome do fogão, sempre lotada de louça suja bem no meio da bancada.",
+    "charada3": "Sou a mesa separada e minúscula no canto do refeitório que ninguém quer sentar, mas todo mundo acaba parando no dia que lota."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "latitude",
+    "charada": "Uma linha imaginária que decide se seu verão vai ser de praia ou de casaco.",
+    "charada2": "Também sou usada, errada, por qualquer um tentando parecer que entende de geografia numa conversa de bar.",
+    "charada3": "Sou a régua esquisita que te ensinam a decorar e que você nunca mais vai usar na vida depois da prova bimestral."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "litoral",
+    "charada": "A faixa de terra que todo mundo lota em janeiro e esquece o resto do ano.",
+    "charada2": "Também sou o assunto principal de qualquer conversa de dezembro em diante.",
+    "charada3": "Sou a promessa de paz e tranquilidade que só resulta em horas de congestionamento engolindo farofa e desviando de guarda-sóis."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "mapa",
+    "charada": "Prometo o caminho mais rápido e te levo direto pro trânsito parado.",
+    "charada2": "Também sou usado pra descrever qualquer plano detalhado que muda assim que a viagem realmente começa.",
+    "charada3": "Sou o desenho colorido dobrado torto no porta-luvas que te joga num atalho de terra com a promessa de economizar cinco minutos."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "migração",
+    "charada": "Sair de um lugar pra outro em busca de coisa melhor, que nem passarinho ou aquele primo que foi tentar a vida em outra cidade.",
+    "charada2": "Também sou usada pra descrever quando todo mundo do grupo muda de rede social ao mesmo tempo.",
+    "charada3": "Sou a troca anual de sofás que toda a família faz pra tentar achar o ponto perfeito da televisão antes do futebol começar."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "montanha",
+    "charada": "O tamanho que qualquer problema pequeno vira na sua cabeça às 3 da manhã.",
+    "charada2": "Também sou usada pra descrever a pilha de roupa suja que cresce até o fim de semana.",
+    "charada3": "Sou o amontoado gigantesco de louça suja que nasce na pia logo depois de um jantar que deveria ser rápido e simples."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "oceano",
+    "charada": "Grande demais pra atravessar nadando, mas pequeno o suficiente pra sumir com seu chinelo na primeira onda.",
+    "charada2": "Também sou usado, exagerado, pra descrever qualquer distância entre você e a geladeira às 3 da manhã.",
+    "charada3": "Sou o balde de lágrimas exageradas de quem descobre que a temporada da série favorita acabou no maior suspense de todos os tempos."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "país",
+    "charada": "Tenho bandeira, hino e um grupo de WhatsApp inteiro discutindo política sobre mim.",
+    "charada2": "Também sou usado pra dizer que 'lá fora é tudo melhor', mesmo sem nunca ter saído do bairro.",
+    "charada3": "Sou a desculpa patriótica que as pessoas usam de quatro em quatro anos só pra pendurar bandeirinha verde e amarela na varanda de casa."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "planeta",
+    "charada": "Sua casa inteira, girando sem parar, e ainda assim ninguém sente a velocidade.",
+    "charada2": "Também sou usado pra dizer que alguém 'vive em outro mundo' quando ignora completamente a real.",
+    "charada3": "Sou o pontinho perdido na galáxia que a professora de ciências jura que precisa de mais árvores, e você ainda joga lixo no chão."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "poluição",
+    "charada": "O motivo do rio que era limpo na foto antiga da vovó não existir mais assim hoje.",
+    "charada2": "Também sou usada pra descrever qualquer notificação inútil lotando a tela do celular.",
+    "charada3": "Sou a cortina de fumaça preta do ônibus da frente que garante que sua camisa branca nova chegue cinza no destino final."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "população",
+    "charada": "Todo mundo, incluindo aquele vizinho que você nunca viu a cara.",
+    "charada2": "Também sou usada pra exagerar quantas pessoas realmente foram na festa de aniversário.",
+    "charada3": "Sou a enorme massa de desconhecidos na rua do comércio empurrando uns aos outros por causa de uma suposta liquidação de calças."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "região",
+    "charada": "Um pedaço do mapa que reclama que ninguém fala o sotaque dele direito na TV.",
+    "charada2": "Também sou usada, num tom de deboche, pra apontar o sotaque de quem é de outro estado.",
+    "charada3": "Sou a demarcação de bairro que a galera usa só pra se achar superior aos outros do outro lado da avenida principal."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "relevo",
+    "charada": "A razão de a bicicleta ficar bem mais cansativa na volta pra casa.",
+    "charada2": "Também sou usado pra descrever a cara de quem finalmente termina uma prova difícil.",
+    "charada3": "Sou o buraco escondido na rua asfaltada que transforma o seu passeio de bicicleta numa verdadeira expedição cheia de surpresas dolorosas."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "rio",
+    "charada": "Corro sem parar, ao contrário de você numa segunda de manhã.",
+    "charada2": "Também sou usado, sem d, pra descrever a risada de quem contou a própria piada.",
+    "charada3": "Sou a água turva que corta a cidade e que você promete nunca nadar, mesmo no calor de 40 graus do verão."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "solo",
+    "charada": "Onde tudo cresce, inclusive aquela grama que você promete cortar todo fim de semana.",
+    "charada2": "Também sou usado pra descrever quem faz uma apresentação sozinho sem ninguém pra dividir o nervosismo.",
+    "charada3": "Sou a superfície cimentada que os skatistas da praça amam desbravar com a paciência infinita de quem não tem medo de cair feio."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "terremoto",
+    "charada": "Balanço o chão inteiro sem avisar, igual susto de notificação de banco de madrugada.",
+    "charada2": "Também sou usado pra descrever o susto de qualquer notificação de cobrança inesperada.",
+    "charada3": "Sou o balanço assustador da máquina de lavar roupas quando entra na fase de centrifugação e parece que vai sair andando pela lavanderia."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "território",
+    "charada": "A linha imaginária que faz duas pessoas brigarem por um metro de terreno.",
+    "charada2": "Também sou usado pra marcar até onde vai o lado da cama que cada um pode usar.",
+    "charada3": "Sou a gaveta do guarda-roupa que o adolescente demarca com fita crepe, proibindo qualquer invasão pacífica por parte de pais curiosos."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "vale",
+    "charada": "O ponto mais baixo entre duas montanhas, e também o motivo de a bicicleta parecer fácil só na descida.",
+    "charada2": "Também sou usado, sem crase, no nome de qualquer cupom que expira antes de você lembrar de usar.",
+    "charada3": "Sou o espaço fundo e frio entre as almofadas do sofá onde as moedinhas de troco e as chaves de casa vão parar pra sempre."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "vento",
+    "charada": "Viro sua sombrinha do avesso sem pedir licença.",
+    "charada2": "Também sou usado pra descrever quem muda de ideia rápido demais numa conversa.",
+    "charada3": "Sou o sopro invisível que joga a areia fina da praia exatamente dentro do olho daquela pessoa que acabou de abrir os óculos de sol."
+  },
+  {
+    "topico": "Geografia",
+    "palavra": "vulcão",
+    "charada": "Fico quieto por anos e depois exploso do nada, que nem aquele parente numa discussão de família.",
+    "charada2": "Também sou usado pra descrever qualquer pessoa calma até alguém mexer no prato dela.",
+    "charada3": "Sou a panela de leite no fogo brando, que parece inofensiva e transborda numa erupção branca assim que você vira as costas."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "adjetivo",
+    "charada": "Dou qualidade a um substantivo, tipo aquele elogio que sua mãe manda com segunda intenção.",
+    "charada2": "Também sou usado em excesso em qualquer legenda de foto de viagem.",
+    "charada3": "Sou a palavra exagerada que você usa pra convencer seu amigo a assistir aquele filme medíocre que te fez perder duas horas da vida."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "antônimo",
+    "charada": "O oposto exato de uma palavra, igual você e aquele parente que discorda de tudo só por discordar.",
+    "charada2": "Também sou usado pra descrever o humor de alguém antes e depois do café da manhã.",
+    "charada3": "Sou a direção totalmente contrária que você toma sem querer só pra fingir que tem um senso de direção invejável no meio da rua."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "autor",
+    "charada": "A pessoa que decide o final da história antes de você, e nunca avisa com antecedência.",
+    "charada2": "Também sou o crédito que ninguém lembra de dar quando repassa uma frase boa pra frente.",
+    "charada3": "Sou o nome de letras miúdas na capa do livro que você nunca pronuncia certo, mas faz questão de citar pra parecer intelectual."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "clímax",
+    "charada": "O momento mais tenso da história, bem antes do final que todo mundo já desconfiava.",
+    "charada2": "Também sou usado pra descrever o momento exato em que a churrasqueira finalmente pega fogo direito.",
+    "charada3": "Sou aquele pico de fofoca onde a tia finalmente conta quem foi o real culpado pelo bolo estragado antes da briga voltar a esfriar."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "conto",
+    "charada": "Termino rápido demais, tipo aquele fim de semana bom.",
+    "charada2": "Também sou usado pra chamar qualquer história exagerada que cresce cada vez que é contada de novo.",
+    "charada3": "Sou a mentirinha rápida que você inventa sobre estar dobrando a esquina quando ainda está deitado na cama escolhendo a roupa."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "crônica",
+    "charada": "Conto um dia comum de um jeito que faz até fila de banco parecer interessante.",
+    "charada2": "Também sou usada pra descrever a dor que aparece só quando o tempo esfria.",
+    "charada3": "Sou a textão diário do seu vizinho nas redes sociais, exagerando as coisas mais chatas do condomínio como se fosse um grande evento."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "enredo",
+    "charada": "O motivo de você perder a hora de dormir assistindo 'só mais um episódio'.",
+    "charada2": "Também sou usado pra descrever a confusão de qualquer fofoca contada por três pessoas diferentes.",
+    "charada3": "Sou a teia confusa da sua explicação pra justificar por que o dever de casa foi devorado, de novo, pelo cachorro invisível da sua avó."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "escrita",
+    "charada": "A prova de que você pensou antes de falar, coisa rara nas redes sociais.",
+    "charada2": "Também sou a letra que ninguém mais consegue ler direito desde que o teclado apareceu.",
+    "charada3": "Sou o rabisco ilegível que sai da sua mão depois de três meses só apertando teclas no computador e no celular o dia todo."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "frase",
+    "charada": "Quando bem colocada, viro status de rede social por meses.",
+    "charada2": "Também sou usada, incompleta, em qualquer discussão de WhatsApp que termina em mal-entendido.",
+    "charada3": "Sou aquele amontoado de palavras sem sentido que você sussurra quando acorda assustado no meio de um pesadelo e tenta voltar a dormir."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "gramática",
+    "charada": "As regras que todo mundo segue errado no WhatsApp e certo só na prova.",
+    "charada2": "Também sou usada pra corrigir os outros bem na hora que ninguém pediu opinião.",
+    "charada3": "Sou o livro de regras odiado que adora ditar como você tem que usar o acento que nunca muda o som da sua voz na rua."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "leitura",
+    "charada": "Prometida toda virada de ano, esquecida já em fevereiro.",
+    "charada2": "Também sou usada pra chamar qualquer interpretação errada de mensagem de texto.",
+    "charada3": "Sou a passada de olho rápida que você dá no manual de instruções antes de amassar o papel e tentar montar tudo na base do improviso."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "livro",
+    "charada": "Prometido pra ser lido em uma semana, viro enfeite de estante por dois anos.",
+    "charada2": "Também sou usado como peso de porta desde que ganhei capa dura de presente.",
+    "charada3": "Sou o peso quadrado de papel que segura perfeitamente a porta do seu quarto pra ventar e que você sempre promete ler até o fim."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "metáfora",
+    "charada": "Comparo duas coisas sem usar \"como\", tipo chamar o trânsito de guerra sem ninguém realmente atirar em ninguém.",
+    "charada2": "Também sou usada quando alguém não quer falar diretamente que o problema é com você.",
+    "charada3": "Sou o balde de água fria figurativo que alguém te joga quando o seu plano genial pra ficar rico jogando na loteria dá errado."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "narrador",
+    "charada": "Sei de tudo, menos por que ninguém nunca confia totalmente em mim.",
+    "charada2": "Também sou o apelido de quem sempre conta a história dos outros com mais detalhes que eles mesmos.",
+    "charada3": "Sou a voz cansada da sua mãe te lembrando de todos os seus deslizes sempre que você ousa pedir pra dormir na casa de um amigo."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "palavra",
+    "charada": "Uma só já é capaz de estragar o clima de qualquer grupo de família.",
+    "charada2": "Também sou aquela que falta na hora exata de terminar uma discussão com estilo.",
+    "charada3": "Sou a única coisa que você solta na hora errada numa sala cheia de estranhos, garantindo que o eco seja eterno no seu pensamento."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "personagem",
+    "charada": "Vivo dramas emocionantes sem nunca ter que pagar boleto de verdade.",
+    "charada2": "Também sou usado pra chamar alguém que sempre aparece com uma história diferente em cada festa.",
+    "charada3": "Sou aquele papel heroico que você jura que interpretou na confusão da escola, mas que no fundo você só estava escondido atrás do pilar."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "poema",
+    "charada": "Digo em quatro linhas o que uma pessoa levaria uma noite inteira explicando por mensagem de voz.",
+    "charada2": "Também sou usado, sem querer, quando alguém tenta se declarar e trava no meio da frase.",
+    "charada3": "Sou o bloquinho de rimas românticas, espremido num bilhetinho amassado, que a garota amou e você nunca mais vai ter coragem de assinar."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "poesia",
+    "charada": "Consigo fazer até uma lista de compras parecer profunda se você quebrar as linhas do jeito certo.",
+    "charada2": "Também sou usada pra descrever qualquer legenda de foto do pôr do sol na praia.",
+    "charada3": "Sou a desculpa artística pras fotos borradas e sem foco do pôr do sol que entopem o seu feed de final de tarde domingo."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "pronome",
+    "charada": "Existo pra você não repetir o nome da pessoa cem vezes na mesma fofoca.",
+    "charada2": "Também sou trocado errado bem na hora que alguém tenta parecer educado demais.",
+    "charada3": "Sou a única coisinha solta na frase que você usa errado o tempo inteiro e faz o professor fechar os olhos de desespero."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "protagonista",
+    "charada": "Quem vive a história inteira sem nunca precisar dividir os créditos com ninguém.",
+    "charada2": "Também sou usado pra descrever quem sempre puxa a história pro próprio lado numa roda de conversa.",
+    "charada3": "Sou aquele amigo dramático que sempre faz questão de puxar os holofotes pra própria tragédia em todo grupo de conversa que entra."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "rima",
+    "charada": "Faço duas palavras diferentes soarem como se fossem feitas uma pra outra.",
+    "charada2": "Também sou usada em qualquer propaganda de rádio que gruda na cabeça sem você querer.",
+    "charada3": "Sou o truque barato que qualquer rapper de bairro usa no final das frases pra fingir que o verso teve algum sentido poético."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "romance",
+    "charada": "Sempre mais longo que o namoro que me inspirou.",
+    "charada2": "Também sou usado, exagerado, pra descrever qualquer paquera que durou só um final de semana.",
+    "charada3": "Sou o relacionamento clichê dos filmes da tarde em que todo mundo tromba no corredor da escola e derruba o caderno cheio de folhas soltas."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "sílaba",
+    "charada": "Um pedacinho da palavra, e o motivo de você travar bonito tentando ler um nome esquisito em voz alta.",
+    "charada2": "Também sou usada pra separar o nome de bebê que os pais insistem em inventar.",
+    "charada3": "Sou os pedacinhos que você usa cantando a palavra aos tropeços quando não tem certeza de como ela se escreve no final da redação."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "sinônimo",
+    "charada": "Uma palavra que significa quase a mesma coisa que outra, tipo dizer \"econômico\" em vez de \"pão-duro\".",
+    "charada2": "Também sou usado quando alguém tenta suavizar uma crítica sem perder a educação.",
+    "charada3": "Sou a palavra bonita que você joga no texto só pra o corretor ortográfico não encher de risco vermelho a sua obra-prima acadêmica."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "substantivo",
+    "charada": "Dou nome pra tudo, inclusive pra aquela coisa que você não lembra o nome e chama de 'treco'.",
+    "charada2": "Também sou usado, sem querer, quando alguém esquece o nome de uma coisa e chama de 'aquilo lá'.",
+    "charada3": "Sou a coisa, a pessoa ou aquele objeto inútil na estante que você nunca sabe o nome, então chama de treco pra todo mundo."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "sujeito",
+    "charada": "Quem pratica a ação na frase, e também aquele suspeito que sempre aparece em toda história de família mal contada.",
+    "charada2": "Também sou usado, num tom de fofoca, pra apontar alguém sem falar o nome.",
+    "charada3": "Sou o culpado da frase, aquele que carrega o peso da ação de ter comido escondido o último brigadeiro da travessa do final de semana."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "texto",
+    "charada": "Chego grande no grupo do trabalho e ninguém me lê inteiro antes de responder 'combinado'.",
+    "charada2": "Também sou aquele que chega grande demais no grupo do trabalho numa sexta à noite.",
+    "charada3": "Sou o bloco interminável de palavras sem parágrafo que te dá dor de cabeça no momento em que abre o chat do aplicativo de conversas."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "verbo",
+    "charada": "A palavra que faz a ação acontecer, mesmo quando você só promete e não faz nada.",
+    "charada2": "Também sou o primeiro a sumir quando alguém tenta se explicar depois de errar.",
+    "charada3": "Sou a ação rápida que some debaixo da mesa quando todo mundo precisa escolher quem vai apresentar a primeira parte da cartolina lá na frente."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "verso",
+    "charada": "Uma linha só, mas decido se o poema inteiro vai rimar ou não.",
+    "charada2": "Também sou usado, decorado errado, em qualquer letra de música cantada no chuveiro.",
+    "charada3": "Sou a linha solitária do refrão de uma música de festa que você grita a plenos pulmões achando que domina o palco inteiro."
+  },
+  {
+    "topico": "Português e Literatura",
+    "palavra": "vírgula",
+    "charada": "Uma pausa pequena que muda o sentido da frase inteira, e também de qualquer herança mal escrita.",
+    "charada2": "Também sou aquela que falta bem na hora de ler um contrato até o fim.",
+    "charada3": "Sou a respiração dramática que você insere num texto pra tentar soar inteligente e só deixa quem está lendo sem ar no fim das contas."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "argumento",
+    "charada": "Aquilo que todo mundo jura ter na discussão de grupo de família, mas poucos realmente trazem.",
+    "charada2": "Também sou usado quando alguém perde a discussão e muda de assunto na hora.",
+    "charada3": "Sou a desculpa fajuta que todo aluno tem pronta pra explicar por que não deu tempo de finalizar a tarefa mais fácil do mundo."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "citação",
+    "charada": "Uma frase de outra pessoa que você usa pra parecer mais culto do que realmente é.",
+    "charada2": "Também sou usada errada, atribuída à pessoa errada, em quase toda rede social.",
+    "charada3": "Sou a frase chique que o estudante rouba da internet na última hora pra tentar impressionar a banca do vestibular na prova do Enem."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "clareza",
+    "charada": "A coisa que falta na explicação de qualquer manual de eletrônico.",
+    "charada2": "Também sou o que falta em qualquer manual de montar móvel.",
+    "charada3": "Sou o que falta em qualquer manual traduzido mal na internet e na sua explicação de matemática no quadro negro."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "coerência",
+    "charada": "A coisa que falta na desculpa de quem chega atrasado dizendo que 'o trânsito estava do nada'.",
+    "charada2": "Também sou o que falta na desculpa de quem chega atrasado dizendo motivo diferente toda semana.",
+    "charada3": "Sou o sentido exato que foge pela janela da sala de aula quando você tenta justificar sua ausência sem ter atestado médico nenhum."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "coesão",
+    "charada": "O motivo de um texto não parecer um monte de frases jogadas ao acaso, tipo esta explicação aqui.",
+    "charada2": "Também sou o que mantém o grupo de amigos junto, mesmo sem ninguém saber explicar por quê.",
+    "charada3": "Sou o milagre invisível que evita que a sua redação pareça um jogo de palavras jogadas num ventilador ligado no nível máximo."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "conclusão",
+    "charada": "Sempre escrita correndo, faltando dois minutos pra acabar o tempo de prova.",
+    "charada2": "Também sou aquela que todo mundo já sabia antes mesmo de terminar de ler o resto.",
+    "charada3": "Sou o fechamento de ouro do seu parágrafo que, na verdade, não resolveu problema nenhum e só repetiu o título de novo e de novo."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "conectivo",
+    "charada": "A palavrinha que costura uma ideia na outra, tipo aquele parente que sempre lembra de puxar assunto na mesa.",
+    "charada2": "Também sou a palavra que salva qualquer história mal contada de virar bagunça total.",
+    "charada3": "Sou a famosa cola invisível que segura o \"porém\" da sua reclamação e junta todas as suas lamentações num discurso chato só."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "crítica",
+    "charada": "O comentário que todo mundo faz depois que o problema já não tem mais solução.",
+    "charada2": "Também sou aquela que ninguém pede, mas todo mundo dá de graça mesmo assim.",
+    "charada3": "Sou a cutucada ácida disfarçada de conselho que chega sempre no grupo no momento em que você mais estava orgulhoso do próprio penteado."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "dissertação",
+    "charada": "O tipo de texto em que você precisa parecer seguro de algo que decidiu pensar cinco minutos atrás.",
+    "charada2": "Também sou usada pra chamar qualquer explicação longa demais pra uma pergunta simples de sim ou não.",
+    "charada3": "Sou aquele documento gigante que você enrola por meses na faculdade pra fingir que está pesquisando a fundo um assunto de três páginas."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "intervenção",
+    "charada": "A proposta de solução que todo mundo escreve no final sem nunca aplicar de verdade na própria vida.",
+    "charada2": "Também sou aquela conversa que a família marca quando alguém exagera nos planos impossíveis.",
+    "charada3": "Sou aquela proposta de salvar o mundo em três linhas de texto na prova do Enem sem que você precise levantar da sua própria cadeira escolar."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "introdução",
+    "charada": "A parte que ninguém lê com atenção, mas que decide se alguém vai continuar lendo o resto.",
+    "charada2": "Também sou a parte que todo mundo pula direto pra ver o resultado final.",
+    "charada3": "Sou a famosa frase engessada e bonita no início da festa que logo perde a pose quando a comida demora pra começar a ser servida."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "objetividade",
+    "charada": "Ir direto ao ponto, coisa que ninguém consegue fazer numa desculpa por chegar atrasado.",
+    "charada2": "Também sou o que falta em qualquer resposta de político em entrevista.",
+    "charada3": "Sou a reta invisível e impossível de ser traçada na história cheia de rodeios e drama que a sua vizinha de porta vem contar."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "opinião",
+    "charada": "Todo mundo tem uma, principalmente sobre assunto que não entende bem.",
+    "charada2": "Também sou dada sem ninguém pedir, principalmente sobre futebol e política.",
+    "charada3": "Sou a pitada a mais de tempero que ninguém pediu, mas que o intrometido faz questão de derramar no meio da roda gigante de fofoca."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "parágrafo",
+    "charada": "Recuo, ideia, ponto final — e ainda assim tem gente que escreve um texto inteiro sem nenhum de mim.",
+    "charada2": "Também sou aquele que devia ter três linhas e vira um texto inteiro sozinho.",
+    "charada3": "Sou o fôlego visual do leitor que você nega ao mandar uma mensagem gigantesca reclamando da professora, sem usar sequer um recuo pro texto respirar."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "proposta",
+    "charada": "Aquilo que ninguém pediu pra discutir, mas que virou obrigatório numa folha de prova.",
+    "charada2": "Também sou aquela que todo mundo aceita animado e ninguém cumpre depois.",
+    "charada3": "Sou aquele plano mirabolante que todo grupo aprova sorrindo na reunião, pra no final todo mundo jogar o planejamento na primeira gaveta velha que achar."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "reflexão",
+    "charada": "Aquele momento de pensar profundamente sobre a vida, geralmente às 2 da manhã sem motivo aparente.",
+    "charada2": "Também sou aquela que aparece só depois que a decisão errada já foi tomada.",
+    "charada3": "Sou a dor na consciência que bate bem devagarinho logo depois de devorar a terceira fatia de bolo que a mãe mandou você só experimentar."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "repertório",
+    "charada": "Aquelas referências que você guarda pra usar na hora certa, tipo aquela citação que ninguém sabe se é verdadeira mesmo.",
+    "charada2": "Também sou usado pra chamar qualquer plano de conversa preparado antes de encontrar alguém importante.",
+    "charada3": "Sou o saco de referências aleatórias que você carrega pra vomitar séries, livros e filmes num texto tentando provar que entende de geopolítica mundial."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "tema",
+    "charada": "Escolhido por alguém que nunca vai ler o que você escreveu sobre mim com tanto carinho quanto você escreveu.",
+    "charada2": "Também sou aquele que ninguém escolhe, mas que decide o rumo da festa de aniversário infantil.",
+    "charada3": "Sou a regra principal da festa à fantasia que sempre tem um convidado folgado jurando que o próprio pijama entra no conceito escolhido praquela noite."
+  },
+  {
+    "topico": "Redação",
+    "palavra": "tese",
+    "charada": "A ideia que você defende com unhas e dentes, mesmo sem certeza nenhuma.",
+    "charada2": "Também sou aquela ideia repetida tantas vezes que todo mundo já concorda só de cansaço.",
+    "charada3": "Sou a ideia fixa que o aluno defende até o fim, suando frio, mesmo depois que o professor já provou no quadro que é fisicamente impossível acontecer."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "conhecimento",
+    "charada": "A única coisa que ninguém consegue tirar de você, exceto na hora da prova que você não estudou.",
+    "charada2": "Também sou aquele que todo mundo finge ter numa discussão de bar sobre política.",
+    "charada3": "Sou o tesouro invisível que todo pai cobra do boletim do filho, ignorando completamente que ele não presta atenção em metade da aula dada."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "consciência",
+    "charada": "Aquela voz que fala 'você devia estar estudando' bem na hora do episódio mais interessante da série.",
+    "charada2": "Também sou aquela que pesa mais depois da segunda fatia de bolo.",
+    "charada3": "Sou a sirene que não para de apitar dentro de você avisando que aquele décimo episódio de madrugada vai custar caríssimo na hora do seu despertador."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "crença",
+    "charada": "Aquilo que você aceita sem precisar de prova nenhuma, tipo achar que hoje vai ser o dia que a dieta começa de verdade.",
+    "charada2": "Também sou aquela que todo mundo tem sobre qual time vai ser campeão nesse ano.",
+    "charada3": "Sou a força teimosa que te faz segurar a superstição do pé direito antes de começar a prova que você, sinceramente, nunca estudou direito."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "dilema",
+    "charada": "Uma escolha difícil entre duas opções ruins, tipo decidir entre acordar cedo ou chegar atrasado de novo.",
+    "charada2": "Também sou a escolha entre lavar a louça agora ou deixar pra 'daqui a pouco' que nunca chega.",
+    "charada3": "Sou o momento torturante no balcão da sorveteria, trancando a fila, entre repetir o pistache do costume ou apostar no morango com limão duvidoso."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "dúvida",
+    "charada": "O motivo de você reler a mesma mensagem cinco vezes antes de enviar.",
+    "charada2": "Também sou aquela que aparece bem na hora de apertar o botão de enviar o áudio.",
+    "charada3": "Sou aquela pulguinha atrás da orelha na prova de múltipla escolha que transforma a certeza da alternativa 'A' no medo arrepiante de marcar a 'C' sem querer."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "essência",
+    "charada": "O que uma coisa realmente é por trás de toda aparência, tipo aquele perfume que promete durar o dia todo e não dura.",
+    "charada2": "Também sou usada pra vender perfume que promete um cheiro que nunca é igual ao da loja.",
+    "charada3": "Sou o miolo de chocolate incrível escondido debaixo daquela embalagem super barata do supermercado que todo mundo esnoba pela estética da prateleira baixa."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "ética",
+    "charada": "O que impede você de comer o último pedaço de bolo sem perguntar antes.",
+    "charada2": "Também sou aquela que some na hora de furar fila achando que ninguém está vendo.",
+    "charada3": "Sou a voz contida que não te deixa rir do tropeço feio do professor no meio da sala, mesmo sendo a coisa mais cômica da escola toda."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "existência",
+    "charada": "A pergunta que ataca você bem quando a luz apaga e você já está deitado tentando dormir.",
+    "charada2": "Também sou questionada assim que a internet cai no meio de algo importante.",
+    "charada3": "Sou o mistério pesado que te tira o sono às quatro da manhã, enquanto você olha pro ventilador girando e pensa no que é feito o vento do universo."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "ideia",
+    "charada": "Apareço do nada, geralmente às 2 da manhã, e sumo assim que você acorda pra me anotar.",
+    "charada2": "Também sou aquela que parecia genial à noite e péssima na luz do dia seguinte.",
+    "charada3": "Sou a lâmpada mágica e imaginária que brilha radiante na cabeça na hora do banho quente, e derrete na mesma hora que você se enxuga."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "ilusão",
+    "charada": "Uma percepção que engana os sentidos, tipo achar que vai estudar cedo só porque comprou uma agenda nova.",
+    "charada2": "Também sou aquela de achar que só essa vez o desconto vale realmente a pena.",
+    "charada3": "Sou o troco certinho de moedas prometido pelo padeiro e que nunca, absolutamente nunca, aparece na sua mão inteiramente como deveria ser no mercadinho do seu bairro."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "liberdade",
+    "charada": "A sensação de sexta-feira às 18h em ponto.",
+    "charada2": "Também sou a sensação de tirar o sapato apertado assim que chega em casa.",
+    "charada3": "Sou aquele suspiro farto e aliviado do momento em que o alarme da escola toca e decreta oficialmente o início das preciosas e esperadas férias da garotada."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "lógica",
+    "charada": "A sequência de raciocínio que todo mundo jura seguir, principalmente numa discussão que já perdeu o sentido.",
+    "charada2": "Também sou aquela que ninguém segue quando o assunto é comida às 2 da manhã.",
+    "charada3": "Sou a trilha óbvia e iluminada que você ignora completamente pra tentar abrir a embalagem plástica do pão com a boca em vez de usar uma simples tesoura."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "moral",
+    "charada": "A régua invisível que todo mundo usa pra julgar o comportamento dos outros, nunca o próprio.",
+    "charada2": "Também sou aquela frase no fim da fábula que ninguém lembra até o professor explicar de novo.",
+    "charada3": "Sou a lousa invisível de juiz que você carrega na testa pra julgar cada erro de percurso que os seus amigos cometem em pleno final de semana."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "pensamento",
+    "charada": "Aquilo que passa pela sua cabeça um segundo antes de você falar besteira mesmo assim.",
+    "charada2": "Também sou aquele que some completamente na hora exata da prova.",
+    "charada3": "Sou o balãozinho invisível em cima da sua cabeça que, graças ao bom senso divino, ninguém é capaz de ler as besteiras quando você fica de cara feia."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "questionamento",
+    "charada": "Aquela pergunta incômoda que ninguém faz até o final da reunião, quando já é tarde demais pra responder direito.",
+    "charada2": "Também sou aquele que o grupo de família faz só depois que já é tarde demais pra mudar de ideia.",
+    "charada3": "Sou a clássica mão levantada lá do fundo no segundo em que o professor diz a famosa frase mágica 'podem fechar os cadernos e ir para o intervalo'."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "razão",
+    "charada": "A parte de você que sabe que devia ter ido dormir mais cedo ontem.",
+    "charada2": "Também sou aquela que ninguém quer dar em discussão de trânsito.",
+    "charada3": "Sou a âncora pesada que você insiste em soltar, acabando com a farra, quando diz pros amigos que pular daquele telhado baixo de jeito nenhum é diversão."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "realidade",
+    "charada": "Aquilo que continua existindo mesmo depois que você fecha os olhos e finge que não viu.",
+    "charada2": "Também sou aquela que bate assim que o alarme toca na segunda-feira.",
+    "charada3": "Sou a pancada dura e sem alarde do extrato bancário zerado bem no meio do dia que você jura que seria perfeito pro consumo impulsivo da promoção na vitrine."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "sentido",
+    "charada": "O que você tenta encontrar na vida e também na última temporada de uma série que decidiu não explicar nada.",
+    "charada2": "Também sou aquele que ninguém encontra tentando montar móvel sem manual.",
+    "charada3": "Sou o destino claro do caminho longo que você perde completamente e fica perambulando quando começa a rolar o feed vazio do aplicativo na madrugada vazia e sem sono."
+  },
+  {
+    "topico": "Filosofia",
+    "palavra": "verdade",
+    "charada": "Sempre dói mais que a mentira, mesmo sendo mais curta de contar.",
+    "charada2": "Também sou aquela que escapa quando alguém pergunta 'quem comeu o último pedaço'.",
+    "charada3": "Sou o raio certeiro que estraga a festa quando a criança mimada conta na frente de todo mundo exatamente por que a sua avó não gostou do prato principal."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "cidadania",
+    "charada": "Os direitos e deveres que todo mundo lembra dos direitos e esquece os deveres.",
+    "charada2": "Também sou lembrada só quando alguém precisa tirar um documento com urgência.",
+    "charada3": "Sou o pacote completo de etiqueta urbana invisível que o seu vizinho rasga ao meio quando decide furar a fila enorme no ponto de ônibus da cidade grande."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "cidadão",
+    "charada": "A pessoa que reclama do imposto e também reclama quando falta asfalto na rua.",
+    "charada2": "Também sou usado, formal demais, quando alguém quer soar sério numa reclamação simples.",
+    "charada3": "Sou o portador exigente do direito de reclamar na prefeitura por qualquer buraco, sem nunca recolher o cocô que o próprio cachorro fez num dia de domingo no meio-fio da calçada."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "classe",
+    "charada": "Divido as pessoas por quanto dinheiro elas têm, mesmo quando ninguém quer admitir que reparou nisso.",
+    "charada2": "Também sou usada pra chamar qualquer festa chique que serve salgadinho igual às outras.",
+    "charada3": "Sou o título que separa o corredor vip da festa na roça, mesmo com a coxinha gelada sendo exatamente a mesma que servem pro povo do salão geral na tenda."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "comunidade",
+    "charada": "O grupo de vizinhos que só se fala de verdade quando falta água ou luz.",
+    "charada2": "Também sou usada pra descrever qualquer grupo de fãs discutindo detalhe que só eles entendem.",
+    "charada3": "Sou o ajuntamento caótico da rua debaixo, onde não existe muro nenhum pra separar quem deve um prato de farofa de quem pega a mangueira pra lavar o quintal do lado."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "costume",
+    "charada": "O jeito de fazer as coisas que vira automático, tipo pôr sal antes mesmo de provar a comida.",
+    "charada2": "Também sou aquele jeito de fazer as coisas que ninguém sabe mais explicar como começou.",
+    "charada3": "Sou a mania velha de checar trinta vezes se o celular está no mesmo bolso de sempre, mesmo sabendo que nunca esteve lá naquele maldito lugar escuro e apertado."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "cultura",
+    "charada": "O motivo de cada família ter uma regra completamente diferente pra passar o Natal.",
+    "charada2": "Também sou usada pra justificar qualquer comida estranha que a família insiste em servir no Natal.",
+    "charada3": "Sou o combo de superstição da família que envolve não beber manga com leite, nem misturar chinelo virado pro chão num feriado sagrado, pelo amor da nossa santa tradição avózinha."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "desigualdade",
+    "charada": "A razão de duas pessoas nascerem no mesmo país e terem chances completamente diferentes.",
+    "charada2": "Também sou usada pra descrever quem sempre pega o pedaço menor do bolo sem perceber.",
+    "charada3": "Sou o triste contraste diário entre a mesa entupida de churrasco na sexta-feira do chefe de departamento e o prato com salsicha do funcionário cansado na cantina do escritório sujo."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "direito",
+    "charada": "Aquilo que você invoca bem alto assim que alguém tenta te prejudicar.",
+    "charada2": "Também sou invocado bem alto na fila do banco assim que alguém tenta furar.",
+    "charada3": "Sou a desculpa barata estampada na cara de quem vira o som do carro na máxima no meio da calçada e jura que a rua é feita só da própria diversão."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "diversidade",
+    "charada": "Ter gente diferente reunida no mesmo lugar, tipo o grupo de família que ninguém entende como ainda funciona.",
+    "charada2": "Também sou usada pra descrever qualquer grupo de amigos que discorda até de qual filme assistir.",
+    "charada3": "Sou o bando eclético da rodinha da escola: a nerd de animes, o skatista bagunceiro, a patricinha de fones caros e o cara que desenha a aula inteira, todos dividindo o misto frio."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "estereótipo",
+    "charada": "A ideia pronta que todo mundo tem sobre um grupo antes mesmo de conhecer alguém dele de verdade.",
+    "charada2": "Também sou usado, sem pensar, pra julgar time de futebol adversário antes do jogo começar.",
+    "charada3": "Sou a fantasia preguiçosa da comédia de TV que enfia o fã de rock em porão sem banho e o jogador de futebol sempre sem nenhuma célula boa no cérebro minúsculo."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "família",
+    "charada": "O grupo que você não escolhe, mas que aparece inteiro assim que alguém posta uma foto de herança.",
+    "charada2": "Também sou usada pra descrever qualquer grupo de zap que ninguém tem coragem de silenciar de vez.",
+    "charada3": "Sou o agrupamento barulhento de tios e sobrinhos que discute herança, futebol, política e maionese no mesmo grito, mas que se espreme no mesmo sofá pra comer pipoca fria do micro-ondas."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "grupo",
+    "charada": "Aquele do WhatsApp que ninguém tem coragem de sair, só de silenciar.",
+    "charada2": "Também sou usado pra chamar qualquer trabalho escolar em que uma pessoa faz tudo sozinha.",
+    "charada3": "Sou o temido núcleo do trabalho de escola, em que um garoto estuda e arruma os slides, e os outros três torcem, do lado da cartolina, pra tirar pelo menos o pontinho da nota."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "identidade",
+    "charada": "A resposta que ninguém consegue dar rápido quando alguém pergunta 'me conta sobre você'.",
+    "charada2": "Também sou aquela que ninguém lembra de levar exatamente no dia que mais precisa dela.",
+    "charada3": "Sou o emaranhado complexo e estranho que você arrasta até a foto oficial da sua primeira CNH, garantindo eternamente o rosto esquisito pro resto da próxima década toda sem nenhuma folga na carteira."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "instituição",
+    "charada": "Uma organização com regras próprias, tipo a família que tem lei não escrita sobre quem senta onde na mesa de Natal.",
+    "charada2": "Também sou usada pra chamar qualquer empresa que muda de regra toda semana sem avisar ninguém.",
+    "charada3": "Sou aquele prédio sério com regras mofadas onde burocratas de cara amarrada passam o dia te pedindo, sem a menor pressa do universo todo, dez vias idênticas pra carimbar uma folha inútil."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "norma",
+    "charada": "A regra que todo mundo segue sem nunca ter assinado nada, tipo separar o lixo só quando alguém está olhando.",
+    "charada2": "Também sou aquela que todo mundo ignora até o fiscal aparecer.",
+    "charada3": "Sou a cordinha vermelha esticada da segurança de museu que todos ultrapassam quando acham que o guarda da sala vizinha deu aquela espiada caprichosa no celular pra verificar alguma coisa aleatória."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "poder",
+    "charada": "Quem segura o controle remoto de verdade na casa.",
+    "charada2": "Também sou disputado sempre que sobra o último pedaço de qualquer coisa boa na mesa.",
+    "charada3": "Sou a chave invisível e reluzente de ter na mão todos os chicletes novos e caros que restaram no pacote da lanchonete da frente na hora mágica e longa da saída escolar de sexta."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "preconceito",
+    "charada": "Julgar o livro pela capa antes mesmo de ler o título.",
+    "charada2": "Também sou aquele que aparece escondido atrás de um elogio mal disfarçado.",
+    "charada3": "Sou o pé atrás escondido num tom de deboche maldoso quando a vizinha espia por debaixo da própria frestinha da cortina fechada o corte de cabelo modernoso do moleque inocente da calçada suja."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "religião",
+    "charada": "O conjunto de crenças que sempre vira assunto proibido na mesa de almoço de domingo, e mesmo assim sempre aparece.",
+    "charada2": "Também sou usada, errado, pra descrever qualquer time de futebol que alguém defende cegamente.",
+    "charada3": "Sou a vela acesa num santuário da porta de uma mãe zelosa no segundo exato em que ouve a primeira bomba barulhenta que explode da zoeira do primo fanático num finalzinho acalorado do jogo clássico."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "sociedade",
+    "charada": "Todo mundo, inclusive quem jura que 'não liga pra opinião dos outros'.",
+    "charada2": "Também sou culpada por qualquer decisão ruim que alguém não quer assumir sozinho.",
+    "charada3": "Sou a mistura toda amontoada e confusa num metrô às seis, julgando as roupas uns dos outros e, na hora da confusão de sempre, fechando um olhão fechado pra escutar qualquer barulho de música chata alheia no vagão."
+  },
+  {
+    "topico": "Sociologia",
+    "palavra": "tradição",
+    "charada": "Aquilo que a família repete todo ano só porque sempre foi assim, mesmo sem ninguém lembrar por quê.",
+    "charada2": "Também sou aquela receita de família que só sai boa na mão de uma pessoa específica.",
+    "charada3": "Sou o velho rito estagnado do pavê que todo mundo abomina da ceia farta de fim de ano, mas continua servindo incansável porque ninguém quer aguentar bico chato e a careta ofendida e reclamona da tia chata."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "alfabeto",
+    "charada": "Vinte e seis letrinhas que decidem toda discussão sobre como se escreve certo.",
+    "charada2": "Também sou o motivo de qualquer lista de compras nunca seguir a ordem certa das letras.",
+    "charada3": "Sou o grupinho decorado da escola que te ajuda a entender a confusão dos códigos da prateleira enorme e empoeirada das grandes livrarias sem dono que você nunca lembra qual letrinha passa do quê."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "bilíngue",
+    "charada": "Quem fala dois idiomas, e ainda assim trava igual todo mundo na hora de pedir a conta no restaurante.",
+    "charada2": "Também sou o rótulo de embalagem que ninguém lê no verso porque já entendeu na frente.",
+    "charada3": "Sou o charme especial da lanchonete falsa que vende sanduíche gourmet pra atrair gente da moda botando uns terminhos num sotaque torto de fast-food do lado de fora e enganando legal."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "conversa",
+    "charada": "Sempre fico mais interessante depois que alguém já foi embora e não pode mais participar de mim.",
+    "charada2": "Também sou aquela que todo mundo jura que vai ter 'rapidinho' e dura a noite inteira.",
+    "charada3": "Sou aquele pingue-pongue super sem jeito que fica na recepção do salão entre elogios falsos e clima mudo sobre nada menos desastroso pra ninguém da fila ter que rir nervoso junto demais não."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "diálogo",
+    "charada": "A parte do livro que você lê rápido só pra saber quem falou o quê.",
+    "charada2": "Também sou aquele que dois grupos de WhatsApp têm ao mesmo tempo sem nenhum se falar de verdade.",
+    "charada3": "Sou a encenação falsa ensaiada de duas pessoas no escritório concordando e rindo, mas que no fundo não se escutam por causa do fone de ouvido disfarçado."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "expressão",
+    "charada": "Um jeito de dizer algo que não faz sentido nenhum traduzido ao pé da letra pra outro idioma.",
+    "charada2": "Também sou aquela cara que todo mundo faz quando prova algo picante achando que ia ser suave.",
+    "charada3": "Sou aquele trejeito cheio de caras e bocas que você joga no ar tentando encobrir que não entendeu absolutamente nada da frase dita em inglês pelo primo chato."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "fala",
+    "charada": "A coisa que trava completamente na primeira vez que você precisa usar outro idioma de verdade.",
+    "charada2": "Também sou aquela que todo mundo perde só de ver a conta do restaurante dividida errado.",
+    "charada3": "Sou o som que foge misteriosamente da sua boca aberta bem na hora exata em que você se depara com o professor mandando você ler o texto da prova difícil."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "gíria",
+    "charada": "A palavra que os mais velhos usam errado tentando parecer descolados.",
+    "charada2": "Também sou usada errada por qualquer adulto tentando parecer jovem no grupo de família.",
+    "charada3": "Sou a palavra descolada da rodinha do pátio que envelhece mal pra caramba e vira piada assim que seu tio tenta repetir num almoço fingindo ser moleque da rua moderna."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "idioma",
+    "charada": "Aquele que você jura entender assistindo série com legenda, e trava completamente numa ligação de verdade.",
+    "charada2": "Também sou usado, mal, quando alguém tenta impressionar usando só três palavras decoradas.",
+    "charada3": "Sou aquele código misterioso que os garçons lá de fora usam só pra fingir que não sabem o quão perdido você está pedindo a comida mais barata do bife inteiro."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "intérprete",
+    "charada": "Traduzo na hora, sem tempo pra pensar, tipo você tentando explicar uma piada que ninguém mais riu.",
+    "charada2": "Também sou o papel de quem sempre precisa explicar a piada que ninguém entendeu na roda.",
+    "charada3": "Sou a pessoa sortuda que sempre fica no meio da roda tentando traduzir o choro escandaloso do bebê pro resto da família que está morrendo de pânico na sala vazia."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "legenda",
+    "charada": "A única razão de você entender o final do filme sem precisar admitir que não sabe o idioma.",
+    "charada2": "Também sou aquela que aparece atrasada bem na cena mais importante do filme.",
+    "charada3": "Sou a salvação branquinha no fundo da tela que, num golpe de gênio, desaparece nas cenas da neve clara, te impedindo de saber quem é o verdadeiro vilão no filme gringo da TV."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "língua",
+    "charada": "Também sou a parte da boca que enrola bonito na hora de pronunciar uma palavra difícil.",
+    "charada2": "Também sou o motivo de qualquer sotaque forte virar imitação exagerada de amigo brincalhão.",
+    "charada3": "Sou a culpada rebelde que escorrega direto e solta o trocadilho sujo na frente dos pais da namorada no minuto silencioso do jantar, sem ter nem como guardar a frase depois."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "pronúncia",
+    "charada": "O motivo de você preferir mandar áudio a falar aquela palavra difícil em inglês.",
+    "charada2": "Também sou aquela que trava justo na palavra mais fácil da frase inteira.",
+    "charada3": "Sou aquele engasgo com a própria saliva que um estudante no intercâmbio solta na hora de pagar o salgado porque tentou caprichar demais no sotaque texano imitando filme ruim."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "significado",
+    "charada": "O que uma palavra realmente quer dizer, coisa que o tradutor automático sempre erra na hora mais importante.",
+    "charada2": "Também sou aquele que se perde completamente quando a piada é traduzida ao pé da letra.",
+    "charada3": "Sou aquilo que se perde de vez quando o aplicativo traduz literalmente o seu ditado popular favorito e o gringo fica te olhando de boca aberta no meio do restaurante vazio na viagem de sexta."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "sotaque",
+    "charada": "A prova de onde você nasceu, mesmo depois de anos tentando me esconder.",
+    "charada2": "Também sou copiado errado por qualquer um tentando imitar região que não é a sua.",
+    "charada3": "Sou a identidade rítmica arrastada da voz que o ator novato se esforça aos prantos pra apagar num teste de novela ruim, e falha feio esquecendo na primeira sílaba esquisita dele."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "tradução",
+    "charada": "Transformo uma piada engraçada em outro idioma numa frase sem graça nenhuma.",
+    "charada2": "Também sou aquela que o aplicativo faz ao pé da letra e vira frase sem nexo nenhum.",
+    "charada3": "Sou o desserviço cômico que a televisão fechada exibe embutido na dublagem forçada de briga ruim americana que, do nada, insere macacos me mordam em vez de um xingamento grosso e natural."
+  },
+  {
+    "topico": "Inglês e Espanhol",
+    "palavra": "vocabulário",
+    "charada": "Cresço muito rápido quando o assunto é xingamento em outro idioma.",
+    "charada2": "Também sou aquele que aumenta bem rápido quando o assunto é resposta de discussão online.",
+    "charada3": "Sou a bolsa infinita de palavras esquecidas, chiques e longas, que o engravatado sempre usa na reunião pra tentar disfarçar as metas tortas da própria gestão fraca que vai dar ruim bem antes da folga."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "artista",
+    "charada": "Quem transforma sentimento em obra, e também qualquer pessoa que decora o próprio bolo de aniversário torto com orgulho.",
+    "charada2": "Também sou o apelido de quem enrola qualquer desculpa de um jeito bonito demais pra ser verdade.",
+    "charada3": "Sou o aluno do fundão que transforma um chiclete mastigado e dois clipes quebrados numa escultura incrível no pé da carteira, enquanto ignora brilhantemente a matéria do ano no quadro negro inteiro de segunda."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "ator",
+    "charada": "Finge sentir emoção profissionalmente, coisa que todo mundo já fez pelo menos uma vez numa festa chata.",
+    "charada2": "Também sou o papel de quem finge gostar do presente feio no aniversário.",
+    "charada3": "Sou aquele aluno que dá um show digno de prêmio e chora sem lágrima na frente da diretora só pra escapar ileso da assinatura e da suspensão no final de sexta."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "cena",
+    "charada": "Um pedacinho da história que, fora de contexto, sempre parece mais dramático do que realmente é.",
+    "charada2": "Também sou aquela que todo mundo faz quando o pedido do restaurante demora além da conta.",
+    "charada3": "Sou aquele barraco maravilhoso e sem roteiro nenhum na porta da escola quando dois carros de pais atrasados tentam entrar na mesma vaga apertada da calçada."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "cor",
+    "charada": "O motivo de duas pessoas discutirem se aquele vestido é azul ou dourado.",
+    "charada2": "Também sou escolhida errado bem na hora de pintar a parede e só descobrem depois de seca.",
+    "charada3": "Sou aquilo que o garoto da loja jura ser azul turquesa envelhecido, mas que você bate o olho sob a lâmpada da vitrine torta e sabe que é só um verde meio encardido da prateleira."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "dança",
+    "charada": "A primeira coisa que todo mundo jura que não sabe fazer, um segundo antes de fazer mesmo assim no casamento.",
+    "charada2": "Também sou aquela que ninguém sabe o nome, mas todo mundo reconhece na hora que toca.",
+    "charada3": "Sou o espasmo esquisito do tio da calça apertada em casamento chic que começa depois de alguns copos de cerveja na pista livre da festa fria demais."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "desenho",
+    "charada": "Sempre pareço mais fácil no vídeo do YouTube do que na sua própria mão.",
+    "charada2": "Também sou aquele rabisco que a criança jura que é um cachorro e todo mundo finge reconhecer.",
+    "charada3": "Sou o boneco de palito e a casinha pontuda com o sol sorridente no cantinho que todo adulto frustrado rabisca na borda da ata gigante e desinteressante da reunião da diretoria na quinta-feira."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "escultura",
+    "charada": "Uma pedra que alguém teve paciência suficiente pra me transformar em outra coisa.",
+    "charada2": "Também sou o resultado de horas de praia tentando fazer um castelo de areia decente.",
+    "charada3": "Sou o amontoado deformado de argila esburacada que toda criança leva feliz no dia das mães, obrigando o objeto a ser exposto na melhor prateleira poeirenta da casa lotada e torta."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "instrumento",
+    "charada": "Todo mundo me comprou pra aprender em 2020, e estou pegando poeira desde então.",
+    "charada2": "Também sou usado, sem afinar, pela criançada logo cedo num domingo de sossego.",
+    "charada3": "Sou a gaita surrada no fundo da mochila velha que você puxa no momento mais inoportuno do ônibus lotado, e ganha olhares mortais silenciosos de todos ao mesmo tempo."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "melodia",
+    "charada": "A parte da música que gruda na cabeça o dia inteiro mesmo você não lembrando a letra.",
+    "charada2": "Também sou aquela que toca na loja e vira trilha sonora da sua semana inteira sem querer.",
+    "charada3": "Sou o refrão instrumental daquela música chata de brinquedo infantil barato que não sai mais do cérebro exausto do pai que apertou sem querer."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "museu",
+    "charada": "O lugar mais silencioso que existe, até alguém esquecer de colocar o celular no silencioso.",
+    "charada2": "Também sou o nome carinhoso que dão pra qualquer quarto cheio de coisa velha guardada.",
+    "charada3": "Sou o depósito refinado de antiguidade que o aluno morre de bocejar em plena excursão do colégio sem conseguir fugir do frio e do sermão."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "música",
+    "charada": "Grudo na sua cabeça o dia inteiro depois de tocar só uma vez de manhã.",
+    "charada2": "Também sou aquela que o vizinho escolhe pra malhar às 6h de um domingo.",
+    "charada3": "Sou a culpada oficial por você perder totalmente o foco na leitura da apostila gorda, cantando alto o refrão dramático que eu enfio nos fones durante o pânico pré-vestibular."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "obra",
+    "charada": "Posso ser um quadro num museu, ou aquela reforma na rua que nunca termina.",
+    "charada2": "Também sou o nome de qualquer conserto de casa que promete uma semana e vira três meses.",
+    "charada3": "Sou a desgraça de marreta do vizinho aloprado acordado seis em ponto de domingo quente com poeira esparramada num projeto barulhento gigante do condomínio."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "palco",
+    "charada": "O lugar onde qualquer nervosismo vira parte do show, quer você queira ou não.",
+    "charada2": "Também sou o centro das atenções de qualquer festa de aniversário de criança pequena.",
+    "charada3": "Sou a plataforma torta iluminada da feira escolar, onde você travou as pernas suadas e gaguejou vestido de melancia sob os olhos e câmeras da arquibancada lotada e quente."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "pincel",
+    "charada": "A ferramenta que promete uma pintura perfeita, e sempre termina com mais tinta na sua roupa do que na tela.",
+    "charada2": "Também sou trocado por qualquer coisa na mão de criança fazendo arte pela primeira vez.",
+    "charada3": "Sou a varinha molhada colorida mágica que desce nas mãos erradas da sua prima pequena, garantindo arte nas paredes limpas num terror mudo da pintura abstrata."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "pintura",
+    "charada": "Posso valer uma fortuna ou parecer rabisco de criança, dependendo de quem assinou embaixo.",
+    "charada2": "Também sou aquela que descasca da parede bem no canto que ninguém repara até visita chegar.",
+    "charada3": "Sou a moldura que segura o quadro esquisito com um quadrado preto que faz o leigo reclamar o tempo todo da vida que não sabe quem paga rios de dinheiro em tinta suja e borrada num fundo vazio."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "retrato",
+    "charada": "A versão sua que sai bem melhor no papel do que na selfie de verdade.",
+    "charada2": "Também sou aquele quadro na sala que ninguém sabe dizer de quando é a foto.",
+    "charada3": "Sou a recordação incômoda da juventude de aparelho feio estampada que os parentes mantêm exposta e firme, estragando o ego no almoço domingo na frente da namorada nova."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "ritmo",
+    "charada": "O que falta pra metade da pista de dança no casamento logo depois da primeira música mais animada.",
+    "charada2": "Também sou perdido completamente na primeira aula de dança que alguém resolve tentar depois dos 30.",
+    "charada3": "Sou o compasso sonoro que rege o corpo das pessoas na pista, exceto o seu tio, que sempre insiste em bater palma na contratempo e pisar no cadarço."
+  },
+  {
+    "topico": "Artes",
+    "palavra": "teatro",
+    "charada": "Onde fingir sentimento na frente de estranhos é literalmente o trabalho.",
+    "charada2": "Também sou usado pra chamar qualquer discussão exagerada de novela mexicana em pleno almoço de família.",
+    "charada3": "Sou a sala cheia de tapete felpudo em que as cadeiras confortáveis ajudam os acompanhantes arrastados a cochilar profundo na maior cena da peça arrastada."
+  }
+]
+```

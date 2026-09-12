@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala de Estudo - Profª Rubia Lima</title>
+    <meta name="description" content="Reforço escolar em Recife com aulas presenciais, domiciliares e online, acompanhamento em todas as disciplinas e preparação para ENEM e SSA.">
+    <link rel="canonical" href="https://allanlauzid.github.io/site-saladeestudo/">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Sala de Estudo">
+    <meta property="og:title" content="Sala de Estudo - Profª Rubia Lima">
+    <meta property="og:description" content="Reforço escolar em Recife com acompanhamento em todas as disciplinas e preparação para ENEM e SSA.">
+    <meta property="og:url" content="https://allanlauzid.github.io/site-saladeestudo/">
+    <meta property="og:image" content="https://allanlauzid.github.io/site-saladeestudo/png/sala-de-estudo-social.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Sala de Estudo - Profª Rubia Lima">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Sala de Estudo - Profª Rubia Lima">
+    <meta name="twitter:description" content="Reforço escolar em Recife com acompanhamento em todas as disciplinas e preparação para ENEM e SSA.">
+    <meta name="twitter:image" content="https://allanlauzid.github.io/site-saladeestudo/png/sala-de-estudo-social.png">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="svg/logo-completa.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="png/sala-de-estudo-icon-180.png">
+    <meta name="theme-color" content="#FFD100">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="intro.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/0.6.5/opentype.min.js"></script>
+</head>
+<body>
+    <div id="intro">
+      <script>
+        // Blindagem contra piscar: esconde na mesma hora se já viu a intro
+        if (sessionStorage.getItem('introPlayed')) {
+            document.getElementById('intro').classList.add('skip-intro');
+        }
+      </script>
+      <div class="intro-bg"></div>
+      <div class="stage">
+        <div class="board-plane">
+          <div class="text-wrap">
+            <svg id="handwriting-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+            <svg class="hand-erase" viewBox="0 0 64 64" fill="none">
+              <rect x="14" y="24" width="30" height="20" rx="6" fill="#ffffff" stroke="#ccc" stroke-width="2"/>
+              <circle cx="46" cy="34" r="12" fill="#f2c9a0"/>
+            </svg>
+          </div>
+        </div>
+        <img class="logo-sweep" draggable="false" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTEzLjNtbSIgaGVpZ2h0PSIxOS43bW0iIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDExMy4zIDE5LjciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiA8ZGVmcz4KICA8Y2xpcFBhdGggaWQ9ImEiPgogICA8cmVjdCB4PSI5Ni41NCIgeT0iOC44ODJlLTE2IiB3aWR0aD0iMTEzLjUiIGhlaWdodD0iMTkuNyIgcnk9Ii4xMjQyIiBzdHJva2Utd2lkdGg9Ii4wNzcyNCIvPgogIDwvY2xpcFBhdGg+CiA8L2RlZnM+CiA8cGF0aCB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtOTYuNTQpIiBkPSJtMCAwaDE5NmM0LjYgMy4yODMgOS4yIDYuNTY3IDEzLjggOS44NS00LjYgMy4yODMtOS4yIDYuNTY3LTEzLjggOS44NWgtMTk2di0xOS43eiIgY2xpcC1wYXRoPSJ1cmwoI2EpIiBmaWxsPSIjZjlkMDAyIi8+Cjwvc3ZnPgo=" alt="">
+      </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="navbar-bg"></div>
+        <div class="container nav-container" style="position: relative; z-index: 2;">
+            <div class="brand-logo">
+                <img src="svg/logo-completa.svg" class="logo-svg" alt="Sala de Estudo">
+            </div>
+            <a href="#contato" class="btn btn-nav">Agendar Diagnóstico</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <span class="badge">Presencial, Domiciliar ou Online</span>
+                <h1>A estratégia exata para o sucesso escolar.</h1>
+                <p>Ajude seu filho a recuperar conteúdos, organizar a rotina e estudar com foco. Professores experientes em todas as disciplinas.</p>
+                <a href="#contato" class="btn">Conhecer a Sala de Estudo</a>
+            </div>
+            <div class="hero-visual">
+                <div class="composition">
+                    <svg
+                      id="mascote-animavel"
+                      class="img-mascote"
+                      focusable="false"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 51.820999 62.332001"
+                      role="img"
+                      aria-labelledby="mascote-title mascote-desc"
+                    >
+                      <title id="mascote-title">Aluno estudando</title>
+                      <desc id="mascote-desc">Mascote articulado da Sala de Estudo, sentado diante de uma mesa.</desc>
+                    
+                      <defs>
+                        <!-- Os quatro contornos abaixo são cópias exatas dos únicos paths visíveis
+                             do SVG original. O corpo é reutilizado pelos recortes do rig. -->
+                        <path id="source-chair" d="m 178.97765,205.43589 c 0.0344,-6.78249 -0.0875,-13.57794 0.0555,-20.36508 0.63232,0.0417 1.2593,0.0469 1.88738,0.071 -0.0172,11.70264 0.0138,23.4005 -0.0138,35.10266 -6.45254,0 -12.90072,0 -19.34792,0 -0.0103,-0.78657 0.0103,-1.57315 0.0379,-2.3568 5.80303,0.0417 11.60176,0 17.40031,0.0417 -0.0276,-3.37487 -0.0789,-6.74941 0.0241,-10.12022 -4.41708,0 -8.83839,0 -13.25981,0 -1.42337,0 -2.85536,0.0758 -4.27126,-0.12955 0.0417,-0.73641 0.0837,-1.47806 0.10922,-2.21447 5.79008,0 11.58543,0 17.37554,0 z"/>
+                        <path id="source-desk" d="m 137.83294,193.61985 c 7.25211,0.13403 14.50732,-0.0417 21.75516,0.0758 0,0.64838 -0.0138,1.30234 -0.0103,1.94665 -5.47178,0.0582 -10.94463,0.0417 -16.41635,0 0.0207,7.49409 -0.0344,14.9971 0.0276,22.49129 1.69994,0 3.39562,0 5.09984,-0.0417 v 2.11789 c -2.35701,0 -4.71391,0 -7.06771,0 -0.0241,-8.17286 0.10095,-16.3586 -0.0613,-24.52715 -1.10191,-0.17985 -2.22415,0 -3.3335,0.0417 0.0103,-0.70743 0.0103,-1.41496 0.0103,-2.12326 z"/>
+                        <path id="source-head" d="m 158.87209,169.0262 c 2.05577,-0.75301 4.43854,0.31423 5.36776,2.25774 1.04299,1.96794 0.72883,4.6676 -0.98397,6.17047 -1.61205,1.72131 -4.70212,1.51537 -6.18872,-0.2722 -2.357,-2.35818 -1.43519,-7.10113 1.80493,-8.15687 z"/>
+                        <path id="source-body" d="m 137.92931,177.90229 c 0.36464,-0.29735 0.72463,-0.60231 1.08909,-0.90328 1.98817,2.29778 3.66782,4.86472 5.70642,7.11271 0.80822,0.28873 1.77933,0 2.55416,0.46094 1.95081,1.08878 3.87265,2.23124 5.75697,3.43724 1.96787,-1.61205 3.67956,-3.49209 5.60571,-5.14604 1.50379,-1.28941 2.77611,-2.86715 4.50066,-3.87686 0.88853,-0.46852 2.14366,-0.42204 2.85223,0.34742 1.15114,1.18098 1.83384,2.71726 2.63774,4.13309 2.62066,4.73541 5.24132,9.47078 7.91231,14.18031 1.10184,1.79215 0.93797,4.38387 -0.63129,5.86202 -0.77499,0.87868 -2.00215,1.08462 -3.11584,1.07624 -5.77295,0 -11.55125,-0.21775 -17.32527,-0.10887 0.0544,4.12892 0.0138,8.25654 0.0241,12.38537 -0.0241,0.97112 0.0417,2.07306 -0.64958,2.85536 -0.95383,1.23164 -3.0397,1.16841 -4.00221,0 -0.37301,-0.53164 -0.62381,-1.1671 -0.5948,-1.82512 0.1423,-4.94066 -0.0172,-9.88503 0.0875,-14.82596 0.0593,-1.66574 1.22715,-3.43725 2.96038,-3.65497 5.14594,-0.0417 10.29933,0.0417 15.44527,-0.0417 -2.38705,-4.14474 -4.93591,-8.20256 -7.24347,-12.39371 -0.34283,0.0875 -0.69461,0.1926 -0.93359,0.47803 -1.65388,1.60795 -3.31214,3.21542 -4.98631,4.80618 -0.51549,0.54463 -1.2561,0.73768 -1.95182,0.94235 -3.1105,-1.62508 -5.99484,-3.66799 -9.18993,-5.12903 -1.0258,-0.55717 -0.63673,-1.84228 -0.80815,-2.78035 -1.85857,-2.48663 -3.87261,-4.86913 -5.70228,-7.38587 z"/>
+                    
+                        <!-- Recortes em coordenadas do contorno original. As pequenas sobreposições
+                             ficam dentro da própria silhueta e evitam frestas nas articulações. -->
+                        <clipPath id="clip-book" clipPathUnits="userSpaceOnUse">
+                          <polygon points="136.5,175.0 141.0,175.0 147.0,184.7 145.0,188.0 139.0,183.2"/>
+                        </clipPath>
+                        <clipPath id="clip-forearm" clipPathUnits="userSpaceOnUse">
+                          <polygon points="141.5,181.0 151.5,181.0 158.5,187.5 155.5,196.0 142.0,191.5"/>
+                        </clipPath>
+                        <clipPath id="clip-upper-arm" clipPathUnits="userSpaceOnUse">
+                          <polygon points="149.0,181.5 161.0,175.0 169.0,179.0 166.5,190.0 156.0,197.0 149.0,191.5"/>
+                        </clipPath>
+                        <clipPath id="clip-torso" clipPathUnits="userSpaceOnUse">
+                          <polygon points="158.0,175.0 169.0,175.0 180.0,199.0 178.0,207.5 158.0,207.5 154.0,196.0"/>
+                        </clipPath>
+                        <clipPath id="clip-thigh" clipPathUnits="userSpaceOnUse">
+                          <polygon points="151.0,196.0 176.5,196.0 178.0,207.5 151.0,210.0"/>
+                        </clipPath>
+                        <clipPath id="clip-shin" clipPathUnits="userSpaceOnUse">
+                          <polygon points="147.0,201.0 158.0,201.0 158.0,223.0 147.0,223.0"/>
+                        </clipPath>
+                      </defs>
+                    
+                      <style>
+                        .rig-part {
+                          transform-box: fill-box;
+                          transform-origin: center;
+                        }
+                        #mascote-animavel {
+                          overflow: visible;
+                        }
+                      </style>
+                    
+                      <!-- Mundo horizontal: a câmera move este grupo inteiro. -->
+                      <g id="hangman-world">
+                      <!-- Mantém a mesma cadeia de transformações do arquivo original. -->
+                      <g id="mascot-scene" fill="#0055d4" transform="translate(0 -87)">
+                        <g id="mascot-layout" transform="translate(-92.900589 -49.512697)">
+                          <g id="mascot-coordinate-space" transform="matrix(1.202516 0 0 1.202516 -72.838041 -66.452115)">
+                            <g id="furniture" aria-label="Mesa e cadeira">
+                              <use id="chair" href="#source-chair"/>
+                              <use id="desk" href="#source-desk"/>
+                            </g>
+                    
+                            <g id="rest-character" aria-label="Silhueta original do mascote">
+                              <!-- Os membros traseiros coincidem com os dianteiros nesta pose lateral. -->
+                              <g id="rest-arm-right" class="rig-part" data-pivot="162.5 182.0">
+                                <use href="#source-body" clip-path="url(#clip-upper-arm)"/>
+                                <g id="rest-forearm-right" class="rig-part" data-pivot="153.2 189.0">
+                                  <use href="#source-body" clip-path="url(#clip-forearm)"/>
+                                </g>
+                              </g>
+                    
+                              <g id="rest-leg-right" class="rig-part" data-pivot="159.0 201.5">
+                                <use href="#source-body" clip-path="url(#clip-thigh)"/>
+                                <g id="rest-shin-right" class="rig-part" data-pivot="152.8 204.5">
+                                  <use href="#source-body" clip-path="url(#clip-shin)"/>
+                                </g>
+                              </g>
+                    
+                              <g id="rest-torso" class="rig-part" data-pivot="162.0 199.5">
+                                <use href="#source-body" clip-path="url(#clip-torso)"/>
+                              </g>
+                    
+                              <g id="rest-leg-left" class="rig-part" data-pivot="159.0 201.5">
+                                <use href="#source-body" clip-path="url(#clip-thigh)"/>
+                                <g id="rest-shin-left" class="rig-part" data-pivot="152.8 204.5">
+                                  <use href="#source-body" clip-path="url(#clip-shin)"/>
+                                </g>
+                              </g>
+                    
+                              <g id="rest-arm-left" class="rig-part" data-pivot="162.5 182.0">
+                                <use href="#source-body" clip-path="url(#clip-upper-arm)"/>
+                                <g id="rest-forearm-left" class="rig-part" data-pivot="153.2 189.0">
+                                  <use href="#source-body" clip-path="url(#clip-forearm)"/>
+                                  <g id="rest-book" class="rig-part" data-pivot="144.8 185.0">
+                                    <use href="#source-body" clip-path="url(#clip-book)"/>
+                                  </g>
+                                </g>
+                              </g>
+                    
+                              <g id="rest-head" class="rig-part" data-pivot="161.0 179.0">
+                                <use href="#source-head"/>
+                              </g>
+                            </g>
+                          </g>
+                        </g>
+                      </g>
+                      <!-- Depois de ser abaixado, o livro pertence ao cenário e sai com a mesa. -->
+                      <g id="hangman-book" opacity="0" fill="none" stroke="#0055d4" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-label="Livro">
+                        <path id="hangman-book-shape" d="M9 20 L3 12"/>
+                      </g>
+                      <!-- Forca espelhada, ampliada e pronta no mundo; a câmera a revela. -->
+                      <g id="hangman-gallows" opacity="1" fill="none" stroke="#0055d4" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round" aria-label="Forca">
+                        <path class="gallows-stroke" pathLength="1" d="M290 83 H357"/>
+                        <path class="gallows-stroke" pathLength="1" d="M357 83 V-53"/>
+                        <path class="gallows-stroke" pathLength="1" d="M290 -53 H357"/>
+                        <path class="gallows-stroke" pathLength="1" d="M357 -29 L337 -53"/>
+                        <path class="gallows-stroke" pathLength="1" d="M290 -53 V-25 M290 -25 C282 -25 282 -5 290 -5 C298 -5 298 -25 290 -25 Z"/>
+                      </g>
+
+                      <!-- Rig articulado preenchido usado durante o movimento. -->
+                      <g id="character-travel">
+                      <g id="character-rig" opacity="0" aria-label="Rig móvel do mascote (23 poses aprovadas v7)">
+                        <g id="leg-right" class="mascot-piece" fill="#0055d4">
+                          <path id="thigh-right-shape"/>
+                          <path id="shin-right-shape"/>
+                        </g>
+                        <g id="arm-right" class="mascot-piece" fill="#0055d4">
+                          <path id="upper-arm-right-shape"/>
+                          <path id="forearm-right-shape"/>
+                        </g>
+                        <g id="torso" class="mascot-piece" fill="#0055d4">
+                          <path id="torso-shape-allan"/>
+                        </g>
+                        <g id="leg-left" class="mascot-piece" fill="#0055d4">
+                          <path id="thigh-left-shape"/>
+                          <path id="shin-left-shape"/>
+                        </g>
+                        <g id="arm-left" class="mascot-piece" fill="#0055d4">
+                          <path id="upper-arm-left-shape"/>
+                          <path id="forearm-left-shape"/>
+                        </g>
+                        <g id="head" class="mascot-piece" fill="#0055d4">
+                          <path id="head-shape-allan"/>
+                        </g>
+                      </g>
+                      </g>
+                      <!-- Slots dinâmicos da palavra, ancorados ao mundo e posicionados sob a cena. -->
+                      <g id="hangman-slots" opacity="0" aria-label="Espaços da palavra"></g>
+                      </g>
+                    </svg>
+                    <div class="float-card card-equation">
+                        <strong>Diagnóstico</strong> + <strong>Rotina</strong> = <span class="highlight-text">Confiança</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="bento-section">
+        <div class="container">
+            <div class="bento-grid">
+                <!-- Card 1 (Main) -->
+                <div class="bento-card card-main">
+                    <div class="icon-box" style="background: transparent; border: 2px solid var(--color-yellow); color: var(--color-yellow);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                    </div>
+                    <h2>Reforço em Todas as Disciplinas</h2>
+                    <p style="margin-top: 1rem;">Seja em Exatas, Humanas, ou Linguagens, acompanhamos o aluno para não acumular dúvidas. Formamos turmas com alunos do mesmo ano escolar para um estudo mais dinâmico.</p>
+                </div>
+
+                <!-- Card 2 (Feature) -->
+                <div class="bento-card card-feature">
+                    <div class="icon-box">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <h3>Aulas Flexíveis</h3>
+                    <p style="margin-top: 0.5rem;">Presencial em cabines individuais, Domiciliar ou Online. Você escolhe!</p>
+                </div>
+
+                <div class="bento-card card-small">
+                    <div class="icon-box">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <h3>Preparação SSA & ENEM</h3>
+                </div>
+
+                <div class="bento-card card-small">
+                    <div class="icon-box">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    </div>
+                    <h3>Tira-Dúvidas Pontual</h3>
+                </div>
+
+                <!-- FAQ Matriz ENEM (Abaixo do conjunto) -->
+                <div class="bento-card card-full" style="grid-column: 1 / -1;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="icon-box" style="margin-bottom: 0;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                        </div>
+                        <h3 style="margin-bottom: 0;">Matriz de Disciplinas do ENEM</h3>
+                    </div>
+                    <div class="mini-faq">
+                        <div class="mini-faq-item">
+                            <div class="mini-faq-q" onclick="toggleMiniFaq(this)">Linguagens e suas Tecnologias <span>+</span></div>
+                            <div class="mini-faq-a">Língua Portuguesa, Literatura, Língua Inglesa, Arte e Educação Física.</div>
+                        </div>
+                        <div class="mini-faq-item">
+                            <div class="mini-faq-q" onclick="toggleMiniFaq(this)">Matemática e suas Tecnologias <span>+</span></div>
+                            <div class="mini-faq-a">Focada na Matemática, suas aplicações práticas, lógica e resolução de problemas estruturados.</div>
+                        </div>
+                        <div class="mini-faq-item">
+                            <div class="mini-faq-q" onclick="toggleMiniFaq(this)">Ciências da Natureza e suas Tecnologias <span>+</span></div>
+                            <div class="mini-faq-a">Biologia, Física e Química.</div>
+                        </div>
+                        <div class="mini-faq-item">
+                            <div class="mini-faq-q" onclick="toggleMiniFaq(this)">Ciências Humanas e Sociais Aplicadas <span>+</span></div>
+                            <div class="mini-faq-a">História, Geografia, Filosofia e Sociologia.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about">
+        <div class="container about-grid">
+            <div class="about-title">
+                <h2>A estratégia<br>por trás de<br>um estudo<br>inteligente.</h2>
+            </div>
+            <div class="about-text">
+                <p>Sou a <strong>Profª Rubia Lima</strong>, proprietária e professora responsável pelo Reforço Escolar Sala de Estudo.</p>
+                <p>O sucesso escolar verdadeiro vai muito além de uma única matéria. É por isso que oferecemos suporte especializado e professores experientes em <strong>todas as disciplinas</strong>. Nossa missão é guiar o aluno para que ele compreenda a lógica de cada conteúdo, deixando a decoreba de lado para finalmente aprender a pensar e resolver problemas com segurança.</p>
+                <p>Seja bem-vindo a um ambiente projetado para resultados.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq">
+        <div class="container">
+            <div class="faq-header">
+                <h2>Como funciona?</h2>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item" onclick="this.querySelector('.faq-a').style.display = this.querySelector('.faq-a').style.display === 'block' ? 'none' : 'block'">
+                    <div class="faq-q">O acompanhamento é individual? <span style="color:var(--color-text-muted)">+</span></div>
+                    <div class="faq-a"><p>Sim, focamos nas necessidades específicas de cada aluno, trabalhando seus pontos fracos.</p></div>
+                </div>
+                <div class="faq-item" onclick="this.querySelector('.faq-a').style.display = this.querySelector('.faq-a').style.display === 'block' ? 'none' : 'block'">
+                    <div class="faq-q">Para quais séries é voltado? <span style="color:var(--color-text-muted)">+</span></div>
+                    <div class="faq-a"><p>Atendemos alunos de todos os anos escolares e em todas as disciplinas, formando turmas com estudantes do mesmo ano escolar ou da mesma escola.</p></div>
+                </div>
+                <div class="faq-item" onclick="this.querySelector('.faq-a').style.display = this.querySelector('.faq-a').style.display === 'block' ? 'none' : 'block'">
+                    <div class="faq-q">Onde acontecem as aulas? <span style="color:var(--color-text-muted)">+</span></div>
+                    <div class="faq-a"><p>Temos aulas presenciais em cabines individuais (Rua Antenor Navarro, 81 - Galeria Estação Jaqueira), aulas domiciliares e aulas 100% online.</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="footer-outer" style="overflow: hidden; padding-top: 800px; margin-top: -800px;">
+        <footer id="contato" class="footer">
+            <div class="container">
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <h2>Pronto para ver a diferença?</h2>
+                        <p>Agende uma conversa rápida no WhatsApp para marcarmos as aulas.</p>
+                        <div style="margin: 1.5rem 0;">
+                            <a href="https://wa.me/5581999824123" class="btn" style="background:#25D366; color:#FFF; border-color:#25D366; box-shadow: -4px 4px 0 #128C7E;">Falar no WhatsApp</a>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <p style="margin-bottom: 0.5rem; font-size: 1.1rem;"><strong>Endereço:</strong><br>Rua Antenor Navarro, 81 - Sala 108<br>Galeria Estação Jaqueira, Recife - PE</p>
+                            <p style="font-size: 1.1rem;"><strong>Telefone:</strong> (81) 99982-4123</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-map">
+                        <div class="map-card">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.5562145827363!2d-34.9069151!3d-8.0445585!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7ab18fc3bb576d1%3A0xc49b78c6b29f0f9b!2sR.%20Antenor%20Navarro%2C%2081%20-%20Jaqueira%2C%20Recife%20-%20PE%2C%2052050-120!5e0!3m2!1spt-BR!2sbr!4v1714000000000!5m2!1spt-BR!2sbr" allowfullscreen="" loading="eager" fetchpriority="high" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <div class="footer-bottom-left">
+                        <span>&copy; 2026 Sala de Estudo - Profª Rubia Lima</span>
+                        <a href="admin.html" class="admin-link">ADMIN</a>
+                    </div>
+                    <a href="https://instagram.com/reforco_se" class="instagram-link">
+                        <img src="png/icon-instagram-branco.png" alt="Instagram" style="width: 28px; height: auto;">
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function toggleMiniFaq(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('span');
+            if (answer.style.display === 'block') {
+                answer.style.display = 'none';
+                icon.textContent = '+';
+                element.style.color = 'var(--color-blue)';
+            } else {
+                answer.style.display = 'block';
+                icon.textContent = '-';
+                element.style.color = 'var(--color-yellow)';
+            }
+        }
+    </script>
+    <!-- ============ SELO KUPIM DIGITAL ============ -->
+    <div id="kupim-badge-wrap">
+      <a
+        id="kupim-badge"
+        href="javascript:void(0)"
+        aria-label="Uma criação de Kupim Digital. Clique para falar conosco."
+      >
+        <span class="k-logo-spacer" aria-hidden="true"></span>
+        <span class="badge-text">© <span class="kupim-year">2026</span> <b>Sala de Estudo</b>. Todos os direitos reservados.<br>Uma criação de <b>Kupim Digital</b>.</span>
+      </a>
+      <span class="k-logo-wrap" aria-hidden="true">
+        <svg viewBox="0 0 80.339996 68.730003" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="k-fill-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop id="k-stop-1" offset="0%" stop-color="#eff3f8"/>
+              <stop id="k-stop-2" offset="100%" stop-color="#eff3f8"/>
+            </linearGradient>
+          </defs>
+          <path d="m 13.66,16.47 c 7.19,-0.43 14.44,-0.34 21.63,-0.04 -0.24,8.15 0,16.3 -0.14,24.45 C 44.4,32.62 53.53,24.22 62.99,16.19 71.94,16.35 80.9,16.03 89.85,16.38 83.67,21.31 78.35,27.2 72.22,32.19 68.1,35.71 64.48,39.82 60.09,43 71.83,56.41 82.59,70.68 93.98,84.4 91.4,85.16 88.68,84.79 86.03,84.85 79.75,84.76 73.47,85.02 67.2,84.71 59.87,75.36 52.54,66.01 44.97,56.86 c -3.63,2.59 -6.28,6.29 -9.84,9 0.14,6.27 -0.03,12.54 0.12,18.81 -7.19,0.24 -14.43,0.42 -21.61,-0.1 0.34,-22.69 0.3,-45.41 0.02,-68.1 z" transform="translate(-13.640002,-16.175853)" fill="url(#k-fill-gradient)"/>
+        </svg>
+      </span>
+    </div>
+    <!-- ============ FIM DO SELO ============ -->
+
+    <script>
+      (function(){
+        var wrap = document.getElementById('kupim-badge-wrap');
+        var badge = document.getElementById('kupim-badge');
+
+        document.querySelectorAll('.kupim-year').forEach(function(el){
+          el.textContent = new Date().getFullYear();
+        });
+
+        function updateShift(){
+          var full = badge.scrollWidth;
+          wrap.style.setProperty('--k-shift', Math.max(full - 44, 0) + 'px');
+        }
+        updateShift();
+        window.addEventListener('load', updateShift);
+        window.addEventListener('resize', updateShift);
+        if(document.fonts && document.fonts.ready){
+          document.fonts.ready.then(updateShift);
+        }
+        requestAnimationFrame(function(){ requestAnimationFrame(updateShift); });
+
+        var isTouch = matchMedia('(hover: none)').matches;
+
+        badge.addEventListener('click', function(e){
+          e.preventDefault();
+          
+          if(isTouch && !wrap.classList.contains('is-open')){
+            // No mobile, o primeiro clique apenas expande o selo
+            wrap.classList.add('is-open');
+            document.addEventListener('click', function closeOnce(ev){
+              if(!wrap.contains(ev.target)){
+                wrap.classList.remove('is-open');
+                document.removeEventListener('click', closeOnce);
+              }
+            });
+          } else {
+            // No segundo clique (ou clique no desktop), abre o modal
+            openContactKupimModal();
+          }
+        });
+      })();
+
+      function openContactKupimModal() {
+        document.getElementById('kupim-badge-wrap').classList.add('modal-open');
+        let ov = document.getElementById('kupimContactModal');
+        if (!ov) {
+          ov = document.createElement('div');
+          ov.id = 'kupimContactModal';
+          ov.style.cssText = 'display:flex;position:fixed;inset:0;z-index:9600;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;';
+          ov.innerHTML = `
+            <style>
+              .k-modal-btn { text-decoration:none; padding:20px 12px; border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:all 0.2s; color:#fff; min-width: 120px; flex: 1; }
+              .k-modal-btn:hover { filter:brightness(1.15); transform:translateY(-3px); box-shadow:0 6px 16px rgba(0,0,0,0.15); }
+              .k-modal-btn svg { margin-bottom:12px; width:32px; height:32px; }
+              .k-modal-btn span { font-size:13px; font-weight:600; line-height:1.3; font-family:'Inter', sans-serif; text-align:center; }
+              .k-btn-email { background:var(--color-yellow); color:var(--color-blue) !important; }
+              .k-btn-site { background:#333; }
+              .k-btn-wpp { background:#25D366; }
+              .k-btn-insta { background:linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+              
+              /* Esconde a barra de rolagem mas permite o scroll no mobile */
+              .k-btn-container::-webkit-scrollbar { display: none; }
+              .k-btn-container { -ms-overflow-style: none; scrollbar-width: none; }
+            </style>
+            <div style="background:rgba(255, 255, 255, 0.25);backdrop-filter:blur(32px) saturate(180%);-webkit-backdrop-filter:blur(32px) saturate(180%);border:1px solid rgba(255, 255, 255, 0.4);width:min(640px,96vw);border-radius:24px;padding:36px;box-shadow:0 30px 60px rgba(0,0,0,0.4);position:relative;text-align:center;">
+              <button onclick="closeContactKupimModal()" style="position:absolute;top:20px;right:20px;background:rgba(0,51,160,0.08);border:none;border-radius:50%;font-size:24px;cursor:pointer;color:var(--color-blue);line-height:1;padding:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,51,160,0.15)'" onmouseout="this.style.background='rgba(0,51,160,0.08)'">&times;</button>
+              
+              <h3 style="font-family:'Outfit',sans-serif;font-size:26px;margin:0 0 28px 0;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,0.2);"><span style="display:block;font-size:16px;font-weight:400;margin-bottom:4px;opacity:0.85;">Gostou do site?</span>Fale com Kupim Digital</h3>
+              
+              <div class="k-btn-container" style="display:flex;gap:12px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;scroll-snap-type:x mandatory;">
+                
+                <!-- Email -->
+                <a href="mailto:allanlauzid@gmail.com" class="k-modal-btn k-btn-email">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  <span>Mande um email</span>
+                </a>
+
+                <!-- Site -->
+                <a href="#" target="_blank" rel="noopener" class="k-modal-btn k-btn-site">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                  <span>Confira o site</span>
+                </a>
+
+                <!-- WhatsApp -->
+                <a href="#" target="_blank" rel="noopener" class="k-modal-btn k-btn-wpp">
+                  <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51h-.571c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                  <span>Fale no whatsapp</span>
+                </a>
+
+                <!-- Instagram -->
+                <a href="#" target="_blank" rel="noopener" class="k-modal-btn k-btn-insta">
+                  <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.20 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                  <span>Visite nosso instagram</span>
+                </a>
+
+              </div>
+            </div>`;
+          document.body.appendChild(ov);
+        }
+        ov.style.display = 'flex';
+      }
+      function closeContactKupimModal() {
+        document.getElementById('kupim-badge-wrap').classList.remove('modal-open');
+        const ov = document.getElementById('kupimContactModal');
+        if (ov) ov.style.display = 'none';
+      }
+    </script>
+    <script src="intro.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <script src="mascote-pose-data.js?v=10"></script>
+    <script src="hangman-animation.js?v=17"></script>
+    <script src="game-jogodavelha.js"></script>
+</body>
+</html>

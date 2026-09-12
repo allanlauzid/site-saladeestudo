@@ -72,7 +72,8 @@
   var SLOT_START_X = 65;
   var SLOT_AREA_WIDTH = 160;
   var SLOT_GAP = 8;
-  var SLOT_Y = 90;
+  /* Alinha os campos da palavra à base horizontal da forca (y=83). */
+  var SLOT_Y = 83;
   var SLOT_COLOR = '#0055d4';
   var SLOT_STROKE_WIDTH = 1.4;
   var REFERENCE_SLOT_WIDTH = 20;
@@ -96,60 +97,356 @@
     'leg-right': { x: 297, y: 55, rotation: 4 }
   };
 
-  /* Cinco poses aprovadas para a forca. A ordem de cada uma é a sequência
-     em que os erros enviam os membros para a cena. As coordenadas são centros
-     no mesmo mundo SVG da forca; os grupos continuam contendo cotovelos e
-     joelhos como subarticulações. */
+  /* Cinco poses montadas por Allan no Inkscape. Os centros, rotações e
+     espelhamentos abaixo foram extraídos dos 30 grupos posicionados em
+     mascote-montagem-5-poses-forca-feito.svg e convertidos para o sistema de
+     coordenadas do mundo SVG do jogo. */
   var GALLOWS_POSES = [
     {
-      name: 'balanco-em-l',
-      order: ['arm-left', 'torso', 'leg-left', 'head', 'arm-right', 'leg-right'],
-      targets: {
-        'arm-left': { x: 290, y: -25, rotation: -18, localAnchor: { x: 86, y: 29.5 } }, torso: { x: 307, y: 2, rotation: -55 },
-        'leg-left': { x: 307, y: 18, rotation: -78 }, head: { x: 307, y: -18, rotation: 0 },
-        'arm-right': { x: 317, y: -4, rotation: 58 }, 'leg-right': { x: 315, y: 19, rotation: -98 }
+      'name': "balanco-em-l",
+      'order': [
+        "arm-left",
+        "torso",
+        "leg-left",
+        "head",
+        "arm-right",
+        "leg-right"
+      ],
+      'targets': {
+        'head': {
+          'x': 315.362,
+          'y': -10.596,
+          'rotation': 0,
+          'localAnchor': {
+            'x': 59.78,
+            'y': 11.78
+          }
+        },
+        'torso': {
+          'x': 328.848,
+          'y': 7.796,
+          'rotation': 21.847,
+          'localAnchor': {
+            'x': 45.2,
+            'y': 22.2
+          }
+        },
+        'arm-left': {
+          'x': 315.254,
+          'y': 8.429,
+          'rotation': 0,
+          'localAnchor': {
+            'x': 61,
+            'y': 30
+          }
+        },
+        'arm-right': {
+          'x': 505,
+          'y': -15,
+          'rotation': 8.788,
+          'scaleY': -1,
+          'localAnchor': {
+            'x': 230.469,
+            'y': 43.292
+          }
+        },
+        'leg-left': {
+          'x': 307.812,
+          'y': 38.168,
+          'rotation': 0,
+          'localAnchor': {
+            'x': 52,
+            'y': 48
+          }
+        },
+        'leg-right': {
+          'x': 320.226,
+          'y': 34.024,
+          'rotation': 0,
+          'localAnchor': {
+            'x': 52,
+            'y': 39
+          }
+        }
       },
-      attachedPiece: 'arm-left'
+      'attachedPiece': "arm-right"
     },
     {
-      name: 'estrela-perna',
-      order: ['leg-right', 'torso', 'leg-left', 'head', 'arm-right', 'arm-left'],
-      targets: {
-        'leg-right': { x: 290, y: -25, rotation: 35, localAnchor: { x: 43, y: 76 } }, torso: { x: 307, y: 6, rotation: -48 },
-        'leg-left': { x: 300, y: 18, rotation: 78 }, head: { x: 307, y: 48, rotation: 180 },
-        'arm-right': { x: 327, y: 21, rotation: 58 }, 'arm-left': { x: 287, y: 20, rotation: -58 }
+      'name': "estrela-perna",
+      'order': [
+        "leg-right",
+        "torso",
+        "leg-left",
+        "head",
+        "arm-right",
+        "arm-left"
+      ],
+      'targets': {
+        'head': {
+          'x': 286.274,
+          'y': 53.259,
+          'rotation': 0,
+          'localAnchor': {
+            'x': 59.78,
+            'y': 11.78
+          }
+        },
+        'torso': {
+          'x': 292.601,
+          'y': 14.62,
+          'rotation': 28.997,
+          'localAnchor': {
+            'x': 45.2,
+            'y': 22.2
+          }
+        },
+        'arm-left': {
+          'x': 295.922,
+          'y': 37.253,
+          'rotation': 22.021,
+          'scaleY': -1,
+          'localAnchor': {
+            'x': 61,
+            'y': 30
+          }
+        },
+        'arm-right': {
+          'x': 246.462,
+          'y': 43.646,
+          'rotation': -71.82,
+          'scaleY': -1,
+          'localAnchor': {
+            'x': 28,
+            'y': 17
+          }
+        },
+        'leg-left': {
+          'x': 257.327,
+          'y': 2.399,
+          'rotation': 68.242,
+          'localAnchor': {
+            'x': 52,
+            'y': 48
+          }
+        },
+        'leg-right': {
+          'x': 505,
+          'y': -15,
+          'rotation': -155.474,
+          'scaleY': -1,
+          'localAnchor': {
+            'x': -148.82,
+            'y': -33.55
+          }
+        }
       },
-      attachedPiece: 'leg-right'
+      'attachedPiece': "leg-right"
     },
     {
-      name: 'preguica-trave',
-      order: ['head', 'torso', 'arm-right', 'arm-left', 'leg-left', 'leg-right'],
-      targets: {
-        head: { x: 314, y: -18, rotation: 0 }, torso: { x: 315, y: 8, rotation: 0 },
-        'arm-right': { x: 333, y: -22, rotation: 18 }, 'arm-left': { x: 299, y: -22, rotation: -18 },
-        'leg-left': { x: 309, y: 40, rotation: 34 }, 'leg-right': { x: 326, y: 40, rotation: -34 }
+      'name': "preguica-trave",
+      'order': [
+        "head",
+        "torso",
+        "arm-right",
+        "arm-left",
+        "leg-left",
+        "leg-right"
+      ],
+      'targets': {
+        'head': {
+          'x': 314.141,
+          'y': -35.22,
+          'rotation': 0,
+          'localAnchor': {
+            'x': 59.78,
+            'y': 11.78
+          }
+        },
+        'torso': {
+          'x': 327.504,
+          'y': -13.278,
+          'rotation': 33.336,
+          'localAnchor': {
+            'x': 45.2,
+            'y': 22.2
+          }
+        },
+        'arm-left': {
+          'x': 505,
+          'y': -15,
+          'rotation': -79.777,
+          'localAnchor': {
+            'x': 82.704,
+            'y': 215.272
+          }
+        },
+        'arm-right': {
+          'x': 303.156,
+          'y': -39.24,
+          'rotation': 117.573,
+          'localAnchor': {
+            'x': 28,
+            'y': 17
+          }
+        },
+        'leg-left': {
+          'x': 310.153,
+          'y': 18.773,
+          'rotation': -29.888,
+          'localAnchor': {
+            'x': 52,
+            'y': 48
+          }
+        },
+        'leg-right': {
+          'x': 314.778,
+          'y': 18.796,
+          'rotation': -28.189,
+          'localAnchor': {
+            'x': 52,
+            'y': 39
+          }
+        }
       },
-      attachedPiece: 'arm-left'
+      'attachedPiece': "arm-left"
     },
     {
-      name: 'enroscado-poste',
-      order: ['head', 'torso', 'arm-right', 'leg-right', 'arm-left', 'leg-left'],
-      targets: {
-        head: { x: 304, y: -15, rotation: -12 }, torso: { x: 316, y: 10, rotation: 28 },
-        'arm-right': { x: 337, y: -18, rotation: 55 }, 'leg-right': { x: 342, y: 24, rotation: 76 },
-        'arm-left': { x: 291, y: 18, rotation: -50 }, 'leg-left': { x: 300, y: 49, rotation: -34 }
+      'name': "enroscado-poste",
+      'order': [
+        "head",
+        "torso",
+        "arm-right",
+        "leg-right",
+        "arm-left",
+        "leg-left"
+      ],
+      'targets': {
+        'head': {
+          'x': 312.446,
+          'y': -15.245,
+          'rotation': 0,
+          'localAnchor': {
+            'x': 59.78,
+            'y': 11.78
+          }
+        },
+        'torso': {
+          'x': 326.997,
+          'y': 6.495,
+          'rotation': 30.724,
+          'localAnchor': {
+            'x': 45.2,
+            'y': 22.2
+          }
+        },
+        'arm-left': {
+          'x': 306.435,
+          'y': 3.895,
+          'rotation': 140.347,
+          'localAnchor': {
+            'x': 61,
+            'y': 30
+          }
+        },
+        'arm-right': {
+          'x': 340.393,
+          'y': -8.871,
+          'rotation': -150.397,
+          'localAnchor': {
+            'x': 28,
+            'y': 17
+          }
+        },
+        'leg-left': {
+          'x': 302.308,
+          'y': 35.13,
+          'rotation': 3.141,
+          'localAnchor': {
+            'x': 52,
+            'y': 48
+          }
+        },
+        'leg-right': {
+          'x': 505,
+          'y': -15,
+          'rotation': -93.806,
+          'localAnchor': {
+            'x': 90.552,
+            'y': 229.834
+          }
+        }
       },
-      attachedPiece: 'leg-right'
+      'attachedPiece': "leg-right"
     },
     {
-      name: 'bandeira-humana',
-      order: ['head', 'torso', 'leg-left', 'leg-right', 'arm-right', 'arm-left'],
-      targets: {
-        head: { x: 270, y: 8, rotation: 0 }, torso: { x: 300, y: 8, rotation: 0 },
-        'leg-left': { x: 278, y: 29, rotation: 52 }, 'leg-right': { x: 278, y: 50, rotation: -52 },
-        'arm-right': { x: 333, y: -5, rotation: 38 }, 'arm-left': { x: 333, y: 20, rotation: -38 }
+      'name': "bandeira-humana",
+      'order': [
+        "head",
+        "torso",
+        "leg-left",
+        "leg-right",
+        "arm-right",
+        "arm-left"
+      ],
+      'targets': {
+        'head': {
+          'x': 343.589,
+          'y': 8.676,
+          'rotation': 0,
+          'localAnchor': {
+            'x': 59.78,
+            'y': 11.78
+          }
+        },
+        'torso': {
+          'x': 307.272,
+          'y': -6.044,
+          'rotation': -50.777,
+          'localAnchor': {
+            'x': 45.2,
+            'y': 22.2
+          }
+        },
+        'arm-left': {
+          'x': 329.426,
+          'y': 12.517,
+          'rotation': 31.136,
+          'localAnchor': {
+            'x': 61,
+            'y': 30
+          }
+        },
+        'arm-right': {
+          'x': 505,
+          'y': -15,
+          'rotation': 168.773,
+          'localAnchor': {
+            'x': -132.599,
+            'y': -16.013
+          }
+        },
+        'leg-left': {
+          'x': 292.18,
+          'y': 8.525,
+          'rotation': -20.585,
+          'scaleY': -1,
+          'localAnchor': {
+            'x': 52,
+            'y': 48
+          }
+        },
+        'leg-right': {
+          'x': 297.244,
+          'y': -9.139,
+          'rotation': 0,
+          'scaleY': -1,
+          'localAnchor': {
+            'x': 52,
+            'y': 39
+          }
+        }
       },
-      attachedPiece: 'arm-right'
+      'attachedPiece': "arm-right"
     }
   ];
   var activeGallowsPose = GALLOWS_POSES[0];
@@ -175,6 +472,7 @@
   var floatingAnimations = [];
   var floatingInteractionsAttached = false;
   var activeParts = null;
+  var pageScrollLock = null;
 
   var WORD_BANK_URL = 'hangman-words.json';
   // Banco reserva, embutido no proprio arquivo (nao depende de fetch): usado quando
@@ -185,194 +483,232 @@
   {
     "topico": "Matérias escolares",
     "palavra": "artes",
-    "charada": "Todo mundo me acha fácil até alguém pedir pra desenhar um cavalo de frente."
+    "charada": "Todo mundo me acha fácil até alguém pedir pra desenhar um cavalo de frente.",
+    "charada2": "Ninguém estuda pra mim achando que vai ser reprovado, e é exatamente aí que a nota vem baixa."
   },
   {
     "topico": "Matérias escolares",
     "palavra": "biologia",
-    "charada": "Todo mundo decorou o nome de uma organela só pra fazer meme, e ninguém mais lembra pra que ela serve."
+    "charada": "Todo mundo decorou o nome de uma organela só pra fazer meme, e ninguém mais lembra pra que ela serve.",
+    "charada2": "Bagunço a mesa de exame de sangue e ainda assim explico por que seu pai é careca."
   },
   {
     "topico": "Matérias escolares",
     "palavra": "espanhol",
-    "charada": "Todo brasileiro acha que me fala fluentemente só de colocar um 'ito' no final das palavras."
+    "charada": "Todo brasileiro acha que me fala fluentemente só de colocar um 'ito' no final das palavras.",
+    "charada2": "Ensino que 'exquisito' não quer dizer esquisito, e ainda assim ninguém aprende essa numa vida inteira."
   },
   {
     "topico": "Matérias escolares",
     "palavra": "filosofia",
-    "charada": "Deixo um adolescente de 16 anos numa crise existencial só de perguntar 'o que é o ser'."
+    "charada": "Deixo um adolescente de 16 anos numa crise existencial só de perguntar 'o que é o ser'.",
+    "charada2": "Faço um menino de 16 anos duvidar da própria existência, mas nunca duvidar do lanche da cantina."
   },
   {
     "topico": "Matérias escolares",
     "palavra": "física",
-    "charada": "Explico por que seu celular, entre todas as posições possíveis, sempre escolhe cair com a tela pra baixo."
+    "charada": "Explico por que seu celular, entre todas as posições possíveis, sempre escolhe cair com a tela pra baixo.",
+    "charada2": "Prevejo a trajetória de qualquer objeto no ar, menos a da sua paciência na aula de manhã cedo."
   },
   {
     "topico": "Matérias escolares",
     "palavra": "geografia",
-    "charada": "Você sabe a capital de um país que nunca vai visitar, mas esquece onde estacionou o carro."
+    "charada": "Você sabe a capital de um país que nunca vai visitar, mas esquece onde estacionou o carro.",
+    "charada2": "Sei quantos fusos horários separam você do primo que mora fora, mas não sei prever se vai chover amanhã."
   },
   {
     "topico": "Matérias escolares",
     "palavra": "história",
-    "charada": "Alguém decepcionado vive dizendo que eu me repito, mas ninguém repete a prova sobre mim se colar direito."
+    "charada": "Alguém decepcionado vive dizendo que eu me repito, mas ninguém repete a prova sobre mim se colar direito.",
+    "charada2": "Ensino que tudo já aconteceu antes, inclusive você jurar que ia estudar 'com antecedência'."
   },
   {
     "topico": "Matérias escolares",
     "palavra": "inglês",
-    "charada": "Te deixo cantar um hit inteiro com pronúncia perfeita e travar solenemente na hora de pedir satisfação no aeroporto."
+    "charada": "Te deixo cantar um hit inteiro com pronúncia perfeita e travar solenemente na hora de pedir satisfação no aeroporto.",
+    "charada2": "Deixo você dublar filme inteiro sozinho no quarto e travar solene na hora de pedir o cardápio em outro país."
   },
   {
     "topico": "Matérias escolares",
     "palavra": "literatura",
-    "charada": "Fingir que te leu inteira antes da prova é praticamente uma segunda matéria à parte."
+    "charada": "Fingir que te leu inteira antes da prova é praticamente uma segunda matéria à parte.",
+    "charada2": "Transformo affair de personagem fictício em trauma real de leitor no capítulo 12."
   },
   {
     "topico": "Matérias escolares",
     "palavra": "matemática",
-    "charada": "Toda vida adulta promete que você nunca mais vai precisar achar o valor de x, e a vida adulta mente descaradamente."
+    "charada": "Toda vida adulta promete que você nunca mais vai precisar achar o valor de x, e a vida adulta mente descaradamente.",
+    "charada2": "Prometo que a vida real usa regra de três todo dia, e a vida real nunca comprova isso na sua frente."
   },
   {
     "topico": "Matérias escolares",
     "palavra": "português",
-    "charada": "A única matéria em que 'mim fazer isso' está errado, mas sai natural na hora de falar."
+    "charada": "A única matéria em que 'mim fazer isso' está errado, mas sai natural na hora de falar.",
+    "charada2": "Ensino a crase que ninguém usa, mas todo mundo finge saber quando cobra do colega."
   },
   {
     "topico": "Matérias escolares",
     "palavra": "química",
-    "charada": "Sou a razão do professor falar 'não façam isso em casa' logo depois de fazer bem na sua frente."
+    "charada": "Sou a razão do professor falar 'não façam isso em casa' logo depois de fazer bem na sua frente.",
+    "charada2": "Explico reação que muda de cor, mas nunca explico por que o cheiro do laboratório gruda na roupa até de noite."
   },
   {
     "topico": "Matérias escolares",
     "palavra": "redação",
-    "charada": "Ninguém nunca viu um 1000 de verdade em mim, só ouviu falar, que nem disco voador."
+    "charada": "Ninguém nunca viu um 1000 de verdade em mim, só ouviu falar, que nem disco voador.",
+    "charada2": "Cobro conectivo variado, mas aceito 'além disso' repetido cinco vezes se a ideia for boa."
   },
   {
     "topico": "Matérias escolares",
     "palavra": "sociologia",
-    "charada": "Te ensinei a dizer 'isso é uma construção social' pra ganhar qualquer discussão no almoço de domingo."
+    "charada": "Te ensinei a dizer 'isso é uma construção social' pra ganhar qualquer discussão no almoço de domingo.",
+    "charada2": "Ensino que toda mesa de bar vira debate de sociedade, principalmente quando ninguém te pediu opinião."
   },
   {
     "topico": "Matemática",
     "palavra": "altura",
-    "charada": "A desculpa clássica de quem não alcança a prateleira de cima do mercado."
+    "charada": "A desculpa clássica de quem não alcança a prateleira de cima do mercado.",
+    "charada2": "Apareço na ficha médica, mas na fila do brinquedo do parque sou eu quem decide se você entra ou não."
   },
   {
     "topico": "Matemática",
     "palavra": "ângulo",
-    "charada": "Toda selfie busca o melhor de mim antes de postar."
+    "charada": "Toda selfie busca o melhor de mim antes de postar.",
+    "charada2": "Tenho graus que ninguém sente na pele, ao contrário dos graus do termômetro em fevereiro."
   },
   {
     "topico": "Física",
     "palavra": "aceleração",
-    "charada": "O que todo mundo faz no último quilômetro só pra não perder o compromisso que já está atrasado."
+    "charada": "O que todo mundo faz no último quilômetro só pra não perder o compromisso que já está atrasado.",
+    "charada2": "Aperto o passo quando o sinal fecha, e ainda assim chego atrasado igual todo mundo."
   },
   {
     "topico": "Física",
     "palavra": "atração",
-    "charada": "Faz dois corpos se aproximarem, e também é a desculpa de qualquer paquera capenga."
+    "charada": "Faz dois corpos se aproximarem, e também é a desculpa de qualquer paquera capenga.",
+    "charada2": "Também sou o motivo de dois ímãs vizinhos na geladeira nunca ficarem separados."
   },
   {
     "topico": "Química",
     "palavra": "ácido",
-    "charada": "A razão do seu estômago reclamar depois daquele lanche às 2 da manhã."
+    "charada": "A razão do seu estômago reclamar depois daquele lanche às 2 da manhã.",
+    "charada2": "Também sou o comentário de quem sempre acha um jeito de estragar o clima de qualquer conversa boa."
   },
   {
     "topico": "Química",
     "palavra": "água",
-    "charada": "Prometem que você deveria beber mais de mim o dia inteiro, e ninguém cumpre."
+    "charada": "Prometem que você deveria beber mais de mim o dia inteiro, e ninguém cumpre.",
+    "charada2": "Também sou o motivo de toda garrafinha reutilizável ficar esquecida na bolsa, vazia, há dias."
   },
   {
     "topico": "Biologia",
     "palavra": "animal",
-    "charada": "Categoria que inclui você, mesmo que sua timeline discorde."
+    "charada": "Categoria que inclui você, mesmo que sua timeline discorde.",
+    "charada2": "Também sou usado pra xingar alguém que corta fila sem pedir licença."
   },
   {
     "topico": "Biologia",
     "palavra": "bactéria",
-    "charada": "Vive numa maçaneta que ninguém nunca limpa direito."
+    "charada": "Vive numa maçaneta que ninguém nunca limpa direito.",
+    "charada2": "Também sou a razão do celular do banheiro público parecer o objeto mais sujo do planeta."
   },
   {
     "topico": "História",
     "palavra": "batalha",
-    "charada": "Aquele confronto que os livros descrevem em páginas inteiras, mas que na vida real dura só alguns minutos."
+    "charada": "Aquele confronto que os livros descrevem em páginas inteiras, mas que na vida real dura só alguns minutos.",
+    "charada2": "Também sou usada pra descrever a fila do banco às vésperas do feriado."
   },
   {
     "topico": "História",
     "palavra": "colônia",
-    "charada": "Território emprestado que o dono original nunca mais devolveu de bom grado."
+    "charada": "Território emprestado que o dono original nunca mais devolveu de bom grado.",
+    "charada2": "Também sou o nome de qualquer perfume que promete durar o dia inteiro e não dura."
   },
   {
     "topico": "Geografia",
     "palavra": "ambiente",
-    "charada": "Tudo ao redor que a gente promete cuidar melhor, geralmente depois de assistir um documentário."
+    "charada": "Tudo ao redor que a gente promete cuidar melhor, geralmente depois de assistir um documentário.",
+    "charada2": "Também sou usado pra descrever qualquer escritório com clima estranho depois de uma reunião ruim."
   },
   {
     "topico": "Geografia",
     "palavra": "bússola",
-    "charada": "Aponto sempre pro norte, ao contrário de qualquer decisão que você tenta tomar sozinho."
+    "charada": "Aponto sempre pro norte, ao contrário de qualquer decisão que você tenta tomar sozinho.",
+    "charada2": "Também sou o app de GPS que insiste em recalcular a rota mesmo você seguindo certinho."
   },
   {
     "topico": "Português e Literatura",
     "palavra": "adjetivo",
-    "charada": "Dou qualidade a um substantivo, tipo aquele elogio que sua mãe manda com segunda intenção."
+    "charada": "Dou qualidade a um substantivo, tipo aquele elogio que sua mãe manda com segunda intenção.",
+    "charada2": "Também sou usado em excesso em qualquer legenda de foto de viagem."
   },
   {
     "topico": "Português e Literatura",
     "palavra": "antônimo",
-    "charada": "O oposto exato de uma palavra, igual você e aquele parente que discorda de tudo só por discordar."
+    "charada": "O oposto exato de uma palavra, igual você e aquele parente que discorda de tudo só por discordar.",
+    "charada2": "Também sou usado pra descrever o humor de alguém antes e depois do café da manhã."
   },
   {
     "topico": "Redação",
     "palavra": "argumento",
-    "charada": "Aquilo que todo mundo jura ter na discussão de grupo de família, mas poucos realmente trazem."
+    "charada": "Aquilo que todo mundo jura ter na discussão de grupo de família, mas poucos realmente trazem.",
+    "charada2": "Também sou usado quando alguém perde a discussão e muda de assunto na hora."
   },
   {
     "topico": "Redação",
     "palavra": "citação",
-    "charada": "Uma frase de outra pessoa que você usa pra parecer mais culto do que realmente é."
+    "charada": "Uma frase de outra pessoa que você usa pra parecer mais culto do que realmente é.",
+    "charada2": "Também sou usada errada, atribuída à pessoa errada, em quase toda rede social."
   },
   {
     "topico": "Filosofia",
     "palavra": "conhecimento",
-    "charada": "A única coisa que ninguém consegue tirar de você, exceto na hora da prova que você não estudou."
+    "charada": "A única coisa que ninguém consegue tirar de você, exceto na hora da prova que você não estudou.",
+    "charada2": "Também sou aquele que todo mundo finge ter numa discussão de bar sobre política."
   },
   {
     "topico": "Filosofia",
     "palavra": "consciência",
-    "charada": "Aquela voz que fala 'você devia estar estudando' bem na hora do episódio mais interessante da série."
+    "charada": "Aquela voz que fala 'você devia estar estudando' bem na hora do episódio mais interessante da série.",
+    "charada2": "Também sou aquela que pesa mais depois da segunda fatia de bolo."
   },
   {
     "topico": "Sociologia",
     "palavra": "cidadania",
-    "charada": "Os direitos e deveres que todo mundo lembra dos direitos e esquece os deveres."
+    "charada": "Os direitos e deveres que todo mundo lembra dos direitos e esquece os deveres.",
+    "charada2": "Também sou lembrada só quando alguém precisa tirar um documento com urgência."
   },
   {
     "topico": "Sociologia",
     "palavra": "cidadão",
-    "charada": "A pessoa que reclama do imposto e também reclama quando falta asfalto na rua."
+    "charada": "A pessoa que reclama do imposto e também reclama quando falta asfalto na rua.",
+    "charada2": "Também sou usado, formal demais, quando alguém quer soar sério numa reclamação simples."
   },
   {
     "topico": "Inglês e Espanhol",
     "palavra": "alfabeto",
-    "charada": "Vinte e seis letrinhas que decidem toda discussão sobre como se escreve certo."
+    "charada": "Vinte e seis letrinhas que decidem toda discussão sobre como se escreve certo.",
+    "charada2": "Também sou o motivo de qualquer lista de compras nunca seguir a ordem certa das letras."
   },
   {
     "topico": "Inglês e Espanhol",
     "palavra": "bilíngue",
-    "charada": "Quem fala dois idiomas, e ainda assim trava igual todo mundo na hora de pedir a conta no restaurante."
+    "charada": "Quem fala dois idiomas, e ainda assim trava igual todo mundo na hora de pedir a conta no restaurante.",
+    "charada2": "Também sou o rótulo de embalagem que ninguém lê no verso porque já entendeu na frente."
   },
   {
     "topico": "Artes",
     "palavra": "artista",
-    "charada": "Quem transforma sentimento em obra, e também qualquer pessoa que decora o próprio bolo de aniversário torto com orgulho."
+    "charada": "Quem transforma sentimento em obra, e também qualquer pessoa que decora o próprio bolo de aniversário torto com orgulho.",
+    "charada2": "Também sou o apelido de quem enrola qualquer desculpa de um jeito bonito demais pra ser verdade."
   },
   {
     "topico": "Artes",
     "palavra": "ator",
-    "charada": "Finge sentir emoção profissionalmente, coisa que todo mundo já fez pelo menos uma vez numa festa chata."
+    "charada": "Finge sentir emoção profissionalmente, coisa que todo mundo já fez pelo menos uma vez numa festa chata.",
+    "charada2": "Também sou o papel de quem finge gostar do presente feio no aniversário."
   }
-];
+  ];
   var wordBankPromise = null;
   var wordBankCache = null;
 
@@ -534,8 +870,11 @@
     landscapeOverlay.setAttribute('aria-live', 'polite');
     landscapeOverlay.style.cssText = [
       'display:none',
-      'position:fixed',
-      'inset:0',
+      'position:absolute',
+      'top:0',
+      'left:0',
+      'width:100vw',
+      'height:100vh',
       'z-index:20000',
       'align-items:center',
       'justify-content:center',
@@ -733,12 +1072,48 @@
       window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }
 
+  function lockPageScroll() {
+    if (pageScrollLock) return;
+    var root = document.documentElement;
+    var body = document.body;
+    pageScrollLock = {
+      x: window.scrollX || window.pageXOffset || 0,
+      y: window.scrollY || window.pageYOffset || 0,
+      rootOverflow: root.style.overflow,
+      rootOverscroll: root.style.overscrollBehavior,
+      bodyOverflow: body.style.overflow,
+      bodyOverscroll: body.style.overscrollBehavior
+    };
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    root.style.overflow = 'hidden';
+    root.style.overscrollBehavior = 'none';
+    body.style.overflow = 'hidden';
+    body.style.overscrollBehavior = 'none';
+    body.classList.add('hangman-scroll-locked');
+  }
+
+  function unlockPageScroll() {
+    if (!pageScrollLock) return;
+    var previous = pageScrollLock;
+    pageScrollLock = null;
+    var root = document.documentElement;
+    var body = document.body;
+    root.style.overflow = previous.rootOverflow;
+    root.style.overscrollBehavior = previous.rootOverscroll;
+    body.style.overflow = previous.bodyOverflow;
+    body.style.overscrollBehavior = previous.bodyOverscroll;
+    body.classList.remove('hangman-scroll-locked');
+    window.scrollTo({ top: previous.y, left: previous.x, behavior: 'auto' });
+  }
+
   function renderFloatingPiece(state) {
     if (!state || !state.piece || !window.gsap) return;
     window.gsap.set(state.piece, {
       x: state.baseX + state.emotionX,
       y: state.baseY + state.floatY + state.waveY + state.reactY + state.emotionY,
       rotation: state.rotation + state.emotionRotation,
+      scaleX: state.scaleX,
+      scaleY: state.scaleY,
       transformOrigin: state.transformOrigin || '50% 50%'
     });
   }
@@ -898,6 +1273,8 @@
         emotionY: 0,
         emotionRotation: 0,
         rotation: 0,
+        scaleX: 1,
+        scaleY: 1,
         transformOrigin: '50% 50%',
         reactionTimeline: null,
         floatTimeline: null,
@@ -1036,12 +1413,14 @@
     state.rotation = 0;
     if (state.piece.parentNode) state.piece.parentNode.appendChild(state.piece);
 
-    var localAnchor = target.localAnchor || PIECE_ANCHORS[state.pieceId] || { x: 0, y: 0 };
+    var localAnchor = target.localAnchor || { x: 0, y: 0 };
     state.transformOrigin = localAnchor.x + 'px ' + localAnchor.y + 'px';
     var tween = gsap.to(state, {
       baseX: target.x - TRAVEL_X - localAnchor.x,
       baseY: target.y - localAnchor.y,
       rotation: target.rotation,
+      scaleX: target.scaleX === undefined ? 1 : target.scaleX,
+      scaleY: target.scaleY === undefined ? 1 : target.scaleY,
       duration: prefersReducedMotion() ? 0.25 : 0.9,
       ease: 'power2.inOut',
       onUpdate: function () { renderFloatingPiece(state); },
@@ -1074,31 +1453,31 @@
     var style = document.createElement('style');
     style.id = 'hangman-topic-reveal-styles';
     style.textContent =
-      '#hangman-topic-reveal{position:absolute;left:50%;top:50%;' +
-      'transform:translate(-50%,-50%);z-index:3;color:#d1273f;font-family:"Caveat",cursive;' +
+      '#hangman-topic-reveal{position:absolute;' +
+      'transform:translate(-50%,-50%);z-index:2147482000;color:#d1273f;font-family:"Caveat",cursive;' +
       'font-weight:700;text-decoration:underline;text-underline-offset:6px;' +
-      'font-size:clamp(44px,6.8vw,68px);white-space:nowrap;pointer-events:none;' +
-      'clip-path:inset(0 100% 0 0);}';
+      'font-size:clamp(44px,6.8vw,68px);white-space:nowrap;pointer-events:none;}';
     document.head.appendChild(style);
   }
 
-  /* O texto do topico mora dentro do <nav>, centralizado horizontalmente
-     (mesmo eixo central usado pela palavra "Dica:" no HUD do jogo), sem
-     ancora fixa na seta amarela. Ele e revelado progressivamente enquanto
-     o boneco caminha, usando a mesma janela de tempo (walkStart /
-     totalWalkDuration) do resto da caminhada -- o mesmo principio da
-     forca, que ja esta desenhada e so entra no enquadramento pelo
-     movimento da cena. */
-  function ensureTopicReveal() {
+  /* O tópico ocupa um ponto do cenário, não da janela. Ele nasce à direita
+     e chega exatamente ao centro mostrado no enquadramento final conforme a
+     câmera desloca a página. */
+  function ensureTopicReveal(finalCameraShift) {
     var el = document.getElementById('hangman-topic-reveal');
-    if (el) return el;
+    if (!el) {
+      ensureTopicRevealStyles();
+      el = document.createElement('div');
+      el.id = 'hangman-topic-reveal';
+      el.setAttribute('aria-hidden', 'true');
+      (pageCamera || ensurePageCamera()).appendChild(el);
+    }
     var nav = document.querySelector('.navbar');
-    if (!nav) return null;
-    ensureTopicRevealStyles();
-    el = document.createElement('div');
-    el.id = 'hangman-topic-reveal';
-    el.setAttribute('aria-hidden', 'true');
-    nav.appendChild(el);
+    if (nav) {
+      var navRect = nav.getBoundingClientRect();
+      el.style.top = (window.scrollY + navRect.top + navRect.height / 2) + 'px';
+    }
+    el.style.left = (window.scrollX + window.innerWidth / 2 + (finalCameraShift || 0)) + 'px';
     return el;
   }
 
@@ -1106,7 +1485,6 @@
     var el = document.getElementById('hangman-topic-reveal');
     if (!el) return;
     el.textContent = '';
-    el.style.clipPath = 'inset(0 100% 0 0)';
   }
 
   /* O jogo da velha desloca a página como um cenário único quando precisa
@@ -1190,6 +1568,8 @@
   function createRound(input) {
     var rawWord = '';
     var hint = '';
+    var hint2 = '';
+    var hint3 = '';
     var topic = '';
 
     if (typeof input === 'string') {
@@ -1199,11 +1579,29 @@
         (typeof input.palavra === 'string' ? input.palavra : '');
       hint = typeof input.hint === 'string' ? input.hint.trim() :
         (typeof input.charada === 'string' ? input.charada.trim() : '');
+      hint2 = typeof input.hint2 === 'string' ? input.hint2.trim() :
+        (typeof input.charada2 === 'string' ? input.charada2.trim() : '');
+      hint3 = typeof input.hint3 === 'string' ? input.hint3.trim() :
+        (typeof input.charada3 === 'string' ? input.charada3.trim() : '');
       topic = typeof input.topic === 'string' ? input.topic.trim() :
         (typeof input.topico === 'string' ? input.topico.trim() : '');
     } else if (typeof input !== 'undefined' && input !== null) {
       console.warn('A palavra da forca deve ser uma string ou um objeto { word, hint, topic }.');
       return null;
+    }
+
+    /* Sorteio de qual das dicas disponiveis aparece primeiro na tela (em
+       vez de ser sempre a "charada" original). As demais entram no ciclo
+       do botao vermelho, comecando pela proxima na ordem sorteada. */
+    var hintPool = [hint, hint2, hint3].filter(function (value) {
+      return typeof value === 'string' && value.trim();
+    });
+    if (hintPool.length > 1) {
+      var shuffleStart = Math.floor(Math.random() * hintPool.length);
+      hintPool = hintPool.slice(shuffleStart).concat(hintPool.slice(0, shuffleStart));
+      hint = hintPool[0] || hint;
+      hint2 = hintPool[1] || '';
+      hint3 = hintPool[2] || '';
     }
 
     rawWord = rawWord.trim().replace(/\s+/g, ' ');
@@ -1232,6 +1630,8 @@
       word: characters.join(''),
       normalizedWord: letters.map(normalizeLetter).join(''),
       hint: hint,
+      hint2: hint2,
+      hint3: hint3,
       topic: topic,
       characters: characters,
       letterCount: letters.length,
@@ -1462,20 +1862,8 @@
       ease: 'none'
     }, walkStart);
 
-    var topicEl = ensureTopicReveal();
-    if (topicEl) {
-      topicEl.textContent = (activeRound && activeRound.topic) || '';
-      topicEl.style.clipPath = 'inset(0 100% 0 0)';
-      var topicRevealState = { percent: 0 };
-      timeline.to(topicRevealState, {
-        percent: 100,
-        duration: totalWalkDuration,
-        ease: 'none',
-        onUpdate: function () {
-          topicEl.style.clipPath = 'inset(0 ' + (100 - topicRevealState.percent) + '% 0 0)';
-        }
-      }, walkStart);
-    }
+    var topicEl = ensureTopicReveal(heroShiftPx);
+    if (topicEl) topicEl.textContent = (activeRound && activeRound.topic) || '';
 
     /* Os frames da marcha usam o mesmo cursor temporal do deslocamento.
        Antes eles eram inseridos após o tween da câmera, causando o deslize
@@ -1601,6 +1989,7 @@
   function resetPose(parts, frames) {
     var gsap = window.gsap;
 
+    unlockPageScroll();
     detachFastForwardControls();
     stopFloatingPieces();
     activeParts = parts;
@@ -1617,7 +2006,8 @@
       parts.hero.classList.remove('hangman-active');
     }
     if (parts.floatingCard) {
-      gsap.set(parts.floatingCard, { autoAlpha: 1 });
+      gsap.set(parts.floatingCard, { autoAlpha: 1, y: 0 });
+      parts.floatingCard.style.animation = '';
     }
 
     gsap.set([parts.world, parts.travel, parts.book, parts.pageCamera], { x: 0 });
@@ -1632,7 +2022,7 @@
 
     gsap.set(PIECE_IDS.map(function (pieceId) {
       return parts.pieceEls[pieceId];
-    }), { x: 0, y: 0, rotation: 0 });
+    }), { x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 });
 
     gsap.set(parts.rig, { autoAlpha: 0 });
     gsap.set(parts.restCharacter, { autoAlpha: 1 });
@@ -1651,9 +2041,6 @@
 
   function startHangmanGame(options) {
     var gsap = window.gsap;
-    if (typeof window.scrollTo === 'function') {
-      window.scrollTo({ top: 0, left: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
-    }
     ensurePageCamera();
     var parts = collectParts();
     var frames = getFrames();
@@ -1678,6 +2065,7 @@
     }
 
     resetPose(parts, frames);
+    lockPageScroll();
     activeRound = round;
     var layout = buildSlots(parts.slots, round);
     gsap.set(parts.gallows, { x: layout.gallowsShiftX });
@@ -1686,6 +2074,8 @@
         word: round.word,
         normalizedWord: round.normalizedWord,
         hint: round.hint,
+        hint2: round.hint2,
+        hint3: round.hint3,
         topic: round.topic,
         letterCount: round.letterCount,
         isPlaceholder: round.isPlaceholder,
@@ -1699,7 +2089,22 @@
       parts.hero.classList.add('hangman-active');
     }
     if (parts.floatingCard) {
-      gsap.to(parts.floatingCard, { autoAlpha: 0, duration: 0.24, ease: 'power1.out' });
+      /* Desce e sai da tela, em vez de sumir com fade. A animacao CSS
+         "float" (styles.css) tambem mexe no transform em loop infinito,
+         entao precisa ser neutralizada antes, senao ela briga com o
+         GSAP e o card fica tremendo em vez de deslizar liso. */
+      parts.floatingCard.style.animation = 'none';
+      var floatingCardRect = parts.floatingCard.getBoundingClientRect();
+      var floatingCardTravel = Math.max(
+        window.innerHeight - floatingCardRect.top + 80,
+        floatingCardRect.height + 80
+      );
+      gsap.to(parts.floatingCard, {
+        y: floatingCardTravel,
+        duration: 0.5,
+        ease: 'power2.in',
+        overwrite: true
+      });
     }
 
     /* Troca instantânea entre a silhueta original e o rig aprovado.
@@ -1803,12 +2208,15 @@
     celebratePieces: function () { return animateFloatingMood('celebrate'); },
     fearAndHangPiece: fearAndHangPiece,
     hangPiece: movePieceToGallows,
+    unlockScroll: unlockPageScroll,
     getRound: function () {
       if (!activeRound) return null;
       return {
         word: activeRound.word,
         normalizedWord: activeRound.normalizedWord,
         hint: activeRound.hint,
+        hint2: activeRound.hint2,
+        hint3: activeRound.hint3,
         topic: activeRound.topic,
         letterCount: activeRound.letterCount,
         isPlaceholder: activeRound.isPlaceholder,

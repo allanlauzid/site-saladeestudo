@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+</head>
+<body>
+  <!-- Include the piece bank from SVG -->
+  <svg width="0" height="0" style="position:absolute">
+    <g id="fonte-cabeca">
+      <circle cx="59.780174" cy="11.781806" r="5.5955"/>
+    </g>
+    <g id="fonte-tronco">
+      <g transform="matrix(1.2683349,-0.22062343,-0.1080881,1.0988326,-4.2220002,13.172359)">
+        <rect width="32.614868" height="9.4505987" x="26.314297" y="-23.206427" ry="4.7252994" transform="matrix(0.49249286,0.87031648,-0.87422639,0.4855185,0,0)"/>
+      </g>
+    </g>
+    <g id="fonte-braco-esquerdo">
+      <g transform="matrix(-0.93938459,0.34286527,0.34286527,0.93938459,86.164846,6.4406169)">
+        <rect width="16.98567" height="5.461638" x="14.979391" y="12.289076" ry="2.730819" transform="matrix(0.89260858,0.45083248,-0.45128102,0.89238189,0,0)"/>
+      </g>
+      <rect width="20.4797" height="5.4616385" x="-88.568932" y="-7.1089177" ry="2.7308192" transform="matrix(-0.8690085,-0.49479715,-0.49450413,0.86917528,0,0)"/>
+    </g>
+    <g id="fonte-braco-direito">
+      <g transform="matrix(-0.62620501,-0.77965844,-0.77965844,0.62620501,78.226501,26.627143)">
+        <rect width="20.4797" height="5.4616385" x="-23.658134" y="-47.692169" ry="2.7308192" transform="matrix(0.23638697,-0.97165899,-0.97173864,-0.23605936,0,0)"/>
+        <g transform="matrix(0.41796838,-0.90846158,-0.90846158,-0.41796838,54.972015,59.908406)">
+          <rect width="16.98567" height="5.461638" x="14.979391" y="12.289076" ry="2.730819" transform="matrix(0.89260858,0.45083248,-0.45128102,0.89238189,0,0)"/>
+        </g>
+      </g>
+    </g>
+    <g id="fonte-perna-esquerda">
+      <g transform="rotate(56.536198,40.035454,49.479578)">
+        <rect width="30.202835" height="6.1170297" x="-63.549179" y="44.769775" ry="3.0585148" transform="rotate(-88.843891)"/>
+        <g transform="rotate(1.156109,-1011.4436,1458.1488)">
+          <rect width="24.90505" height="6.3354945" x="37.318317" y="-21.3368" ry="3.1677473" transform="rotate(90)"/>
+        </g>
+      </g>
+    </g>
+    <g id="fonte-perna-direita-6">
+      <rect width="30.202835" height="6.1170297" x="-70.840073" y="48.001583" ry="3.0585148" transform="rotate(-95.135737)"/>
+      <g transform="rotate(52.779934,13.974457,90.012251)">
+        <rect width="24.90505" height="6.3354945" x="37.318317" y="-21.3368" ry="3.1677473" transform="rotate(90)"/>
+      </g>
+    </g>
+  </svg>
+  <div id="out"></div>
+  <script>
+    const ids = [
+      'fonte-cabeca', 'fonte-tronco', 'fonte-braco-esquerdo',
+      'fonte-braco-direito', 'fonte-perna-esquerda', 'fonte-perna-direita-6'
+    ];
+    const map = ['head', 'torso', 'arm-left', 'arm-right', 'leg-left', 'leg-right'];
+    const results = {};
+    ids.forEach((id, i) => {
+      const el = document.getElementById(id);
+      const box = el.getBBox();
+      results[map[i]] = {
+        x: box.x, y: box.y, width: box.width, height: box.height,
+        cx: box.x + box.width / 2,
+        cy: box.y + box.height / 2
+      };
+    });
+    document.getElementById('out').innerText = JSON.stringify(results, null, 2);
+  </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Validação — modelo do mascote criado por Allan</title>
+  <style>
+    :root{font-family:Inter,Arial,sans-serif;color:#13233b;background:#eef3f9}*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;grid-template-rows:auto 1fr}.bar{display:flex;align-items:center;gap:10px;padding:14px 18px;background:#fff;border-bottom:1px solid #cfdae8;box-shadow:0 6px 22px #17396712}.bar strong{margin-right:auto}.bar button{border:1px solid #bed0e4;border-radius:9px;padding:10px 14px;background:#fff;color:#17345d;font-weight:700;cursor:pointer}.bar button.primary{background:#0055d4;color:#fff;border-color:#0055d4}.bar button.active{box-shadow:inset 0 0 0 2px #ffd100}.stage{position:relative;display:grid;place-items:center;overflow:hidden;background-image:linear-gradient(#0055d40b 1px,transparent 1px),linear-gradient(90deg,#0055d40b 1px,transparent 1px);background-size:28px 28px}.card{width:min(78vw,720px);height:min(76vh,650px);display:grid;place-items:center;border:1px solid #c7d4e5;border-radius:24px;background:#fff;box-shadow:0 22px 60px #193c6a20}.card object{width:min(56vw,520px);height:min(68vh,570px)}.note{position:absolute;left:22px;bottom:18px;max-width:360px;padding:12px 14px;border-radius:12px;background:#fff;color:#53657b;font-size:13px;box-shadow:0 9px 30px #17396716}@media(max-width:720px){.bar{flex-wrap:wrap}.bar strong{width:100%}.card{width:94vw}.card object{width:88vw}.note{position:static;margin:12px}}
+  </style>
+</head>
+<body>
+  <header class="bar">
+    <strong>Modelo criado por Allan · validação técnica</strong>
+    <button id="colors" class="active" type="button">Cores por peça</button>
+    <button id="pivots" type="button">Articulações</button>
+    <button id="reset" type="button">Sentado</button>
+    <button id="play" class="primary" type="button">Levantar e caminhar</button>
+  </header>
+  <main class="stage">
+    <div class="card"><object id="mascot" type="image/svg+xml" data="../svg/mascote-modelo-allan.svg" aria-label="Mascote articulado criado por Allan"></object></div>
+    <p class="note">Esta prévia usa exatamente as formas desenhadas no Inkscape. Cores servem apenas para conferir a separação das seis peças.</p>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script>
+    (function(){
+      var object=document.getElementById('mascot'), doc, root, timeline;
+      var colors=true, pivots=false;
+      function el(id){return doc&&doc.getElementById(id)}
+      function ready(){return doc&&root&&window.gsap}
+      function reset(){
+        if(!ready())return;
+        if(timeline)timeline.kill();
+        gsap.set([el('head'),el('torso'),el('arm-left'),el('forearm-left'),el('arm-right'),el('forearm-right'),el('leg-left'),el('shin-left'),el('leg-right'),el('shin-right')],{clearProps:'transform'});
+      }
+      function play(){
+        if(!ready())return;
+        reset();
+        timeline=gsap.timeline({defaults:{ease:'power2.inOut'}});
+        timeline.to(el('head'),{x:1,y:-1,duration:.35})
+          .to(el('head'),{x:15,y:.5,duration:.8},.42)
+          .to(el('torso'),{rotation:30,svgOrigin:'40 39',duration:1},.42)
+          .to([el('leg-left'),el('leg-right')],{rotation:-90,svgOrigin:'42 39',duration:1},.42)
+          .to([el('shin-left'),el('shin-right')],{rotation:90,svgOrigin:'19 40',duration:1},.42)
+          .to(el('arm-left'),{x:12,y:-2,rotation:-28,svgOrigin:'30 17',duration:1},.42)
+          .to(el('forearm-left'),{rotation:8,svgOrigin:'19 24.5',duration:1},.42)
+          .to(el('arm-right'),{x:12,y:-2,rotation:-92,svgOrigin:'30 17',duration:1},.42)
+          .to(el('forearm-right'),{rotation:18,svgOrigin:'19 24.5',duration:1},.42)
+          .to(root,{x:.8,y:-1,duration:.26,ease:'sine.inOut'})
+          .to(el('leg-left'),{rotation:-73,duration:.34,ease:'sine.inOut'},'<')
+          .to(el('leg-right'),{rotation:-107,duration:.34,ease:'sine.inOut'},'<')
+          .to(el('arm-left'),{rotation:-43,duration:.34,ease:'sine.inOut'},'<')
+          .to(el('arm-right'),{rotation:-76,duration:.34,ease:'sine.inOut'},'<')
+          .to(root,{x:1.6,y:0,duration:.34,ease:'sine.inOut'})
+          .to(el('leg-left'),{rotation:-107,duration:.34,ease:'sine.inOut'},'<')
+          .to(el('leg-right'),{rotation:-73,duration:.34,ease:'sine.inOut'},'<')
+          .to(el('arm-left'),{rotation:-13,duration:.34,ease:'sine.inOut'},'<')
+          .to(el('arm-right'),{rotation:-106,duration:.34,ease:'sine.inOut'},'<')
+          .to(root,{x:2.4,y:-1,duration:.34,ease:'sine.inOut'})
+          .to(el('leg-left'),{rotation:-73,duration:.34,ease:'sine.inOut'},'<')
+          .to(el('leg-right'),{rotation:-107,duration:.34,ease:'sine.inOut'},'<')
+          .to(root,{x:3.2,y:0,duration:.34,ease:'sine.inOut'})
+          .to([el('leg-left'),el('leg-right')],{rotation:-90,duration:.34,ease:'sine.inOut'},'<');
+      }
+      object.addEventListener('load',function(){doc=object.contentDocument;root=doc.getElementById('character-rig-allan');reset()});
+      document.getElementById('play').onclick=play;
+      document.getElementById('reset').onclick=reset;
+      document.getElementById('colors').onclick=function(){if(!root)return;colors=!colors;root.classList.toggle('single-color',!colors);this.classList.toggle('active',colors)};
+      document.getElementById('pivots').onclick=function(){if(!root)return;pivots=!pivots;root.classList.toggle('show-pivots',pivots);this.classList.toggle('active',pivots)};
+    }());
+  </script>
+</body>
+</html>

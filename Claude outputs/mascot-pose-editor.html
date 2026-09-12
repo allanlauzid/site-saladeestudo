@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Editor de poses — Mascote Sala de Estudo</title>
+  <link rel="stylesheet" href="mascot-pose-editor.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-block">
+      <span class="brand-mark" aria-hidden="true">SE</span>
+      <div>
+        <p class="eyebrow">Sala de Estudo · ferramenta local</p>
+        <h1>Editor de poses do mascote</h1>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span id="save-status" class="save-status" role="status">Pronto para editar</span>
+      <button id="undo" class="icon-button" type="button" title="Desfazer" aria-label="Desfazer">↶</button>
+      <button id="redo" class="icon-button" type="button" title="Refazer" aria-label="Refazer">↷</button>
+      <button id="reset-pose" class="button button-light" type="button">Restaurar pose</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="panel poses-panel" aria-label="Biblioteca de poses">
+      <div class="panel-heading">
+        <p class="panel-kicker">01 · Biblioteca</p>
+        <h2>Poses</h2>
+        <p>Comece de uma referência e salve quantas variações quiser.</p>
+      </div>
+
+      <label class="field-label" for="pose-name">Nome da pose</label>
+      <input id="pose-name" class="text-input" type="text" value="Original sentado" maxlength="60">
+
+      <div class="button-row">
+        <button id="save-pose" class="button button-primary" type="button">Salvar pose</button>
+        <button id="duplicate-pose" class="button button-secondary" type="button">Duplicar</button>
+      </div>
+
+      <div class="section-label">Referências prontas</div>
+      <div id="preset-list" class="pose-list"></div>
+
+      <div class="section-label custom-label">
+        <span>Minhas poses</span>
+        <span id="pose-count" class="count-pill">0</span>
+      </div>
+      <div id="custom-pose-list" class="pose-list custom-list">
+        <p class="empty-state">Suas poses salvas aparecerão aqui.</p>
+      </div>
+
+      <button id="delete-pose" class="button button-danger" type="button" disabled>Excluir pose selecionada</button>
+    </aside>
+
+    <section class="stage-column" aria-label="Área de desenho">
+      <div class="stage-toolbar">
+        <div class="tool-group" aria-label="Visualização">
+          <button id="toggle-reference" class="tool-button active" type="button" aria-pressed="true">Referência</button>
+          <button id="toggle-colors" class="tool-button" type="button" aria-pressed="false">Cores por peça</button>
+          <button id="toggle-handles" class="tool-button active" type="button" aria-pressed="true">Pontos</button>
+          <button id="toggle-contours" class="tool-button active" type="button" aria-pressed="true">Contorno</button>
+        </div>
+        <label class="opacity-control">
+          <span>Referência</span>
+          <input id="reference-opacity" type="range" min="0" max="65" value="24">
+        </label>
+      </div>
+
+      <div class="drawing-board">
+        <div class="board-note">
+          <span class="note-dot"></span>
+          Selecione uma peça. Pontos azuis esculpem o preenchimento.
+        </div>
+        <svg id="pose-canvas" viewBox="-8 -6 76 76" role="img" aria-labelledby="editor-title editor-desc">
+          <title id="editor-title">Área editável do mascote</title>
+          <desc id="editor-desc">Pose articulada sobreposta ao mascote original sentado.</desc>
+          <defs>
+            <pattern id="small-grid" width="2" height="2" patternUnits="userSpaceOnUse">
+              <path d="M 2 0 L 0 0 0 2" fill="none" stroke="#0055d4" stroke-opacity="0.07" stroke-width="0.12"/>
+            </pattern>
+            <pattern id="large-grid" width="10" height="10" patternUnits="userSpaceOnUse">
+              <rect width="10" height="10" fill="url(#small-grid)"/>
+              <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#0055d4" stroke-opacity="0.13" stroke-width="0.18"/>
+            </pattern>
+            <filter id="selected-glow" x="-40%" y="-40%" width="180%" height="180%">
+              <feDropShadow dx="0" dy="0" stdDeviation="0.7" flood-color="#ffd100" flood-opacity="1"/>
+            </filter>
+          </defs>
+          <rect x="-8" y="-6" width="76" height="76" fill="#fbfcff"/>
+          <rect x="-8" y="-6" width="76" height="76" fill="url(#large-grid)"/>
+
+          <g id="reference-layer" opacity="0.24" pointer-events="none">
+            <image href="../svg/mascote-animavel.svg" x="0" y="0" width="51.821" height="62.332"/>
+          </g>
+
+          <g id="model-layer">
+            <path id="part-right-thigh" class="editable-part limb" data-part="right-thigh"/>
+            <path id="part-right-shin" class="editable-part limb" data-part="right-shin"/>
+            <path id="part-right-upper-arm" class="editable-part limb" data-part="right-upper-arm"/>
+            <path id="part-right-forearm" class="editable-part limb" data-part="right-forearm"/>
+            <path id="part-left-thigh" class="editable-part limb" data-part="left-thigh"/>
+            <path id="part-left-shin" class="editable-part limb" data-part="left-shin"/>
+            <path id="part-torso" class="editable-part torso-part" data-part="torso"/>
+            <path id="part-left-upper-arm" class="editable-part limb" data-part="left-upper-arm"/>
+            <path id="part-left-forearm" class="editable-part limb" data-part="left-forearm"/>
+            <path id="part-head" class="editable-part head-part" data-part="head"/>
+          </g>
+
+          <g id="handles-layer"></g>
+        </svg>
+
+        <div id="color-legend" class="color-legend" hidden></div>
+      </div>
+
+      <div class="stage-footer">
+        <span><kbd>Ctrl</kbd> + <kbd>Z</kbd> desfaz</span>
+        <span>Selecione uma peça para ajustar sua espessura.</span>
+        <strong id="canvas-coordinates">x 0.0 · y 0.0</strong>
+      </div>
+    </section>
+
+    <aside class="panel inspector-panel" aria-label="Propriedades da peça">
+      <div class="panel-heading">
+        <p class="panel-kicker">02 · Modelagem</p>
+        <h2>Peças e medidas</h2>
+        <p id="selection-help">Selecione uma peça ou um ponto no desenho.</p>
+      </div>
+
+      <div id="selection-card" class="selection-card">
+        <div class="selection-color" id="selection-color"></div>
+        <div>
+          <span class="selection-label">Selecionado</span>
+          <strong id="selection-name">Nenhuma peça</strong>
+        </div>
+      </div>
+
+      <div id="point-controls" class="control-block" hidden>
+        <div class="section-label">Posição do ponto</div>
+        <div class="coordinate-grid">
+          <label>X <input id="point-x" type="number" step="0.1"></label>
+          <label>Y <input id="point-y" type="number" step="0.1"></label>
+        </div>
+      </div>
+
+      <div id="part-controls" class="control-block" hidden>
+        <div class="section-label">Forma da peça</div>
+        <label class="range-field">
+          <span>Espessura <output id="width-value">4.0</output></span>
+          <input id="part-width" type="range" min="1" max="11" step="0.1">
+        </label>
+        <p class="microcopy">Losangos mudam o eixo da curva. Pontos azuis modelam cada lado do preenchimento.</p>
+      </div>
+
+      <div class="section-label">Todas as peças</div>
+      <div id="parts-list" class="parts-list"></div>
+
+      <div class="export-card">
+        <div>
+          <p class="panel-kicker">03 · Entrega</p>
+          <h3>Exportar pose</h3>
+        </div>
+        <button id="copy-pose" class="button button-primary" type="button">Copiar dados</button>
+        <button id="export-json" class="button button-secondary" type="button">Baixar JSON</button>
+        <button id="export-svg" class="button button-secondary" type="button">Baixar SVG</button>
+        <label class="button button-light import-button">
+          Importar JSON
+          <input id="import-json" type="file" accept="application/json,.json" hidden>
+        </label>
+      </div>
+    </aside>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="mascot-pose-editor.js"></script>
+</body>
+</html>

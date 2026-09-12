@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkpoint 4 — levantar do mascote</title>
+  <style>
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #0f1d31; }
+    iframe { width: 100%; height: 100%; border: 0; background: #fff; }
+    .controls {
+      position: fixed;
+      z-index: 10;
+      right: 16px;
+      top: 16px;
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 12px;
+      background: rgba(15, 29, 49, 0.92);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.24);
+    }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font: 700 14px/1 system-ui, sans-serif;
+      cursor: pointer;
+      color: #0033a0;
+      background: #f9d002;
+    }
+    button.secondary { color: #fff; background: #0055d4; }
+  </style>
+</head>
+<body>
+  <div class="controls" aria-label="Controles da prévia">
+    <button type="button" id="play">Reproduzir</button>
+    <button type="button" id="reload" class="secondary">Recomeçar</button>
+  </div>
+  <iframe id="site" src="../index.html" title="Prévia do site"></iframe>
+  <script>
+    var frame = document.getElementById('site');
+
+    function focusMascot() {
+      var mascot = frame.contentDocument && frame.contentDocument.getElementById('mascote-animavel');
+      if (mascot) mascot.scrollIntoView({ block: 'center' });
+    }
+
+    frame.addEventListener('load', function () {
+      setTimeout(focusMascot, 80);
+    });
+
+    document.getElementById('play').addEventListener('click', function () {
+      focusMascot();
+      if (typeof frame.contentWindow.startHangmanGame === 'function') {
+        frame.contentWindow.startHangmanGame();
+      }
+    });
+
+    document.getElementById('reload').addEventListener('click', function () {
+      frame.contentWindow.location.reload();
+    });
+  </script>
+</body>
+</html>

@@ -69,6 +69,17 @@
 
       if (bgClickCount >= CLICKS_TO_TRIGGER) {
         bgClickCount = 0;
+
+        // Se a animação de introdução estiver rodando (ou prestes a mostrar a seta), cancela na hora.
+        var introEl = document.getElementById('intro');
+        if (introEl) {
+          introEl.classList.add('skip-intro');
+          document.body.style.overflow = ''; // Garante que o scroll volte
+          try {
+            sessionStorage.setItem('introPlayed', 'true');
+          } catch (e) {}
+        }
+
         pickRandomGame().start(e.clientX, e.clientY);
       }
     },
