@@ -164,7 +164,14 @@ const INTRO_FAST_RATE = 6;
 
 function applyIntroFastForward(){
   if(!introFastForward) return;
-  document.getAnimations().forEach(anim => {
+  const introEl = document.getElementById('intro');
+  if(!introEl) return;
+  /* Só acelera animações que pertencem à intro (seta, texto etc.).
+     document.getAnimations() pega TODAS as animações da página, então sem
+     esse filtro qualquer animação que já estivesse rodando fora da intro
+     (ex.: "Diagnóstico + rotina = confiança" no restante do site) também
+     era forçada pra 6x, mesmo sem ter nada a ver com o clique de pular. */
+  introEl.getAnimations({ subtree: true }).forEach(anim => {
     if (anim.playbackRate !== INTRO_FAST_RATE) {
       anim.playbackRate = INTRO_FAST_RATE;
     }

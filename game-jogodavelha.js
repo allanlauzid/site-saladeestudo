@@ -68,6 +68,14 @@
     wrapper.style.cssText = 'transition: transform 0.6s ease; will-change: transform;';
     var children = Array.prototype.slice.call(document.body.children);
     children.forEach(function (child) {
+      /* A intro (#intro) usa position:fixed pra cobrir a tela inteira sem
+         se mexer com o resto da pagina. Se ela entrar aqui dentro, passa a
+         ser descendente de um elemento com will-change/transform, o que
+         muda o "container" dela: em vez de ficar fixa na janela, ela passa
+         a se mover junto com o deslize da pagina (o translateX abaixo),
+         podendo reaparecer por cima do jogo se ainda nao tiver terminado
+         de se esconder. Por isso ela fica de fora do wrapper. */
+      if (child && child.id === 'intro') return;
       wrapper.appendChild(child);
     });
     document.body.appendChild(wrapper);

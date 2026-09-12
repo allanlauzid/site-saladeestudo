@@ -124,7 +124,7 @@
     window.addEventListener('click', finishRoundAndReset, true);
     window.addEventListener('keydown', finishRoundAndReset, true);
     roundEndListenersAttached = true;
-    roundEndTimer = window.setTimeout(finishRoundAndReset, 15000);
+    roundEndTimer = window.setTimeout(finishRoundAndReset, 20000);
   }
 
   function createMarkSvg() {
