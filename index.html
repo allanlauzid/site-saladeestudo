@@ -278,19 +278,19 @@
                     </div>
                     <div class="mini-faq">
                         <div class="mini-faq-item">
-                            <div class="mini-faq-q" onclick="toggleMiniFaq(this)">Linguagens e suas Tecnologias <span>+</span></div>
+                            <div class="mini-faq-q" role="button" tabindex="0" aria-expanded="false" onclick="toggleMiniFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleMiniFaq(this);}">Linguagens e suas Tecnologias <span>+</span></div>
                             <div class="mini-faq-a">Língua Portuguesa, Literatura, Língua Inglesa, Arte e Educação Física.</div>
                         </div>
                         <div class="mini-faq-item">
-                            <div class="mini-faq-q" onclick="toggleMiniFaq(this)">Matemática e suas Tecnologias <span>+</span></div>
+                            <div class="mini-faq-q" role="button" tabindex="0" aria-expanded="false" onclick="toggleMiniFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleMiniFaq(this);}">Matemática e suas Tecnologias <span>+</span></div>
                             <div class="mini-faq-a">Focada na Matemática, suas aplicações práticas, lógica e resolução de problemas estruturados.</div>
                         </div>
                         <div class="mini-faq-item">
-                            <div class="mini-faq-q" onclick="toggleMiniFaq(this)">Ciências da Natureza e suas Tecnologias <span>+</span></div>
+                            <div class="mini-faq-q" role="button" tabindex="0" aria-expanded="false" onclick="toggleMiniFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleMiniFaq(this);}">Ciências da Natureza e suas Tecnologias <span>+</span></div>
                             <div class="mini-faq-a">Biologia, Física e Química.</div>
                         </div>
                         <div class="mini-faq-item">
-                            <div class="mini-faq-q" onclick="toggleMiniFaq(this)">Ciências Humanas e Sociais Aplicadas <span>+</span></div>
+                            <div class="mini-faq-q" role="button" tabindex="0" aria-expanded="false" onclick="toggleMiniFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleMiniFaq(this);}">Ciências Humanas e Sociais Aplicadas <span>+</span></div>
                             <div class="mini-faq-a">História, Geografia, Filosofia e Sociologia.</div>
                         </div>
                     </div>
@@ -318,16 +318,16 @@
                 <h2>Como funciona?</h2>
             </div>
             <div class="faq-list">
-                <div class="faq-item" onclick="this.querySelector('.faq-a').style.display = this.querySelector('.faq-a').style.display === 'block' ? 'none' : 'block'">
-                    <div class="faq-q">O acompanhamento é individual? <span style="color:var(--color-text-muted)">+</span></div>
+                <div class="faq-item">
+                    <div class="faq-q" role="button" tabindex="0" aria-expanded="false" onclick="toggleFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleFaq(this);}">O acompanhamento é individual? <span style="color:var(--color-text-muted)">+</span></div>
                     <div class="faq-a"><p>Sim, focamos nas necessidades específicas de cada aluno, trabalhando seus pontos fracos.</p></div>
                 </div>
-                <div class="faq-item" onclick="this.querySelector('.faq-a').style.display = this.querySelector('.faq-a').style.display === 'block' ? 'none' : 'block'">
-                    <div class="faq-q">Para quais séries é voltado? <span style="color:var(--color-text-muted)">+</span></div>
+                <div class="faq-item">
+                    <div class="faq-q" role="button" tabindex="0" aria-expanded="false" onclick="toggleFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleFaq(this);}">Para quais séries é voltado? <span style="color:var(--color-text-muted)">+</span></div>
                     <div class="faq-a"><p>Atendemos alunos de todos os anos escolares e em todas as disciplinas, formando turmas com estudantes do mesmo ano escolar ou da mesma escola.</p></div>
                 </div>
-                <div class="faq-item" onclick="this.querySelector('.faq-a').style.display = this.querySelector('.faq-a').style.display === 'block' ? 'none' : 'block'">
-                    <div class="faq-q">Onde acontecem as aulas? <span style="color:var(--color-text-muted)">+</span></div>
+                <div class="faq-item">
+                    <div class="faq-q" role="button" tabindex="0" aria-expanded="false" onclick="toggleFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleFaq(this);}">Onde acontecem as aulas? <span style="color:var(--color-text-muted)">+</span></div>
                     <div class="faq-a"><p>Temos aulas presenciais em cabines individuais (Rua Antenor Navarro, 81 - Galeria Estação Jaqueira), aulas domiciliares e aulas 100% online.</p></div>
                 </div>
             </div>
@@ -353,7 +353,7 @@
 
                     <div class="contact-map">
                         <div class="map-card">
-                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.5562145827363!2d-34.9069151!3d-8.0445585!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7ab18fc3bb576d1%3A0xc49b78c6b29f0f9b!2sR.%20Antenor%20Navarro%2C%2081%20-%20Jaqueira%2C%20Recife%20-%20PE%2C%2052050-120!5e0!3m2!1spt-BR!2sbr!4v1714000000000!5m2!1spt-BR!2sbr" allowfullscreen="" loading="eager" fetchpriority="high" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3950.5562145827363!2d-34.9069151!3d-8.0445585!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x7ab18fc3bb576d1%3A0xc49b78c6b29f0f9b!2sR.%20Antenor%20Navarro%2C%2081%20-%20Jaqueira%2C%20Recife%20-%20PE%2C%2052050-120!5e0!3m2!1spt-BR!2sbr!4v1714000000000!5m2!1spt-BR!2sbr" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                         </div>
                     </div>
                 </div>
@@ -361,10 +361,18 @@
                 <div class="footer-bottom">
                     <div class="footer-bottom-left">
                         <span>&copy; 2026 Sala de Estudo - Profª Rubia Lima</span>
-                        <a href="admin.html" class="admin-link">ADMIN</a>
+                        <div class="admin-gate" id="adminGate">
+                            <a href="admin.html" class="admin-link" id="adminLink">ADMIN</a>
+                            <div class="admin-totp-reveal" id="adminTotpReveal">
+                                <input type="text" id="adminTotpInput" class="admin-totp-input" maxlength="6" inputmode="numeric" autocomplete="one-time-code" aria-label="Código do autenticador">
+                                <button type="button" id="adminTotpSubmit" class="admin-totp-submit" aria-label="Entrar" data-tooltip="Entrar">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <a href="https://instagram.com/reforco_se" class="instagram-link">
-                        <img src="png/icon-instagram-branco.png" alt="Instagram" style="width: 28px; height: auto;">
+                        <img src="png/icon-instagram-branco.png" alt="Instagram" style="width: 70px; height: auto;">
                     </a>
                 </div>
             </div>
@@ -379,13 +387,45 @@
                 answer.style.display = 'none';
                 icon.textContent = '+';
                 element.style.color = 'var(--color-blue)';
+                element.setAttribute('aria-expanded', 'false');
             } else {
                 answer.style.display = 'block';
                 icon.textContent = '-';
                 element.style.color = 'var(--color-yellow)';
+                element.setAttribute('aria-expanded', 'true');
             }
         }
+        function toggleFaq(element) {
+            const answer = element.parentElement.querySelector('.faq-a');
+            const isOpen = answer.style.display === 'block';
+            answer.style.display = isOpen ? 'none' : 'block';
+            element.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+        }
     </script>
+    <!-- ============ BOTÃO FLUTUANTE WHATSAPP ============ -->
+    <a
+      id="whatsapp-float-btn"
+      href="https://api.whatsapp.com/send/?phone=558199824123&text=Ol%C3%A1%21%20%F0%9F%91%8B%20Gostaria%20de%20saber%20mais%20sobre%20as%20aulas%20da%20Sala%20de%20Estudo%20e%20como%20funciona%20o%20acompanhamento.%20Podem%20me%20passar%20mais%20informa%C3%A7%C3%B5es%3F&type=phone_number&app_absent=0"
+      target="_blank"
+      rel="noopener"
+      aria-label="Falar no WhatsApp"
+      data-tooltip="Falar no WhatsApp"
+    >
+      <img src="icons/icone_whatsapp_celular.webp" alt="" aria-hidden="true">
+      <span id="whatsapp-bubble" aria-hidden="true"></span>
+    </a>
+
+    <!-- ============ BALÃO 1: ÍCONE DO WHATSAPP (fala direta) ============ -->
+    <a id="wa-icon-bubble" class="wa-icon-bubble" target="_blank" rel="noopener" aria-label="Falar no WhatsApp" aria-hidden="true" tabindex="-1">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51h-.571c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+    </a>
+
+    <!-- ============ BALÃO 2: PERGUNTAS RÁPIDAS (à direita) ============ -->
+    <div id="wa-chat-popup" role="dialog" aria-modal="false" aria-hidden="true" aria-label="Adiante seu atendimento">
+      <button type="button" class="wa-chat-close" aria-label="Fechar">&times;</button>
+      <div id="wa-chat-body"></div>
+    </div>
+
     <!-- ============ SELO KUPIM DIGITAL ============ -->
     <div id="kupim-badge-wrap">
       <a
@@ -473,6 +513,13 @@
               /* Esconde a barra de rolagem mas permite o scroll no mobile */
               .k-btn-container::-webkit-scrollbar { display: none; }
               .k-btn-container { -ms-overflow-style: none; scrollbar-width: none; }
+              /* Em telas bem estreitas os 4 botões ficam apertados lado a lado;
+                 empilhar verticalmente é mais confortável ao toque. */
+              @media (max-width: 420px) {
+                .k-btn-container { flex-wrap: wrap; overflow-x: visible; }
+                .k-modal-btn { flex: 1 1 100%; flex-direction: row; padding: 14px 16px; }
+                .k-modal-btn svg { margin-bottom: 0; margin-right: 10px; }
+              }
             </style>
             <div style="background:rgba(255, 255, 255, 0.25);backdrop-filter:blur(32px) saturate(180%);-webkit-backdrop-filter:blur(32px) saturate(180%);border:1px solid rgba(255, 255, 255, 0.4);width:min(640px,96vw);border-radius:24px;padding:36px;box-shadow:0 30px 60px rgba(0,0,0,0.4);position:relative;text-align:center;">
               <button onclick="closeContactKupimModal()" style="position:absolute;top:20px;right:20px;background:rgba(0,51,160,0.08);border:none;border-radius:50%;font-size:24px;cursor:pointer;color:var(--color-blue);line-height:1;padding:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,51,160,0.15)'" onmouseout="this.style.background='rgba(0,51,160,0.08)'">&times;</button>
@@ -510,19 +557,550 @@
           document.body.appendChild(ov);
         }
         ov.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        document.addEventListener('keydown', handleKupimModalEscape);
       }
       function closeContactKupimModal() {
         document.getElementById('kupim-badge-wrap').classList.remove('modal-open');
         const ov = document.getElementById('kupimContactModal');
         if (ov) ov.style.display = 'none';
+        document.body.style.overflow = '';
+        document.removeEventListener('keydown', handleKupimModalEscape);
+      }
+      function handleKupimModalEscape(e) {
+        if (e.key === 'Escape') closeContactKupimModal();
       }
     </script>
     <script src="intro.js?v=2"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <script>
+      // Botão flutuante do WhatsApp: só aparece depois que a intro termina
+      // (nunca durante a animação de abertura), "saindo" da perna do
+      // boneco como se fosse tirado do bolso — revelado de cima para
+      // baixo — e então voando em ziguezague até a posição final de
+      // descanso. Depois disso entra num laço contínuo de flutuar (em
+      // forma de onda/senoide) + "vibrar" (curta ou longa, aleatório) +
+      // balão de texto (frases aleatórias em tempos aleatórios).
+      (function(){
+        const btn = document.getElementById('whatsapp-float-btn');
+        if(!btn) return;
+        const bubble = document.getElementById('whatsapp-bubble');
+        const introEl = document.getElementById('intro');
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function finalRestStyles(){
+          // Lê a posição de descanso definida no CSS (left/top/margin-top),
+          // pra não precisar duplicar esses números aqui.
+          const cs = window.getComputedStyle(btn);
+          return {
+            left: parseFloat(cs.left),
+            top: parseFloat(cs.top) + parseFloat(cs.marginTop)
+          };
+        }
+
+        // Flutuação contínua em forma de onda: um ciclo completo (sobe,
+        // desce, volta) dura 8 segundos. Amplitude vertical maior +
+        // horizontal menor, com a horizontal defasada em 1/4 do ciclo
+        // (como um seno x cosseno), pra desenhar uma ondulação suave em
+        // vez de um vaivém reto na diagonal.
+        function startFloating(){
+          if(!window.gsap || reduceMotion) return;
+          gsap.to(btn, { y: -34, duration: 4, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+          gsap.to(btn, { x: 14, duration: 4, ease: 'sine.inOut', yoyo: true, repeat: -1, delay: 2 });
+        }
+
+        // Vibração: acontece por cima da flutuação (mexe só na rotação,
+        // nunca no "y"/"x"), alternando aleatoriamente entre curta e
+        // longa, com pausas também aleatórias entre uma e outra.
+        function vibrateLoop(){
+          if(!window.gsap || reduceMotion) return;
+          const isShort = Math.random() < 0.5;
+          const shakes = isShort ? 2 : 5;
+          const shakeDur = isShort ? 0.09 : 0.11;
+          const tl = gsap.timeline({
+            onComplete: function(){
+              const gap = 1.4 + Math.random() * 2.8;
+              gsap.delayedCall(gap, vibrateLoop);
+            }
+          });
+          tl.to(btn, { rotate: 9, duration: shakeDur, ease: 'sine.inOut', repeat: shakes, yoyo: true })
+            .to(btn, { rotate: 0, duration: 0.15 });
+        }
+
+        // Balão de texto: mostra uma frase por vez, em ordem aleatória
+        // (sem repetir até passar por todas), aparecendo e sumindo em
+        // tempos aleatórios pra sempre.
+        const bubblePhrases = [
+          'Tire suas dúvidas aqui!',
+          'Vamos conversar?',
+          'Precisa de ajuda com as notas?',
+          'Seu filho travou nos estudos?',
+          'Agende uma conversa rápida',
+          'Fale com a Profª Rubia',
+          'Atendimento pelo WhatsApp',
+          'Chama no zap! 💬',
+          'Oi! 👋',
+          'Dúvidas?',
+          'Manda um oi! 😊',
+          'Adiante o seu atendimento por aqui!'
+        ];
+        let bubbleQueue = [];
+        function nextPhrase(){
+          if(bubbleQueue.length === 0){
+            bubbleQueue = bubblePhrases.slice();
+            // Embaralha (Fisher–Yates) pra não repetir a mesma ordem a cada volta.
+            for(let i = bubbleQueue.length - 1; i > 0; i--){
+              const j = Math.floor(Math.random() * (i + 1));
+              const tmp = bubbleQueue[i]; bubbleQueue[i] = bubbleQueue[j]; bubbleQueue[j] = tmp;
+            }
+          }
+          return bubbleQueue.pop();
+        }
+        function bubbleLoop(){
+          if(!bubble) return;
+          // Enquanto os balões de atendimento (ícone do WhatsApp +
+          // perguntas rápidas) estiverem ativos, o balão de frases
+          // aleatórias fica em espera — só volta a aparecer depois
+          // que o usuário fechar aqueles balões.
+          if(window.__waAssistOpen){
+            setTimeout(bubbleLoop, 500);
+            return;
+          }
+          const gapBefore = 3000 + Math.random() * 6000;
+          setTimeout(function(){
+            if(window.__waAssistOpen){ bubbleLoop(); return; }
+            bubble.textContent = nextPhrase();
+            bubble.classList.add('wa-bubble-show');
+            const showFor = 3200 + Math.random() * 1800;
+            setTimeout(function(){
+              bubble.classList.remove('wa-bubble-show');
+              bubbleLoop();
+            }, showFor);
+          }, gapBefore);
+        }
+
+        function startIdle(){
+          startFloating();
+          vibrateLoop();
+          bubbleLoop();
+        }
+
+        function revealFromMascotPocket(){
+          btn.classList.add('wa-visible');
+          const rest = finalRestStyles();
+          // Usa a silhueta inteira do boneco (braços, tronco, pernas,
+          // cabeça) e mira na região inferior dela, que é onde ficam as
+          // pernas nessa pose sentada — mais confiável do que tentar
+          // pegar só o grupo da perna, que sozinho pode não ter uma
+          // caixa delimitadora útil.
+          const character = document.getElementById('rest-character');
+          const charRect = character ? character.getBoundingClientRect() : null;
+
+          if(!window.gsap || reduceMotion || !charRect || !charRect.width){
+            // Sem GSAP/animação disponível (ou reduced-motion): só mostra
+            // direto na posição final, sem efeito nenhum.
+            btn.style.left = rest.left + 'px';
+            btn.style.top = rest.top + 'px';
+            if(!reduceMotion) startIdle();
+            return;
+          }
+
+          // Ponto de partida: perto da base da cadeira/perna do
+          // personagem sentado (a região marcada pelo "X" de referência),
+          // já minúsculo (10% do tamanho final).
+          const startX = charRect.left + charRect.width * 0.82;
+          const startY = charRect.top + charRect.height * 0.60;
+
+          gsap.set(btn, {
+            left: startX, top: startY, xPercent: -50, yPercent: -50,
+            scale: 0.1, opacity: 1, rotate: 0, clipPath: 'none'
+          });
+
+          // Trajeto único do X até a posição final: o celular já sai
+          // flutuando (ondulando de leve, perpendicular à linha reta
+          // entre início e fim) e crescendo continuamente de 10% até
+          // 100%, tudo ao mesmo tempo — sem pausas nem etapas separadas.
+          const dx = rest.left - startX;
+          const dy = rest.top - startY;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          // Vetor perpendicular ao trajeto, para desenhar a ondulação.
+          const perpX = -dy / dist;
+          const perpY = dx / dist;
+          const waveAmplitude = Math.min(70, dist * 0.14);
+          const waveCycles = 2.4;
+          const duration = 6;
+
+          const proxy = { t: 0 };
+          const travelTween = gsap.to(proxy, {
+            t: 1,
+            duration: duration,
+            ease: 'sine.inOut',
+            onUpdate: function () {
+              const t = proxy.t;
+              // A amplitude da onda decresce suavemente perto do fim,
+              // pra pousar exatamente na posição final sem solavanco.
+              const wave = Math.sin(t * Math.PI * waveCycles) * waveAmplitude * (1 - t);
+              const x = startX + dx * t + perpX * wave;
+              const y = startY + dy * t + perpY * wave;
+              const scale = 0.1 + 0.9 * t;
+              // O ponto de ancoragem (centro → canto superior esquerdo)
+              // migra suavemente ao longo do trajeto, pra não haver
+              // nenhum "salto" no instante em que a animação termina.
+              const anchor = -50 * (1 - t);
+              gsap.set(btn, { left: x, top: y, xPercent: anchor, yPercent: anchor, scale: scale });
+            },
+            onComplete: function () {
+              gsap.set(btn, { left: rest.left, top: rest.top, xPercent: 0, yPercent: 0, scale: 1 });
+              startIdle();
+            }
+          });
+        }
+
+        if(!introEl || introEl.classList.contains('skip-intro')){
+          revealFromMascotPocket();
+          return;
+        }
+        function check(){
+          if(document.body.style.overflow !== 'hidden'){ revealFromMascotPocket(); return; }
+          requestAnimationFrame(check);
+        }
+        requestAnimationFrame(check);
+      })();
+
+      // Balão de perguntas rápidas: ao clicar no celular flutuante, em
+      // vez de ir direto pro WhatsApp, abre um balão (mesmo visual do
+      // balão de frases) que já mostra a primeira pergunta — sem
+      // perguntar antes "quer responder?" — enquanto deixa sempre à
+      // mão o link para falar direto no WhatsApp. As respostas viram
+      // um resumo que é enviado junto na mensagem final.
+      (function(){
+        const btn = document.getElementById('whatsapp-float-btn');
+        const iconBubble = document.getElementById('wa-icon-bubble');
+        const popup = document.getElementById('wa-chat-popup');
+        const body = document.getElementById('wa-chat-body');
+        const closeBtn = popup ? popup.querySelector('.wa-chat-close') : null;
+        const phraseBubble = document.getElementById('whatsapp-bubble');
+        if(!btn || !iconBubble || !popup || !body) return;
+
+        const WA_PHONE = '558199824123';
+        function directWaUrl(text){
+          return 'https://api.whatsapp.com/send/?phone=' + WA_PHONE +
+            '&text=' + encodeURIComponent(text) +
+            '&type=phone_number&app_absent=0';
+        }
+        const DEFAULT_TEXT = 'Olá! 👋 Gostaria de saber mais sobre as aulas da Sala de Estudo e como funciona o acompanhamento. Podem me passar mais informações?';
+        iconBubble.href = directWaUrl(DEFAULT_TEXT);
+
+        const steps = [
+          { key: 'materia', label: 'Matéria com mais dificuldade', msg: 'Oi! 👋 Rapidinho: em qual matéria seu filho(a) tem mais dificuldade?', options: [
+            'Português', 'Redação', 'Literatura', 'Matemática', 'Ciências', 'Biologia', 'Física', 'Química',
+            'História', 'Geografia', 'Filosofia', 'Sociologia', 'Inglês', 'Espanhol', 'Outra'
+          ] },
+          { key: 'serie', label: 'Série', msg: 'Show! E em que série ele(a) está?', groups: [
+            { title: 'Ensino Médio', options: [
+              { label: '3º ano', value: '3º ano do Ensino Médio' },
+              { label: '2º ano', value: '2º ano do Ensino Médio' },
+              { label: '1º ano', value: '1º ano do Ensino Médio' }
+            ] },
+            { title: 'Ensino Fundamental', options: [
+              { label: '9º ano', value: '9º ano do Ensino Fundamental' },
+              { label: '8º ano', value: '8º ano do Ensino Fundamental' },
+              { label: '7º ano', value: '7º ano do Ensino Fundamental' },
+              { label: '6º ano', value: '6º ano do Ensino Fundamental' },
+              { label: '5º ano', value: '5º ano do Ensino Fundamental' },
+              { label: '4º ano', value: '4º ano do Ensino Fundamental' },
+              { label: '3º ano', value: '3º ano do Ensino Fundamental' },
+              { label: '2º ano', value: '2º ano do Ensino Fundamental' },
+              { label: '1º ano', value: '1º ano do Ensino Fundamental' }
+            ] },
+            { title: 'Outro', options: [
+              { label: 'Outro', value: 'Outro' }
+            ] }
+          ] },
+          { key: 'turno', label: 'Turno', msg: 'Perfeito. Estuda em qual turno?', options: ['Manhã', 'Tarde', 'Noite'] },
+          { key: 'colegio', label: 'Colégio', msg: 'Última coisa: qual o nome do colégio?', options: [
+            'Damas', 'Marista/São Luis', 'Agnes/Mackenzie', 'Equipe', 'Núcleo', 'Cognitivo', 'CBV', 'GGE', 'Motivo', 'Outro'
+          ] }
+        ];
+
+        let stepIndex = 0;
+        const answers = {};
+
+        function summaryText(){
+          let lines = ['Olá! 👋 Gostaria de saber mais sobre as aulas da Sala de Estudo.', '', 'Informações rápidas do aluno:'];
+          steps.forEach(function(s){
+            if(answers[s.key]) lines.push('• ' + s.label + ': ' + answers[s.key]);
+          });
+          lines.push('', 'Podem me passar mais informações?');
+          return lines.join('\n');
+        }
+
+        function render(){
+          if(stepIndex >= steps.length){
+            renderFinal();
+            return;
+          }
+          const step = steps[stepIndex];
+          let html = '<p class="wa-chat-eyebrow">Adiante seu atendimento</p>';
+          html += '<p class="wa-chat-msg">' + step.msg + '</p>';
+
+          function chipHtml(opt){
+            const label = (typeof opt === 'string') ? opt : opt.label;
+            const value = (typeof opt === 'string') ? opt : opt.value;
+            return '<button type="button" class="wa-chip" data-value="' + String(value).replace(/"/g,'&quot;') + '">' + label + '</button>';
+          }
+
+          if(step.groups){
+            html += step.groups.map(function(group){
+              return '<p class="wa-chip-group-title">' + group.title + '</p>' +
+                '<div class="wa-chip-row">' + group.options.map(chipHtml).join('') + '</div>';
+            }).join('');
+          } else {
+            html += '<div class="wa-chip-row">' + step.options.map(chipHtml).join('') + '</div>';
+          }
+          body.innerHTML = html;
+
+          body.querySelectorAll('.wa-chip').forEach(function(chip){
+            chip.addEventListener('click', function(){
+              answers[step.key] = chip.getAttribute('data-value');
+              stepIndex++;
+              render();
+            });
+          });
+        }
+
+        function renderFinal(){
+          const href = directWaUrl(summaryText());
+          body.innerHTML =
+            '<p class="wa-chat-eyebrow">Tudo certo!</p>' +
+            '<p class="wa-chat-msg">Perfeito, já anotei tudo. Toque abaixo pra continuar no WhatsApp 👇</p>' +
+            '<a class="wa-chat-cta" id="wa-chat-cta" target="_blank" rel="noopener" href="' + href + '">Continuar no WhatsApp</a>';
+          const cta = document.getElementById('wa-chat-cta');
+          if(cta) cta.addEventListener('click', function(){ closeAssist(); });
+        }
+
+        // Balão 1 (ícone) fica acima do botão, igual à posição do balão
+        // de frases. Balão 2 (perguntas) fica à direita — ou à esquerda,
+        // se não houver espaço na tela.
+        function positionBubbles(){
+          const rect = btn.getBoundingClientRect();
+
+          const iconWidth = iconBubble.offsetWidth || 62;
+          let iconLeft = rect.left + rect.width / 2 - iconWidth / 2;
+          iconLeft = Math.max(10, Math.min(iconLeft, window.innerWidth - iconWidth - 10));
+          iconBubble.style.left = iconLeft + 'px';
+          iconBubble.style.bottom = Math.max(10, window.innerHeight - rect.top + 14) + 'px';
+
+          const popupWidth = popup.offsetWidth || 300;
+          const popupHeight = popup.offsetHeight || 220;
+          let flip = false;
+          let popupLeft = rect.right + 16;
+          if(popupLeft + popupWidth > window.innerWidth - 10){
+            flip = true;
+            popupLeft = rect.left - popupWidth - 16;
+          }
+          popupLeft = Math.max(10, Math.min(popupLeft, window.innerWidth - popupWidth - 10));
+          let popupTop = rect.top + rect.height / 2 - popupHeight / 2;
+          popupTop = Math.max(10, Math.min(popupTop, window.innerHeight - popupHeight - 10));
+          popup.style.left = popupLeft + 'px';
+          popup.style.top = popupTop + 'px';
+          popup.classList.toggle('wa-chat-flip', flip);
+        }
+
+        function assistOpen(){
+          return iconBubble.classList.contains('wa-icon-open') || popup.classList.contains('wa-chat-open');
+        }
+
+        function openAssist(){
+          stepIndex = 0;
+          for(const k in answers) delete answers[k];
+          render();
+          positionBubbles();
+          iconBubble.classList.add('wa-icon-open');
+          iconBubble.setAttribute('aria-hidden', 'false');
+          iconBubble.removeAttribute('tabindex');
+          popup.classList.add('wa-chat-open');
+          popup.setAttribute('aria-hidden', 'false');
+          // Enquanto os balões de atendimento estão ativos, o balão de
+          // frases aleatórias não deve aparecer.
+          window.__waAssistOpen = true;
+          if(phraseBubble) phraseBubble.classList.remove('wa-bubble-show');
+          document.addEventListener('click', outsideClick, true);
+          window.addEventListener('resize', positionBubbles);
+        }
+
+        function closeAssist(){
+          iconBubble.classList.remove('wa-icon-open');
+          iconBubble.setAttribute('aria-hidden', 'true');
+          iconBubble.setAttribute('tabindex', '-1');
+          popup.classList.remove('wa-chat-open');
+          popup.setAttribute('aria-hidden', 'true');
+          window.__waAssistOpen = false;
+          document.removeEventListener('click', outsideClick, true);
+          window.removeEventListener('resize', positionBubbles);
+        }
+
+        function outsideClick(e){
+          if(!popup.contains(e.target) && !iconBubble.contains(e.target) && e.target !== btn && !btn.contains(e.target)){
+            closeAssist();
+          }
+        }
+
+        btn.addEventListener('click', function(e){
+          e.preventDefault();
+          if(assistOpen()){
+            closeAssist();
+          } else {
+            openAssist();
+          }
+        });
+        iconBubble.addEventListener('click', function(){ closeAssist(); });
+        closeBtn.addEventListener('click', closeAssist);
+        document.addEventListener('keydown', function(e){
+          if(e.key === 'Escape' && assistOpen()) closeAssist();
+        });
+      })();
+
+      // "Agendar Diagnóstico" / "Conhecer a Sala de Estudo" pulam pra
+      // âncora #contato (o próprio <footer>). Como o conteúdo do rodapé
+      // às vezes é mais baixo que a tela, o pulo padrão do navegador
+      // podia "estourar" o fim da página. Em vez de mudar o layout do
+      // rodapé (o que bagunçava a sobreposição do card de FAQ), a
+      // correção fica só no scroll: se o rodapé é mais alto que a tela,
+      // alinha o topo dele (comportamento normal); se é mais baixo,
+      // alinha o fim dele com o fim da tela — a faixa azul nunca é
+      // ultrapassada, e nada do que vem depois do rodapé aparece.
+      (function(){
+        document.querySelectorAll('a[href="#contato"]').forEach(function(link){
+          link.addEventListener('click', function(e){
+            const footer = document.getElementById('contato');
+            if(!footer) return;
+            e.preventDefault();
+            const footerTop = footer.getBoundingClientRect().top + window.scrollY;
+            const footerHeight = footer.offsetHeight;
+            const vh = window.innerHeight;
+            const target = footerHeight >= vh ? footerTop : (footerTop + footerHeight - vh);
+            window.scrollTo({ top: Math.max(target, 0), behavior: 'smooth' });
+          });
+        });
+      })();
+    </script>
     <script src="mascote-pose-data.js?v=10"></script>
-    <script src="hangman-animation.js?v=28"></script>
-    <script src="hangman-gameplay.js?v=8"></script>
+    <script src="hangman-animation.js?v=31"></script>
+    <script src="hangman-gameplay.js?v=12"></script>
     <script src="game-jogodavelha.js?v=2"></script>
-    <script src="game-trigger.js?v=2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="game-analytics.js?v=1"></script>
+    <script src="game-trigger.js?v=3"></script>
+    <script>
+    // ---- Botão ADMIN: se já existir TOTP verificado, revela o campo de
+    // código ali mesmo (sem abrir a tela de login em admin.html). Se não
+    // houver autenticador cadastrado ainda, cai no comportamento normal
+    // (vai para admin.html, onde o primeiro cadastro acontece). ----
+    (function(){
+        const gate = document.getElementById('adminGate');
+        const link = document.getElementById('adminLink');
+        const input = document.getElementById('adminTotpInput');
+        const submitBtn = document.getElementById('adminTotpSubmit');
+        if(!gate || !link || !input || !submitBtn) return;
+
+        const SUPABASE_URL = 'https://fesejrbindspzafiyssm.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_mGEU6ouQVdIt1G97ENAq_w_tX8uknCK';
+        const SHARED_EMAIL = 'kupimdigital@gmail.com';
+        const SHARED_PASSWORD = 'Supabase91!';
+
+        let sbClient = null;
+        let factorsCache = null;
+        let checking = false;
+
+        function getClient(){
+            if(!sbClient && window.supabase){ sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
+            return sbClient;
+        }
+
+        async function ensureSharedSession(client){
+            const { data } = await client.auth.getSession();
+            if(!data || !data.session){
+                const { error } = await client.auth.signInWithPassword({ email: SHARED_EMAIL, password: SHARED_PASSWORD });
+                if(error) throw error;
+            }
+        }
+
+        async function getVerifiedFactors(client){
+            const { data, error } = await client.auth.mfa.listFactors();
+            if(error) return [];
+            return (data && data.totp || []).filter(function(f){ return f.status === 'verified'; });
+        }
+
+        link.addEventListener('click', function(e){
+            if(gate.classList.contains('totp-open')){ e.preventDefault(); return; }
+            if(checking){ e.preventDefault(); return; }
+            const client = getClient();
+            if(!client) return; // supabase não carregou: mantém o link normal
+            e.preventDefault();
+            checking = true;
+            (async function(){
+                try{
+                    await ensureSharedSession(client);
+                    const factors = await getVerifiedFactors(client);
+                    checking = false;
+                    if(!factors.length){
+                        window.location.href = 'admin.html';
+                        return;
+                    }
+                    factorsCache = factors;
+                    gate.classList.add('totp-open');
+                    setTimeout(function(){ input.focus(); }, 350);
+                }catch(err){
+                    checking = false;
+                    window.location.href = 'admin.html';
+                }
+            })();
+        });
+
+        input.addEventListener('input', function(){
+            input.value = input.value.replace(/\D/g, '').slice(0, 6);
+        });
+        input.addEventListener('keydown', function(e){
+            if(e.key === 'Enter'){ e.preventDefault(); trySubmit(); }
+        });
+        submitBtn.addEventListener('click', trySubmit);
+
+        async function trySubmit(){
+            const code = input.value.trim();
+            if(!/^\d{6}$/.test(code) || !factorsCache) { input.focus(); return; }
+            const client = getClient();
+            submitBtn.disabled = true;
+
+            let matchedName = null;
+            for(let i = 0; i < factorsCache.length; i++){
+                const f = factorsCache[i];
+                try{
+                    const { data: chData, error: chErr } = await client.auth.mfa.challenge({ factorId: f.id });
+                    if(chErr) continue;
+                    const { error: vErr } = await client.auth.mfa.verify({ factorId: f.id, challengeId: chData.id, code: code });
+                    if(vErr) continue;
+                    matchedName = f.friendly_name || f.friendlyName || 'desconhecido';
+                    break;
+                }catch(e){ /* tenta o próximo fator */ }
+            }
+
+            submitBtn.disabled = false;
+            if(!matchedName){
+                input.value = '';
+                input.focus();
+                input.classList.add('admin-totp-input--err');
+                setTimeout(function(){ input.classList.remove('admin-totp-input--err'); }, 320);
+                return;
+            }
+            try{
+                localStorage.setItem('se_admin_login_at', String(Date.now()));
+                localStorage.setItem('se_admin_login_nome', matchedName);
+                sessionStorage.setItem('se_admin_skip_gate', '1');
+            }catch(e){}
+            window.location.href = 'admin.html';
+        }
+    })();
+    </script>
 </body>
 </html>

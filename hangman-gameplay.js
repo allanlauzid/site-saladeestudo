@@ -206,12 +206,32 @@
       '.hangman-help-eliminate{top:29px;background:' + BLUE + '}',
       '.hangman-help-menu{top:73px;background:#7c3aed}',
       '.hangman-help-modal-overlay{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;background:rgba(10,20,40,.55);padding:16px}',
-      '.hangman-help-modal{width:min(92vw,420px);max-height:88vh;overflow:auto;background:#fff;border:3px solid ' + BLUE + ';border-radius:20px;padding:20px;box-shadow:0 30px 80px rgba(0,20,60,.35)}',
-      '.hangman-help-modal h3{margin:0 0 4px;color:' + BLUE + ';font-size:18px;text-align:center}',
-      '.hangman-help-modal p{margin:0 0 14px;color:#667085;font-size:13px;text-align:center}',
-      '.hangman-help-option{display:block;width:100%;text-align:left;margin-bottom:8px;padding:10px 14px;border-radius:12px;border:2px solid ' + BLUE + ';background:#f4f8ff;color:' + BLUE + ';font-weight:700;cursor:pointer;font-size:14px}',
-      '.hangman-help-option:disabled{opacity:.4;cursor:default;border-color:#ccc;color:#888;background:#f2f2f2}',
-      '.hangman-help-modal-close{display:block;margin:10px auto 0;background:none;border:0;color:#888;cursor:pointer;text-decoration:underline;font-size:13px}',
+      '.hangman-help-modal{width:min(94vw,760px);max-height:90vh;overflow:auto;background:#fff;border:3px solid ' + BLUE + ';border-radius:16px;padding:22px;box-shadow:0 30px 80px rgba(0,20,60,.35)}',
+      '.hangman-help-modal h3{margin:0 0 5px;color:' + BLUE + ';font-size:22px;text-align:center;text-wrap:balance}',
+      '.hangman-help-modal>p{margin:0 0 18px;color:#44546a;font-size:14px;text-align:center}',
+      '.hangman-help-options-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}',
+      '.hangman-help-option-wrap{aspect-ratio:1/1;min-width:0;display:grid;grid-template-rows:1fr 42px;border:3px solid ' + BLUE + ';border-radius:16px;overflow:hidden;background:#f4f8ff;box-shadow:0 4px 0 rgba(0,85,212,.18)}',
+      '.hangman-help-option-wrap.is-disabled{border-color:#aeb9c8;background:#f1f3f6;box-shadow:0 4px 0 rgba(70,82,100,.12)}',
+      '.hangman-help-option{display:flex;min-width:0;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:0;background:transparent;color:' + BLUE + ';padding:16px 12px 12px;font:800 15px/1.25 Montserrat,Arial,sans-serif;text-align:center;cursor:pointer;transition:background .18s ease,transform .18s ease}',
+      '.hangman-help-option:not(:disabled):hover{background:#e4efff}',
+      '.hangman-help-option:not(:disabled):active{transform:scale(.97)}',
+      '.hangman-help-option:focus-visible,.hangman-help-option-info:focus-visible,.hangman-help-explanation-close:focus-visible{outline:3px solid ' + GOLD + ';outline-offset:-3px}',
+      '.hangman-help-option:disabled{color:#788494;cursor:not-allowed}',
+      '.hangman-help-option-icon{width:64px;height:64px;line-height:1;display:grid;place-items:center;color:' + BLUE + ';filter:drop-shadow(0 3px 0 rgba(0,85,212,.13))}',
+      '.hangman-help-option-icon svg,.hangman-help-explanation-icon svg{display:block;width:100%;height:100%;overflow:visible}',
+      '.hangman-help-option-wrap.is-disabled .hangman-help-option-icon{filter:grayscale(1) drop-shadow(0 3px 0 rgba(70,82,100,.1));opacity:.72}',
+      '.hangman-help-option-label{display:block;max-width:16ch}',
+      '.hangman-help-option-info{width:100%;border:0;border-top:2px solid ' + BLUE + ';background:' + BLUE + ';color:#fff;font:800 13px/1 Montserrat,Arial,sans-serif;cursor:pointer;transition:background .18s ease}',
+      '.hangman-help-option-info:hover{background:#0047b3}',
+      '.hangman-help-option-wrap.is-disabled .hangman-help-option-info{border-top-color:#788494;background:#788494}',
+      '.hangman-help-option-wrap.is-disabled .hangman-help-option-info:hover{background:#626e7d}',
+      '.hangman-help-modal-close{display:block;margin:18px auto 0;padding:9px 14px;background:none;border:0;color:#596579;cursor:pointer;text-decoration:underline;font:700 13px Montserrat,Arial,sans-serif}',
+      '.hangman-help-explanation-overlay{position:fixed;inset:0;z-index:2147483100;display:grid;place-items:center;background:rgba(7,16,31,.66);padding:18px}',
+      '.hangman-help-explanation{width:min(90vw,430px);background:#fff;border:3px solid ' + BLUE + ';border-radius:16px;padding:22px;text-align:center;box-shadow:0 24px 64px rgba(0,20,60,.38)}',
+      '.hangman-help-explanation-icon{display:grid;place-items:center;width:76px;height:76px;line-height:1;margin:0 auto 10px;color:' + BLUE + ';filter:drop-shadow(0 3px 0 rgba(0,85,212,.13))}',
+      '.hangman-help-explanation h4{margin:0 0 10px;color:' + BLUE + ';font-size:20px;text-wrap:balance}',
+      '.hangman-help-explanation p{margin:0;color:#344054;font-size:15px;line-height:1.55;text-align:left}',
+      '.hangman-help-explanation-close{margin-top:18px;min-width:120px;border:0;border-radius:10px;background:' + BLUE + ';color:#fff;padding:11px 18px;font:800 14px Montserrat,Arial,sans-serif;cursor:pointer}',
       '.hangman-speech-bubble{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:14px;z-index:2147482800;background:#fff;border:3px solid ' + BLUE + ';border-radius:16px;padding:8px 16px;font-weight:800;color:' + BLUE + ';font-size:16px;white-space:nowrap;box-shadow:0 8px 20px rgba(0,30,90,.25)}',
       '.hangman-speech-bubble:after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border-width:10px 8px 0;border-style:solid;border-color:' + BLUE + ' transparent transparent}',
       '.hangman-game-key.is-eliminated{visibility:hidden;pointer-events:none}',
@@ -228,7 +248,10 @@
       '.hangman-key-mark path{fill:none;stroke-width:3.1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;opacity:0}',
       '.hangman-mark-check{stroke:' + CORRECT_COLOR + '}',
       '.hangman-mark-cross{stroke:' + WRONG_COLOR + '}',
-      '.hangman-game-key.is-correct .hangman-mark-check,.hangman-game-key.is-wrong .hangman-mark-cross{opacity:1;stroke-dashoffset:0}',
+      /* A classe apenas revela a marca; o desenho progressivo do X fica sob
+         controle exclusivo de animateMarks/GSAP. Forçar dashoffset=0 aqui
+         fazia o X aparecer instantaneamente. */
+      '.hangman-game-key.is-correct .hangman-mark-check,.hangman-game-key.is-wrong .hangman-mark-cross{opacity:1}',
       '.hangman-game-key.is-used{background:#eef2f7;color:#667085;cursor:default}',
       '.hangman-game-status{min-height:24px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.9);color:' + BLUE + ';font-size:23px;font-weight:800;text-align:center;transition:opacity .22s ease}',
       '.hangman-keyboard-overlay{position:absolute;inset:0;display:grid;place-items:center;padding:20px;background:rgba(244,247,252,.64);backdrop-filter:blur(11px);-webkit-backdrop-filter:blur(11px);opacity:0;visibility:hidden;pointer-events:none}',
@@ -254,7 +277,7 @@
       '#hangman-page-camera{transition:filter .28s ease}',
       '.hangman-round-eraser{position:absolute;z-index:2147482900;pointer-events:none;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.9) 18%,#fff 42%,#fff 58%,rgba(255,255,255,.9) 82%,transparent 100%);box-shadow:0 0 34px rgba(255,255,255,.9)}',
       '.hangman-missing-letter{fill:' + WRONG_COLOR + ';opacity:.7;font-family:Montserrat,Arial,sans-serif;font-size:13px;font-weight:900;text-anchor:middle}',
-      '@media(max-width:700px){.hangman-game-hud{bottom:calc(clamp(74px,12vh,130px) + 100px);gap:8px}.hangman-game-hint-row{gap:7px;max-width:96vw}.hangman-game-hint{max-width:78vw;font-size:21px;padding:8px 12px}.hangman-game-hint-label{font-size:15px}.hangman-game-status{font-size:20px;min-height:22px;padding:5px 10px;max-width:94vw}.hangman-keyboard-small .hangman-game-key{width:15px;height:13px;font-size:7px}.hangman-keyboard-panel{padding:15px 8px 17px;border-radius:18px}.hangman-keyboard-title{margin-bottom:10px}}',
+      '@media(max-width:700px){.hangman-game-hud{bottom:calc(clamp(74px,12vh,130px) + 100px);gap:8px}.hangman-game-hint-row{gap:7px;max-width:96vw}.hangman-game-hint{max-width:78vw;font-size:21px;padding:8px 12px}.hangman-game-hint-label{font-size:15px}.hangman-game-status{font-size:20px;min-height:22px;padding:5px 10px;max-width:94vw}.hangman-keyboard-small .hangman-game-key{width:15px;height:13px;font-size:7px}.hangman-keyboard-panel{padding:15px 8px 17px;border-radius:18px}.hangman-keyboard-title{margin-bottom:10px}.hangman-help-modal{width:min(94vw,520px);padding:16px}.hangman-help-options-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.hangman-help-option-wrap{grid-template-rows:1fr 38px;border-radius:14px}.hangman-help-option{padding:12px 8px 9px;font-size:13px}.hangman-help-option-icon{width:52px;height:52px}}',
       '@media(prefers-reduced-motion:reduce){#hangman-page-camera,.hangman-keyboard-overlay,.hangman-keyboard-panel{transition:none!important}}'
     ].join('');
     document.head.appendChild(style);
@@ -267,6 +290,9 @@
     document.body.classList.remove('hangman-help-open');
     if (ui && ui.helpModalOverlay && ui.helpModalOverlay.parentNode) {
       ui.helpModalOverlay.parentNode.removeChild(ui.helpModalOverlay);
+    }
+    if (ui && ui.helpExplanationOverlay && ui.helpExplanationOverlay.parentNode) {
+      ui.helpExplanationOverlay.parentNode.removeChild(ui.helpExplanationOverlay);
     }
     if (ui && ui.root && ui.root.parentNode) ui.root.parentNode.removeChild(ui.root);
     ui = null;
@@ -338,10 +364,18 @@
 
   function openKeyboard() {
     if (!ui || guessInProgress || ui.gameOver) return;
+    if (ui.root.classList.contains('keyboard-open')) return;
     ui.root.classList.add('keyboard-open');
     document.body.classList.add('hangman-keyboard-open');
     ui.overlay.setAttribute('aria-hidden', 'false');
     if (window.gsap) {
+      window.gsap.killTweensOf(ui.overlay);
+      window.gsap.killTweensOf(ui.panel);
+      window.gsap.fromTo(ui.overlay, { opacity: 0 }, {
+        opacity: 1,
+        duration: reducedMotion() ? 0.08 : 0.26,
+        ease: 'power1.out'
+      });
       window.gsap.fromTo(ui.panel, { scale: 0.35, y: 40, opacity: 0 }, {
         scale: 1, y: 0, opacity: 1,
         duration: reducedMotion() ? 0.08 : 0.38,
@@ -352,11 +386,45 @@
     if (firstAvailable) firstAvailable.focus({ preventScroll: true });
   }
 
-  function closeKeyboard() {
-    if (!ui) return;
-    ui.root.classList.remove('keyboard-open');
-    document.body.classList.remove('hangman-keyboard-open');
-    ui.overlay.setAttribute('aria-hidden', 'true');
+  /* Fechar tinha zero animacao (sumia seco). Agora o painel encolhe/some
+     e o fundo desfoca de volta suavemente, e so DEPOIS disso a classe
+     "keyboard-open" sai (ela e o que aciona o blur da cena via CSS) --
+     senao o blur sumiria de golpe enquanto o painel ainda estivesse
+     desaparecendo. Aceita um callback opcional pra quem precisa saber
+     quando o fechamento visual realmente terminou. */
+  function closeKeyboard(callback) {
+    if (!ui) { if (callback) callback(); return; }
+    if (!ui.root.classList.contains('keyboard-open')) {
+      if (callback) callback();
+      return;
+    }
+    var finish = function () {
+      if (ui) {
+        ui.root.classList.remove('keyboard-open');
+        ui.overlay.setAttribute('aria-hidden', 'true');
+      }
+      document.body.classList.remove('hangman-keyboard-open');
+      if (callback) callback();
+    };
+    if (window.gsap) {
+      window.gsap.killTweensOf(ui.overlay);
+      window.gsap.killTweensOf(ui.panel);
+      var closeTimeline = window.gsap.timeline({ onComplete: finish });
+      closeTimeline.to(ui.panel, {
+        scale: 0.35,
+        y: 40,
+        opacity: 0,
+        duration: reducedMotion() ? 0.08 : 0.24,
+        ease: 'power1.in'
+      }, 0);
+      closeTimeline.to(ui.overlay, {
+        opacity: 0,
+        duration: reducedMotion() ? 0.08 : 0.24,
+        ease: 'power1.in'
+      }, 0);
+    } else {
+      finish();
+    }
   }
 
   /* ---------------------------------------------------------------------
@@ -398,6 +466,26 @@
     }
   }
 
+  function setAlphabetInputLocked(locked) {
+    if (!ui || !ui.root) return;
+    ui.root.classList.toggle('hangman-alphabet-locked', locked);
+    ui.root.querySelectorAll('.hangman-keyboard-large button[data-game-letter]').forEach(function (key) {
+      var letter = key.getAttribute('data-game-letter');
+      if (locked) {
+        if (!key.hasAttribute('data-help-lock-state')) {
+          key.setAttribute('data-help-lock-state', key.disabled ? 'disabled' : 'enabled');
+        }
+        key.disabled = true;
+        key.setAttribute('aria-disabled', 'true');
+      } else {
+        var wasEnabled = key.getAttribute('data-help-lock-state') === 'enabled';
+        key.removeAttribute('data-help-lock-state');
+        if (wasEnabled && !usedLetters.has(letter)) key.disabled = false;
+        if (!key.disabled) key.removeAttribute('aria-disabled');
+      }
+    });
+  }
+
   function revealLetterEverywhere(letter) {
     if (!round || usedLetters.has(letter)) return;
     usedLetters.set(letter, 'correct');
@@ -427,6 +515,7 @@
 
     helpEliminateBusy = true;
     helpEliminateUsed += 1;
+    setAlphabetInputLocked(true);
     updateHelpButtonsState();
 
     var letter = candidates[Math.floor(Math.random() * candidates.length)];
@@ -436,13 +525,31 @@
       if (!ui) { helpEliminateBusy = false; return; }
       usedLetters.set(letter, 'wrong');
       syncLetterState(letter, 'wrong');
+
+      /* Um pulinho na tecla no instante em que ela vai ser marcada, igual
+         ao que acontece quando o proprio jogador aperta uma tecla -- sem
+         isso a marcacao aparecia do nada, seca. */
+      if (window.gsap) {
+        ui.root.querySelectorAll('[data-game-letter="' + letter + '"]').forEach(function (key) {
+          window.gsap.fromTo(key, { scale: 1 }, {
+            scale: 1.18,
+            duration: reducedMotion() ? 0.05 : 0.16,
+            repeat: 1,
+            yoyo: true,
+            ease: 'power2.out'
+          });
+        });
+      }
+
       animateMarks(letter, 'wrong', {
         duration: reducedMotion() ? 0.2 : 2,
         onComplete: function () {
           window.setTimeout(function () {
-            closeKeyboard();
-            helpEliminateBusy = false;
-            updateHelpButtonsState();
+            closeKeyboard(function () {
+              helpEliminateBusy = false;
+              setAlphabetInputLocked(false);
+              updateHelpButtonsState();
+            });
           }, 1000);
         }
       });
@@ -472,11 +579,114 @@
     return { vowels: vowels, consonants: letters.length - vowels };
   }
 
+  function closeHelpExplanation() {
+    if (!ui || !ui.helpExplanationOverlay) return;
+    var overlay = ui.helpExplanationOverlay;
+    ui.helpExplanationOverlay = null;
+    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+  }
+
   function closeHelpModal() {
+    closeHelpExplanation();
     document.body.classList.remove('hangman-help-open');
     if (!ui || !ui.helpModalOverlay) return;
     if (ui.helpModalOverlay.parentNode) ui.helpModalOverlay.parentNode.removeChild(ui.helpModalOverlay);
     ui.helpModalOverlay = null;
+  }
+
+  /* Ícones autorais das seis ajudas. O desenho usa apenas formas SVG simples,
+     preserva as cores do jogo e herda o cinza do cartão quando indisponível. */
+  function getHelpIcon(kind) {
+    var drawings = {
+      reveal: [
+        '<rect x="22" y="12" width="34" height="42" rx="6" fill="#ffd400"/>',
+        '<text x="43" y="42" fill="currentColor" stroke="none" font-family="Montserrat,Arial,sans-serif" font-size="22" font-weight="900" text-anchor="middle">A</text>',
+        '<path d="M10 20 31 14l8 39-22 5Z" fill="#dceaff"/>',
+        '<path d="M31 14 39 53"/>',
+        '<text x="23" y="42" fill="currentColor" stroke="none" font-family="Montserrat,Arial,sans-serif" font-size="20" font-weight="900" text-anchor="middle" transform="rotate(-11 23 42)">?</text>',
+        '<path d="M11 16C13 9 19 5 26 6M22 3l5 3-3 5" stroke="#d1273f" stroke-width="3"/>'
+      ],
+      forgive: [
+        '<g stroke="#d1273f" stroke-width="5"><path d="m5 18 11 11m0-11L5 29"/><path d="m21 18 11 11m0-11L21 29"/><path d="m46 7 11 11m0-11L46 18"/></g>',
+        '<path d="M49 31v-7m-3 3 3-3 3 3M56 32v-7" stroke="currentColor" stroke-width="2.4"/>',
+        '<path d="M58 59H41l-3-10H19c-4 0-7-2-7-5s3-5 7-5h17l-8-7c-3-3-2-6 0-8 2-2 5-1 7 1l14 11c5 4 7 9 8 15Z" fill="#fff" stroke="currentColor" stroke-width="2.8"/>',
+        '<path d="M19 39h23M38 49h10" stroke="currentColor" stroke-width="2"/>',
+        '<rect x="40" y="51" width="18" height="11" rx="3" fill="#ffd400" stroke="currentColor" stroke-width="2.8"/>'
+      ],
+      vowels: [
+        '<circle cx="18" cy="20" r="9" fill="#ffd400"/>',
+        '<circle cx="40" cy="18" r="9" fill="#dceaff"/>',
+        '<circle cx="23" cy="42" r="9" fill="#dceaff"/>',
+        '<circle cx="46" cy="40" r="9" fill="#ffd400"/>',
+        '<circle cx="35" cy="55" r="7" fill="#fff"/>',
+        '<g fill="currentColor" stroke="none" font-family="Montserrat,Arial,sans-serif" font-size="11" font-weight="900" text-anchor="middle"><text x="18" y="24">A</text><text x="40" y="22">E</text><text x="23" y="46">I</text><text x="46" y="44">O</text><text x="35" y="59">U</text></g>'
+      ],
+      consonants: [
+        '<rect x="8" y="15" width="19" height="19" rx="5" fill="#dceaff"/>',
+        '<rect x="36" y="10" width="19" height="19" rx="5" fill="#ffd400"/>',
+        '<rect x="23" y="39" width="19" height="19" rx="5" fill="#dceaff"/>',
+        '<g fill="currentColor" stroke="none" font-family="Montserrat,Arial,sans-serif" font-size="13" font-weight="900" text-anchor="middle"><text x="17.5" y="29">B</text><text x="45.5" y="24">C</text><text x="32.5" y="53">D</text></g>',
+        '<path d="M31 13h4M29 19h4" stroke="#d1273f" stroke-width="2.4"/>'
+      ],
+      first: [
+        '<path d="M8 45h12M25 45h12M42 45h12"/>',
+        '<rect x="7" y="20" width="14" height="19" rx="4" fill="#ffd400"/>',
+        '<text x="14" y="34" fill="currentColor" stroke="none" font-family="Montserrat,Arial,sans-serif" font-size="13" font-weight="900" text-anchor="middle">A</text>',
+        '<path d="M14 6v9M10 11l4 4 4-4" stroke="#d1273f" stroke-width="3"/>'
+      ],
+      half: [
+        '<rect x="7" y="18" width="50" height="34" rx="7" fill="#dceaff"/>',
+        '<g fill="#fff" stroke="currentColor" stroke-width="1.5"><rect x="12" y="24" width="8" height="7" rx="2"/><rect x="23" y="24" width="8" height="7" rx="2"/><rect x="34" y="24" width="8" height="7" rx="2"/><rect x="45" y="24" width="8" height="7" rx="2"/><rect x="12" y="35" width="8" height="7" rx="2"/><rect x="23" y="35" width="8" height="7" rx="2"/><rect x="34" y="35" width="8" height="7" rx="2"/><rect x="45" y="35" width="8" height="7" rx="2"/></g>',
+        '<path d="m12 24 8 7m0-7-8 7m22 4 8 7m0-7-8 7" stroke="#d1273f" stroke-width="2.5"/>',
+        '<circle cx="49" cy="15" r="11" fill="#ffd400"/>',
+        '<text x="49" y="19" fill="currentColor" stroke="none" font-family="Montserrat,Arial,sans-serif" font-size="11" font-weight="900" text-anchor="middle">½</text>'
+      ]
+    };
+    var drawing = drawings[kind] || drawings.reveal;
+    return '<svg viewBox="0 0 64 64" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">' + drawing.join('') + '</svg>';
+  }
+
+  function openHelpExplanation(icon, label, description) {
+    if (!ui) return;
+    closeHelpExplanation();
+
+    var overlay = document.createElement('div');
+    overlay.className = 'hangman-help-explanation-overlay';
+    overlay.addEventListener('click', function (event) {
+      if (event.target === overlay) closeHelpExplanation();
+    });
+
+    var dialog = document.createElement('div');
+    dialog.className = 'hangman-help-explanation';
+    dialog.setAttribute('role', 'dialog');
+    dialog.setAttribute('aria-modal', 'true');
+    dialog.setAttribute('aria-label', 'Explicação da ajuda ' + label);
+
+    var iconEl = document.createElement('span');
+    iconEl.className = 'hangman-help-explanation-icon';
+    iconEl.setAttribute('aria-hidden', 'true');
+    iconEl.innerHTML = getHelpIcon(icon);
+    dialog.appendChild(iconEl);
+
+    var title = document.createElement('h4');
+    title.textContent = label;
+    dialog.appendChild(title);
+
+    var text = document.createElement('p');
+    text.textContent = description;
+    dialog.appendChild(text);
+
+    var close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'hangman-help-explanation-close';
+    close.textContent = 'Entendi';
+    close.addEventListener('click', closeHelpExplanation);
+    dialog.appendChild(close);
+
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+    ui.helpExplanationOverlay = overlay;
+    close.focus({ preventScroll: true });
   }
 
   function markHelpUsedAndClose() {
@@ -503,36 +713,74 @@
 
     var modal = document.createElement('div');
     modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'hangman-help-modal-title');
     modal.className = 'hangman-help-modal';
 
     var title = document.createElement('h3');
+    title.id = 'hangman-help-modal-title';
     title.textContent = 'Escolha uma ajuda';
     modal.appendChild(title);
 
     var subtitle = document.createElement('p');
-    subtitle.textContent = 'Só dá pra usar uma ajuda dessas por palavra.';
+    subtitle.textContent = 'Toque no cartão para usar. “Como funciona” abre a explicação. Só vale uma ajuda por palavra.';
     modal.appendChild(subtitle);
 
-    function addOption(label, disabled, onClick) {
+    var helpGrid = document.createElement('div');
+    helpGrid.className = 'hangman-help-options-grid';
+    modal.appendChild(helpGrid);
+
+    /* O cartão possui dois alvos independentes: a área grande aplica a ajuda
+       imediatamente; o rodapé abre uma explicação sem consumir a ajuda. */
+    function addOption(icon, label, description, disabled, onClick) {
+      var wrap = document.createElement('div');
+      wrap.className = 'hangman-help-option-wrap' + (disabled ? ' is-disabled' : '');
+
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'hangman-help-option';
-      btn.textContent = label;
       btn.disabled = !!disabled;
+      btn.setAttribute('aria-label', 'Usar ajuda: ' + label);
+
+      var iconEl = document.createElement('span');
+      iconEl.className = 'hangman-help-option-icon';
+      iconEl.setAttribute('aria-hidden', 'true');
+      iconEl.innerHTML = getHelpIcon(icon);
+      btn.appendChild(iconEl);
+
+      var labelEl = document.createElement('span');
+      labelEl.className = 'hangman-help-option-label';
+      labelEl.textContent = label;
+      btn.appendChild(labelEl);
+
       btn.addEventListener('click', function (event) {
         event.stopPropagation();
+        if (disabled) return;
         onClick();
         markHelpUsedAndClose();
       });
-      modal.appendChild(btn);
+
+      var infoBtn = document.createElement('button');
+      infoBtn.type = 'button';
+      infoBtn.className = 'hangman-help-option-info';
+      infoBtn.textContent = 'Como funciona';
+      infoBtn.setAttribute('aria-label', 'Explicar ajuda: ' + label);
+      infoBtn.addEventListener('click', function (event) {
+        event.stopPropagation();
+        openHelpExplanation(icon, label, description);
+      });
+
+      wrap.appendChild(btn);
+      wrap.appendChild(infoBtn);
+      helpGrid.appendChild(wrap);
     }
 
-    addOption('Revelar uma letra certa aleatória', hiddenCorrect.length === 0, function () {
+    addOption('reveal', 'Revelar uma letra certa', 'Mostra de graça uma das letras que ainda faltam na palavra, escolhida aleatoriamente.', hiddenCorrect.length === 0, function () {
       var letter = hiddenCorrect[Math.floor(Math.random() * hiddenCorrect.length)];
       if (letter) revealLetterEverywhere(letter);
     });
 
-    addOption('Perdoar um erro', errorCount === 0, function () {
+    addOption('forgive', 'Perdoar um erro', 'Desfaz um dos seus erros, afastando o boneco de ser enforcado.', errorCount === 0, function () {
       if (errorCount > 0) {
         errorCount -= 1;
         if (window.HangmanAnimation && window.HangmanAnimation.celebratePieces) {
@@ -541,22 +789,21 @@
       }
     });
 
-    addOption('Mostrar quantidade de vogais', false, function () {
+    addOption('vowels', 'Quantidade de vogais', 'Mostra quantas vogais (A, E, I, O, U) essa palavra tem.', false, function () {
       var counts = countVowelsConsonants();
       showSpeechBubble('Essa palavra tem ' + counts.vowels + ' vogal' + (counts.vowels === 1 ? '' : 'is') + '!');
     });
 
-    addOption('Mostrar quantidade de consoantes', false, function () {
+    addOption('consonants', 'Quantidade de consoantes', 'Mostra quantas consoantes essa palavra tem.', false, function () {
       var counts = countVowelsConsonants();
       showSpeechBubble('Essa palavra tem ' + counts.consonants + ' consoante' + (counts.consonants === 1 ? '' : 's') + '!');
     });
 
-    addOption('Revelar a primeira letra', firstLetterAlready, function () {
+    addOption('first', 'Revelar a primeira letra', 'Mostra de graça a primeira letra da palavra.', firstLetterAlready, function () {
       if (firstLetter) revealLetterEverywhere(firstLetter);
     });
 
-    var lastChanceLabel = 'Remover 50% das teclas erradas (só na última chance)';
-    addOption(lastChanceLabel, !isLastChance || lastChanceCandidates.length === 0, function () {
+    addOption('half', 'Remover 50% das teclas erradas', 'Some com metade das letras erradas do teclado. Só pode ser usada na última chance (quando só falta um erro pra perder).', !isLastChance || lastChanceCandidates.length === 0, function () {
       var half = Math.ceil(lastChanceCandidates.length / 2);
       var shuffled = lastChanceCandidates.slice().sort(function () { return Math.random() - 0.5; });
       shuffled.slice(0, half).forEach(function (letter) {
@@ -587,6 +834,8 @@
     document.body.appendChild(overlay);
     document.body.classList.add('hangman-help-open');
     ui.helpModalOverlay = overlay;
+    var firstAvailableHelp = modal.querySelector('.hangman-help-option:not(:disabled)');
+    if (firstAvailableHelp) firstAvailableHelp.focus({ preventScroll: true });
   }
 
   function buildUi() {
@@ -938,7 +1187,7 @@
   }
 
   function chooseLetter(letter, sourceKey) {
-    if (!ui || !round || guessInProgress || ui.gameOver || usedLetters.has(letter)) return;
+    if (!ui || !round || guessInProgress || ui.gameOver || helpEliminateBusy || usedLetters.has(letter)) return;
     guessInProgress = true;
     dismissInstruction();
     var sourceCenter = rectCenter(sourceKey.getBoundingClientRect());
@@ -971,6 +1220,18 @@
 
   function handleKeydown(event) {
     if (!ui) return;
+    if (event.key === 'Escape' && ui.helpExplanationOverlay) {
+      closeHelpExplanation();
+      return;
+    }
+    if (event.key === 'Escape' && ui.helpModalOverlay) {
+      closeHelpModal();
+      return;
+    }
+    if (helpEliminateBusy) {
+      if (/^[a-zA-Z]$/.test(String(event.key || ''))) event.preventDefault();
+      return;
+    }
     if (event.key === 'Escape' && ui.root.classList.contains('keyboard-open')) {
       closeKeyboard();
       return;

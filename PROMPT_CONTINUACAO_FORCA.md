@@ -851,3 +851,44 @@ window.startHangmanGame({
 - `index.html` carrega `hangman-animation.js?v=28` e `hangman-gameplay.js?v=8`.
 
 **Pendente após a validação visual:** testar os seis estados intermediários de cada uma das cinco poses. A correção do boneco torto exige extrair, para cada peça, o ponto anatômico de encaixe da montagem do Inkscape e convertê-lo para o pivô local do rig; depois conferir a ordem de entrada dos seis membros e as posições após cada erro. A validação do conjunto completo não substitui essa conferência progressiva.
+
+---
+
+## Checkpoint v33 — ícones personalizados das seis ajudas
+
+- os seis emojis do menu de ajudas foram substituídos por ilustrações SVG autorais embutidas em `hangman-gameplay.js`;
+- cada ação ganhou uma metáfora própria: letra iluminada, borracha apagando erro, fichas de vogais, blocos de consoantes, primeiro espaço revelado e teclado reduzido pela metade;
+- todos os ícones usam a identidade azul e amarela do jogo, reservando o vermelho para erros e alertas;
+- os estados indisponíveis preservam o mesmo desenho em cinza, sem trocar a linguagem visual;
+- o modal “Como funciona” reutiliza e amplia o mesmo SVG da respectiva ajuda;
+- a grade foi validada visualmente em duas colunas no viewport estreito, incluindo a última linha, os cartões desabilitados e o modal de explicação;
+- o navegador não registrou erros e `hangman-gameplay.js` passou em `node --check`;
+- `index.html` agora carrega `hangman-gameplay.js?v=11` para invalidar o cache da versão anterior.
+
+## Checkpoint v34 — leitura mais clara das duas primeiras ajudas
+
+- somente os ícones de “Revelar uma letra certa” e “Perdoar um erro” foram redesenhados após avaliação de Allan;
+- “Revelar uma letra certa” agora mostra uma portinha com `?` sendo aberta e a letra `A` aparecendo por trás;
+- “Perdoar um erro” agora mostra uma sequência de três `X`, com uma mão retirando o último erro e deixando seu lugar vazio;
+- os outros quatro ícones, textos, estados e comportamentos permaneceram intactos;
+- `index.html` agora carrega `hangman-gameplay.js?v=12` para invalidar o cache anterior.
+
+## Checkpoint v35 — mão personalizada em “Perdoar um erro”
+
+- o ícone de “Perdoar um erro” foi refinado conforme a composição aprovada por Allan;
+- agora há três `X` vermelhos grandes, com o terceiro elevado enquanto é retirado;
+- a mão tem preenchimento branco, contorno azul e punho amarelo com contorno azul;
+- foram removidos cursor, círculo tracejado, setas e demais sinais auxiliares;
+- os outros cinco ícones e todo o comportamento do menu permaneceram intactos;
+- o resultado foi validado visualmente no cartão desabilitado e, em cores, no modal “Como funciona”; o navegador não registrou erros;
+- `index.html` agora carrega `hangman-gameplay.js?v=13` para invalidar o cache anterior.
+
+## Checkpoint v36 — mão aberta elevando o erro
+
+- a mão de “Perdoar um erro” passou a ser mostrada de perfil, com a palma aberta para cima;
+- o terceiro `X` vermelho fica acima da palma e ligeiramente elevado em relação aos outros dois;
+- pequenos traços ascendentes reforçam que esse `X` está sendo levantado pela mão;
+- a mão permanece branca com contorno azul, e o punho permanece amarelo com contorno azul;
+- os outros cinco ícones e o comportamento das ajudas não foram alterados;
+- o cartão desabilitado e o modal ampliado em cores foram validados visualmente; o navegador não registrou erros;
+- `index.html` agora carrega `hangman-gameplay.js?v=14` para invalidar o cache anterior.

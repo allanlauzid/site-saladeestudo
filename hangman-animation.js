@@ -101,7 +101,7 @@
      espelhamentos abaixo foram extraídos dos 30 grupos posicionados em
      mascote-montagem-5-poses-forca-feito.svg e convertidos para o sistema de
      coordenadas do mundo SVG do jogo. */
-  var GALLOWS_POSES = [
+  var LEGACY_GALLOWS_POSES = [
     {
       'name': "balanco-em-l",
       'order': [
@@ -449,7 +449,101 @@
       'attachedPiece': "arm-right"
     }
   ];
+
+  /* v29: destinos matriciais extraídos das mesmas seis peças reutilizadas nas
+     cinco montagens do Inkscape. Estes dados substituem os alvos experimentais
+     acima sem depender de pivôs inventados ou coordenadas provisórias. */
+  var GALLOWS_POSES = [
+    {
+      name: 'balanco-em-l',
+      order: ['arm-left', 'torso', 'leg-left', 'head', 'arm-right', 'leg-right'],
+      targets: {
+        head: { x: 315.362, y: -10.594, matrix: [1, 0, 0, 1] },
+        torso: { x: 318.796, y: 18.502, matrix: [0.9281816, 0.3721276, -0.3721276, 0.9281816] },
+        'arm-left': { x: 329.997, y: 12.261, matrix: [1, 0, 0, 1] },
+        'arm-right': { x: 302.661, y: -17.794, matrix: [0.98826, 0.1527811, 0.1527811, -0.98826] },
+        'leg-left': { x: 291.686, y: 50.244, matrix: [1, 0, 0, 1] },
+        'leg-right': { x: 316.783, y: 52.372, matrix: [1, 0, 0, 1] }
+      },
+      attachedPiece: 'arm-right'
+    },
+    {
+      name: 'estrela-perna',
+      order: ['leg-right', 'torso', 'leg-left', 'head', 'arm-right', 'arm-left'],
+      targets: {
+        head: { x: 286.274, y: 53.261, matrix: [1, 0, 0, 1] },
+        torso: { x: 281.295, y: 23.992, matrix: [0.8746421, 0.4847692, -0.4847692, 0.8746421] },
+        'arm-left': { x: 311.026, y: 39.228, matrix: [0.9270433, 0.3749543, 0.3749543, -0.9270433] },
+        'arm-right': { x: 248.878, y: 42.251, matrix: [0.3120023, -0.9500814, -0.9500814, -0.3120023] },
+        'leg-left': { x: 240.134, y: -8.102, matrix: [0.3706867, 0.928758, -0.928758, 0.3706867] },
+        'leg-right': { x: 287.7, y: -14.236, matrix: [-0.9097703, -0.415112, -0.415112, 0.9097703] }
+      },
+      attachedPiece: 'leg-right'
+    },
+    {
+      name: 'preguica-trave',
+      order: ['head', 'torso', 'arm-right', 'arm-left', 'leg-left', 'leg-right'],
+      targets: {
+        head: { x: 314.141, y: -35.218, matrix: [1, 0, 0, 1] },
+        torso: { x: 315.521, y: -4.788, matrix: [0.8354605, 0.5495505, -0.5495505, 0.8354605] },
+        'arm-left': { x: 325.205, y: -40.351, matrix: [0.1774878, -0.984123, 0.984123, 0.1774878] },
+        'arm-right': { x: 303.842, y: -36.536, matrix: [-0.4628827, 0.8864195, -0.8864195, -0.4628827] },
+        'leg-left': { x: 302.189, y: 37.279, matrix: [0.8670005, -0.4983073, 0.4983073, 0.8670005] },
+        'leg-right': { x: 320.411, y: 36.594, matrix: [0.8813911, -0.4723873, 0.4723873, 0.8813911] }
+      },
+      attachedPiece: 'arm-left'
+    },
+    {
+      name: 'enroscado-poste',
+      order: ['head', 'torso', 'arm-right', 'leg-right', 'arm-left', 'leg-left'],
+      targets: {
+        head: { x: 312.446, y: -15.243, matrix: [1, 0, 0, 1] },
+        torso: { x: 315.413, y: 15.522, matrix: [0.8596392, 0.5109015, -0.5109015, 0.8596392] },
+        /* Pose enroscado-poste: centro recalculado a partir do grupo
+           fonte-braco-esquerdo-78 do SVG original. */
+        'arm-left': { x: 300.159, y: 13.288, matrix: [-0.7699281, 0.6381307, -0.6381307, -0.7699281] },
+        'arm-right': { x: 337.667, y: -8.281, matrix: [-0.869473, -0.4939805, 0.4939805, -0.869473] },
+        'leg-left': { x: 285.545, y: 46.304, matrix: [0.9984981, 0.0547876, -0.0547876, 0.9984981] },
+        'leg-right': { x: 335.682, y: 38.352, matrix: [-0.0663749, -0.9977948, 0.9977948, -0.0663749] }
+      },
+      attachedPiece: 'leg-right'
+    },
+    {
+      name: 'bandeira-humana',
+      order: ['head', 'torso', 'leg-left', 'leg-right', 'arm-right', 'arm-left'],
+      targets: {
+        head: { x: 343.589, y: 8.678, matrix: [1, 0, 0, 1] },
+        torso: { x: 314.488, y: 6.747, matrix: [0.6323441, -0.7746877, 0.7746877, 0.6323441] },
+        'arm-left': { x: 340.064, y: 23.42, matrix: [0.855945, 0.5170668, -0.5170668, 0.855945] },
+        'arm-right': { x: 339.37, y: -13.884, matrix: [-0.9808629, 0.1946996, -0.1946996, -0.9808629] },
+        'leg-left': { x: 272.838, y: 2.89, matrix: [0.9361508, -0.3515989, -0.3515989, -0.9361508] },
+        'leg-right': { x: 293.801, y: -27.487, matrix: [1, 0, 0, -1] }
+      },
+      attachedPiece: 'arm-right'
+    }
+  ];
   var activeGallowsPose = GALLOWS_POSES[0];
+
+  /* Montagens completas do SVG do Inkscape. Cada entrada preserva os seis
+     grupos originais e aplica somente uma transformação global para trazer a
+     montagem do canvas 1800x900 para o mundo da forca. */
+  var IMPORTED_GALLOWS_POSES = [
+    { transform: 'matrix(0.457727 0 0 0.457727 202.93 -262.99)', ids: {
+      head: 'fonte-cabeca-7', torso: 'fonte-tronco-9', 'arm-left': 'fonte-braco-esquerdo-4', 'arm-right': 'fonte-braco-direito-1', 'leg-left': 'fonte-perna-esquerda-7', 'leg-right': 'fonte-perna-direita-6'
+    } },
+    { transform: 'matrix(0.457727 0 0 0.457727 26.35 -262.99)', ids: {
+      head: 'fonte-cabeca-9', torso: 'fonte-tronco-3', 'arm-left': 'fonte-braco-esquerdo-7', 'arm-right': 'fonte-braco-direito-6', 'leg-left': 'fonte-perna-esquerda-0', 'leg-right': 'fonte-perna-direita-2'
+    } },
+    { transform: 'matrix(0.457727 0 0 0.457727 -97.51 -262.99)', ids: {
+      head: 'fonte-cabeca-1', torso: 'fonte-tronco-7', 'arm-left': 'fonte-braco-esquerdo-76', 'arm-right': 'fonte-braco-direito', 'leg-left': 'fonte-perna-esquerda-3', 'leg-right': 'fonte-perna-direita-0'
+    } },
+    { transform: 'matrix(0.457727 0 0 0.457727 -267.80 -262.99)', ids: {
+      head: 'fonte-cabeca-0', torso: 'fonte-tronco-5', 'arm-left': 'fonte-braco-esquerdo-78', 'arm-right': 'fonte-braco-direito-4-6', 'leg-left': 'fonte-perna-esquerda-01', 'leg-right': 'g21-8'
+    } },
+    { transform: 'matrix(0.457727 0 0 0.457727 -441.60 -262.99)', ids: {
+      head: 'fonte-cabeca-97', torso: 'fonte-tronco-6', 'arm-left': 'fonte-braco-esquerdo-49', 'arm-right': 'fonte-braco-direito-4-4', 'leg-left': 'fonte-perna-esquerda-33', 'leg-right': 'g21-88'
+    } }
+  ];
   var gallowsSwayTimeline = null;
   var gallowsSwayAngle = 0;
 
@@ -471,11 +565,13 @@
   var activeRound = null;
   var floatingAnimations = [];
   var floatingInteractionsAttached = false;
-  /* "Peças penduradas" (ver movePieceToGallows): em vez de animar a mesma
-     peça flutuante voando até a pose final na forca, ela some no lugar e
-     surge uma cópia já plantada na posição certa. Essas cópias ficam
-     guardadas aqui para serem removidas quando a rodada terminar/reiniciar. */
+  /* Invólucros FLIP das peças já enviadas à montagem. São removidos quando a
+     rodada termina ou reinicia; a transformação artística fica no grupo
+     interno e nunca é sobrescrita pela animação temporária. */
   var hungGhosts = [];
+  var importedPoseGroup = null;
+  var importedPoseUses = null;
+  var importedPoseSourceDocument = null;
   var activeParts = null;
   var pageScrollLock = null;
 
@@ -1188,8 +1284,70 @@
       window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }
 
-  function lockPageScroll() {
-    if (pageScrollLock) return;
+  // Duracao maxima (ms) da rolagem ate a altura do mascote, usada quando a
+  // distancia a percorrer e a maior possivel na pagina (o usuario clicou 10x
+  // bem no fim do documento). Distancias menores levam proporcionalmente
+  // menos tempo, em vez do salto instantaneo que havia antes.
+  var SCROLL_TO_MASCOT_MAX_MS = 3000;
+
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function getMaxScrollDistance() {
+    var doc = document.documentElement;
+    var max = (doc.scrollHeight || 0) - (window.innerHeight || 0);
+    return max > 0 ? max : 0;
+  }
+
+  function blockScrollInput(e) {
+    e.preventDefault();
+  }
+
+  // Anima a rolagem ate o topo (onde fica o mascote) em vez de teleportar.
+  // O tempo gasto e proporcional a distancia atual em relacao a maior
+  // distancia de rolagem possivel na pagina, com teto de SCROLL_TO_MASCOT_MAX_MS.
+  function animateScrollToTop(onComplete) {
+    var startY = window.scrollY || window.pageYOffset || 0;
+    var startX = window.scrollX || window.pageXOffset || 0;
+    var maxDistance = getMaxScrollDistance();
+    var duration = (prefersReducedMotion() || maxDistance <= 0)
+      ? 0
+      : Math.min(SCROLL_TO_MASCOT_MAX_MS, (startY / maxDistance) * SCROLL_TO_MASCOT_MAX_MS);
+
+    if (duration <= 0) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      onComplete();
+      return;
+    }
+
+    // Bloqueia a rolagem manual do usuario durante a animacao sem impedir o
+    // scrollTo programado (overflow:hidden bloquearia os dois).
+    window.addEventListener('wheel', blockScrollInput, { passive: false });
+    window.addEventListener('touchmove', blockScrollInput, { passive: false });
+
+    var startTime = null;
+    function step(timestamp) {
+      if (startTime === null) startTime = timestamp;
+      var progress = Math.min((timestamp - startTime) / duration, 1);
+      var eased = easeInOutCubic(progress);
+      window.scrollTo(startX * (1 - eased), startY * (1 - eased));
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        window.removeEventListener('wheel', blockScrollInput, { passive: false });
+        window.removeEventListener('touchmove', blockScrollInput, { passive: false });
+        onComplete();
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function lockPageScroll(onLocked) {
+    if (pageScrollLock) {
+      if (onLocked) onLocked();
+      return;
+    }
     var root = document.documentElement;
     var body = document.body;
     pageScrollLock = {
@@ -1200,12 +1358,14 @@
       bodyOverflow: body.style.overflow,
       bodyOverscroll: body.style.overscrollBehavior
     };
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-    root.style.overflow = 'hidden';
-    root.style.overscrollBehavior = 'none';
-    body.style.overflow = 'hidden';
-    body.style.overscrollBehavior = 'none';
-    body.classList.add('hangman-scroll-locked');
+    animateScrollToTop(function () {
+      root.style.overflow = 'hidden';
+      root.style.overscrollBehavior = 'none';
+      body.style.overflow = 'hidden';
+      body.style.overscrollBehavior = 'none';
+      body.classList.add('hangman-scroll-locked');
+      if (onLocked) onLocked();
+    });
   }
 
   function unlockPageScroll() {
@@ -1245,7 +1405,6 @@
   function startGallowsSway(parts) {
     var gsap = window.gsap;
     if (!gsap || gallowsSwayTimeline || !parts || !parts.gallows) return;
-    var attached = activeGallowsPose.attachedPiece;
     gallowsSwayTimeline = gsap.timeline({ repeat: -1, yoyo: true });
     gallowsSwayTimeline.to({ angle: 0 }, {
       angle: 2.2,
@@ -1255,10 +1414,8 @@
         var angle = this.targets()[0].angle;
         gallowsSwayAngle = angle;
         gsap.set(parts.gallows, { rotation: angle, transformOrigin: '290px 194px' });
-        floatingPieceStates.forEach(function (state) {
-          if (!state.hung || !state.ghost) return;
-          gsap.set(state.ghost, { rotation: (state.hungRotation || 0) + angle * (state.pieceId === attached ? 0.9 : 0.65) });
-        });
+        /* As peças não recebem rotações individuais aqui: isso destruiria as
+           matrizes relativas aprovadas no molde do Inkscape. */
       }
     });
   }
@@ -1289,6 +1446,11 @@
       if (ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost);
     });
     hungGhosts = [];
+    if (importedPoseGroup && importedPoseGroup.parentNode) {
+      importedPoseGroup.parentNode.removeChild(importedPoseGroup);
+    }
+    importedPoseGroup = null;
+    importedPoseUses = null;
 
     if (floatingInteractionsAttached) {
       window.removeEventListener('pointerdown', handleFloatingSlotInput, true);
@@ -1519,20 +1681,180 @@
     return true;
   }
 
-  /* Em vez de animar a MESMA peça flutuante voando até a pose final (a
-     trajetória nunca ficou alinhada direito com a pose pendurada), a peça
-     flutuante some com um fade rápido no lugar onde estava, e uma cópia
-     dela nasce já plantada certinha na posição final (os mesmos valores de
-     x/y/rotação/escala que a pose sorteada define), revelada com um
-     pop + flash azul. Pro jogador parece uma peça só se teletransportando;
-     na prática são duas elementos diferentes -- a "gambiarra" combinada
-     com o Allan. */
+  function multiplyMatrices(left, right) {
+    return {
+      a: left.a * right.a + left.c * right.b,
+      b: left.b * right.a + left.d * right.b,
+      c: left.a * right.c + left.c * right.d,
+      d: left.b * right.c + left.d * right.d,
+      e: left.a * right.e + left.c * right.f + left.e,
+      f: left.b * right.e + left.d * right.f + left.f
+    };
+  }
+
+  function invertMatrix(matrix) {
+    var determinant = matrix.a * matrix.d - matrix.b * matrix.c;
+    if (!Number.isFinite(determinant) || Math.abs(determinant) < 0.000001) return null;
+    return {
+      a: matrix.d / determinant,
+      b: -matrix.b / determinant,
+      c: -matrix.c / determinant,
+      d: matrix.a / determinant,
+      e: (matrix.c * matrix.f - matrix.d * matrix.e) / determinant,
+      f: (matrix.b * matrix.e - matrix.a * matrix.f) / determinant
+    };
+  }
+
+  function matrixText(matrix) {
+    return 'matrix(' + [matrix.a, matrix.b, matrix.c, matrix.d, matrix.e, matrix.f]
+      .map(function (value) { return Number(value.toFixed(6)); })
+      .join(' ') + ')';
+  }
+
+  function targetMatrixForPiece(piece, target) {
+    var linear = target.matrix;
+    if (!Array.isArray(linear) || linear.length !== 4 || linear.some(function (value) {
+      return !Number.isFinite(value);
+    })) return null;
+
+    var box = piece.getBBox();
+    var centerX = box.x + box.width / 2;
+    var centerY = box.y + box.height / 2;
+    return {
+      a: linear[0],
+      b: linear[1],
+      c: linear[2],
+      d: linear[3],
+      e: target.x - linear[0] * centerX - linear[2] * centerY,
+      f: target.y - linear[1] * centerX - linear[3] * centerY
+    };
+  }
+
+  function ensureHungPieceLayer(parts) {
+    var layer = document.getElementById('hangman-hung-pieces');
+    if (layer && layer.parentNode === parts.world) return layer;
+    layer = document.createElementNS(SVG_NS, 'g');
+    layer.id = 'hangman-hung-pieces';
+    layer.setAttribute('aria-hidden', 'true');
+    layer.style.pointerEvents = 'none';
+    parts.world.appendChild(layer);
+    return layer;
+  }
+
+  function ensureImportedPose(parts) {
+    if (importedPoseGroup && importedPoseGroup.parentNode === parts.world) {
+      return { group: importedPoseGroup, uses: importedPoseUses };
+    }
+
+    var imported = IMPORTED_GALLOWS_POSES[GALLOWS_POSES.indexOf(activeGallowsPose)] || IMPORTED_GALLOWS_POSES[0];
+    var group = document.createElementNS(SVG_NS, 'g');
+    group.id = 'hangman-imported-pose';
+    group.setAttribute('aria-hidden', 'true');
+    group.setAttribute('pointer-events', 'none');
+    group.setAttribute('transform', imported.transform);
+    group.style.pointerEvents = 'none';
+
+    if (!importedPoseSourceDocument && window.HANGMAN_POSES_SVG) {
+      importedPoseSourceDocument = new DOMParser().parseFromString(
+        window.HANGMAN_POSES_SVG,
+        'image/svg+xml'
+      );
+    }
+    if (!importedPoseSourceDocument || importedPoseSourceDocument.querySelector('parsererror')) {
+      return { group: group, uses: {} };
+    }
+
+    var uses = {};
+    Object.keys(imported.ids).forEach(function (pieceId) {
+      var sourceId = imported.ids[pieceId];
+      var source = importedPoseSourceDocument.getElementById(sourceId);
+      if (!source) return;
+      var clone = document.importNode(source, true);
+      clone.removeAttribute('id');
+      clone.removeAttribute('style');
+      clone.setAttribute('data-imported-piece', pieceId);
+      clone.setAttribute('visibility', 'hidden');
+      clone.setAttribute('opacity', '0');
+      clone.querySelectorAll('[id]').forEach(function (node) {
+        node.removeAttribute('id');
+      });
+      clone.querySelectorAll('path,rect,circle,ellipse,polygon,polyline').forEach(function (shape) {
+        shape.setAttribute('fill', '#0055d4');
+        shape.setAttribute('fill-opacity', '1');
+      });
+      uses[pieceId] = clone;
+      group.appendChild(clone);
+    });
+
+    parts.world.appendChild(group);
+    importedPoseGroup = group;
+    importedPoseUses = uses;
+    return { group: group, uses: uses };
+  }
+
+  function cleanPieceClone(piece) {
+    var clone = piece.cloneNode(true);
+    clone.removeAttribute('id');
+    clone.removeAttribute('style');
+    clone.removeAttribute('transform');
+    clone.removeAttribute('data-hangman-piece');
+    clone.setAttribute('aria-hidden', 'true');
+    Array.prototype.slice.call(clone.querySelectorAll('[id]')).forEach(function (node) {
+      node.removeAttribute('id');
+    });
+    return clone;
+  }
+
+  /* A peça final nasce de um molde limpo e recebe exatamente a matriz da
+     montagem do Inkscape. Um invólucro externo faz apenas a transição FLIP;
+     ao terminar em identidade, não sobra nenhuma correção animada capaz de
+     deformar ou deslocar a pose aprovada. */
   function movePieceToGallows(identifier, parts) {
     var gsap = window.gsap;
     var state = findFloatingPiece(identifier);
     if (!gsap || !state || state.hung) return false;
+
+    /* A pose importada é a fonte visual definitiva. A peça flutuante continua
+       sendo usada durante a caminhada, mas a derrota revela o grupo original
+       do Inkscape, preservando todos os encaixes entre as partes. */
+    if (parts && parts.world) {
+      state.hung = true;
+      if (state.floatTimeline) state.floatTimeline.kill();
+      if (state.reactionTimeline) state.reactionTimeline.kill();
+      gsap.killTweensOf(state);
+
+      var importedPose = ensureImportedPose(parts);
+      var importedPiece = importedPose.uses[state.pieceId];
+      if (!importedPiece) {
+        state.hung = false;
+        return false;
+      }
+
+      if (state.piece) {
+        state.piece.style.visibility = 'hidden';
+        state.piece.style.pointerEvents = 'none';
+      }
+      importedPiece.setAttribute('visibility', 'visible');
+      importedPiece.setAttribute('opacity', '0');
+      importedPiece.style.opacity = '0';
+      hungGhosts.push(importedPiece);
+      state.ghost = importedPiece;
+      var importedAnimation = gsap.to(importedPiece, {
+        opacity: 1,
+        duration: prefersReducedMotion() ? 0.18 : 0.78,
+        ease: 'power2.out',
+        onComplete: function () {
+          document.dispatchEvent(new CustomEvent('hangman:piece-hung', {
+            detail: { index: state.index, pieceId: state.pieceId }
+          }));
+        }
+      });
+      floatingAnimations.push(importedAnimation);
+      return true;
+    }
+
     var target = activeGallowsPose.targets[state.pieceId] || GALLOWS_PIECE_TARGETS[state.pieceId];
-    if (!target) return false;
+    if (!target || !parts || !parts.world) return false;
 
     state.hung = true;
     if (state.floatTimeline) state.floatTimeline.kill();
@@ -1540,74 +1862,68 @@
     gsap.killTweensOf(state);
 
     var floatingPiece = state.piece;
+    var finalMatrix = targetMatrixForPiece(floatingPiece, target);
+    var layer = ensureHungPieceLayer(parts);
+    var sourceMatrix = floatingPiece.getCTM();
+    var layerMatrix = layer.getCTM();
+    if (!finalMatrix || !sourceMatrix || !layerMatrix) {
+      state.hung = false;
+      return false;
+    }
 
-    /* 1) A peça flutuante original só desaparece (fade), sem se mover. */
-    gsap.to(floatingPiece, {
-      opacity: 0,
-      duration: prefersReducedMotion() ? 0.12 : 0.22,
-      ease: 'power1.in',
+    var inverseLayer = invertMatrix(layerMatrix);
+    var inverseFinal = invertMatrix(finalMatrix);
+    if (!inverseLayer || !inverseFinal) {
+      state.hung = false;
+      return false;
+    }
+
+    var animationWrapper = document.createElementNS(SVG_NS, 'g');
+    var finalWrapper = document.createElementNS(SVG_NS, 'g');
+    finalWrapper.setAttribute('transform', matrixText(finalMatrix));
+    finalWrapper.appendChild(cleanPieceClone(floatingPiece));
+    animationWrapper.appendChild(finalWrapper);
+    layer.appendChild(animationWrapper);
+
+    var flipMatrix = multiplyMatrices(
+      multiplyMatrices(inverseLayer, sourceMatrix),
+      inverseFinal
+    );
+    animationWrapper.setAttribute('transform', matrixText(flipMatrix));
+    hungGhosts.push(animationWrapper);
+    state.ghost = animationWrapper;
+    floatingPiece.style.visibility = 'hidden';
+    floatingPiece.style.pointerEvents = 'none';
+
+    var animated = {
+      a: flipMatrix.a,
+      b: flipMatrix.b,
+      c: flipMatrix.c,
+      d: flipMatrix.d,
+      e: flipMatrix.e,
+      f: flipMatrix.f
+    };
+    var movement = gsap.to(animated, {
+      a: 1,
+      b: 0,
+      c: 0,
+      d: 1,
+      e: 0,
+      f: 0,
+      duration: prefersReducedMotion() ? 0.18 : 0.78,
+      ease: 'power2.inOut',
+      onUpdate: function () {
+        animationWrapper.setAttribute('transform', matrixText(animated));
+      },
       onComplete: function () {
-        floatingPiece.style.visibility = 'hidden';
-        floatingPiece.style.pointerEvents = 'none';
-      }
-    });
-
-    /* 2) Uma cópia dela nasce escondida já na posição final da pose e é
-       revelada com um pop (escala) + flash azul (drop-shadow). */
-    var localAnchor = target.localAnchor || { x: 0, y: 0 };
-    var finalScaleX = target.scaleX === undefined ? 1 : target.scaleX;
-    var finalScaleY = target.scaleY === undefined ? 1 : target.scaleY;
-
-    var ghost = floatingPiece.cloneNode(true);
-    ghost.removeAttribute('id');
-    ghost.removeAttribute('data-hangman-piece');
-    ghost.setAttribute('aria-hidden', 'true');
-    ghost.style.cursor = '';
-    ghost.style.willChange = '';
-    ghost.style.pointerEvents = 'none';
-    if (floatingPiece.parentNode) floatingPiece.parentNode.appendChild(ghost);
-    hungGhosts.push(ghost);
-    state.ghost = ghost;
-    state.hungRotation = target.rotation;
-
-    gsap.set(ghost, {
-      x: target.x - TRAVEL_X - localAnchor.x,
-      y: target.y - localAnchor.y,
-      rotation: target.rotation,
-      scaleX: finalScaleX * 0.7,
-      scaleY: finalScaleY * 0.7,
-      transformOrigin: localAnchor.x + 'px ' + localAnchor.y + 'px',
-      opacity: 0
-    });
-    ghost.style.filter = 'drop-shadow(0 0 0 rgba(0,85,212,0))';
-
-    var reveal = gsap.timeline({
-      onComplete: function () {
+        animationWrapper.removeAttribute('transform');
         document.dispatchEvent(new CustomEvent('hangman:piece-hung', {
           detail: { index: state.index, pieceId: state.pieceId }
         }));
       }
     });
-    reveal
-      .to(ghost, {
-        opacity: 1,
-        scaleX: finalScaleX,
-        scaleY: finalScaleY,
-        duration: prefersReducedMotion() ? 0.16 : 0.38,
-        ease: 'back.out(2.2)'
-      }, 0)
-      .to(ghost, {
-        filter: 'drop-shadow(0 0 10px rgba(0,85,212,0.95))',
-        duration: 0.16,
-        ease: 'power1.out'
-      }, 0)
-      .to(ghost, {
-        filter: 'drop-shadow(0 0 0 rgba(0,85,212,0))',
-        duration: 0.35,
-        ease: 'power1.in'
-      }, 0.16);
 
-    floatingAnimations.push(reveal);
+    floatingAnimations.push(movement);
     return true;
   }
 
@@ -2255,60 +2571,67 @@
     }
 
     resetPose(parts, frames);
-    lockPageScroll();
-    activeRound = round;
-    var layout = buildSlots(parts.slots, round);
-    gsap.set(parts.gallows, { x: layout.gallowsShiftX });
-    document.dispatchEvent(new CustomEvent('hangman:round-ready', {
-      detail: {
-        word: round.word,
-        normalizedWord: round.normalizedWord,
-        hint: round.hint,
-        hint2: round.hint2,
-        hint3: round.hint3,
-        topic: round.topic,
-        letterCount: round.letterCount,
-        isPlaceholder: round.isPlaceholder,
-        gallowsPose: poseIndex,
-        gallowsPoseName: activeGallowsPose.name,
-        gallowsOrder: activeGallowsPose.order.slice()
+
+    // O resto da montagem so acontece depois que a rolagem ate a altura do
+    // mascote termina (lockPageScroll anima essa rolagem em vez de
+    // teleportar), pra elementos que leem a posicao atual da tela (como o
+    // card flutuante abaixo) nao pegarem coordenadas de antes de chegar la.
+    lockPageScroll(function () {
+      activeRound = round;
+      var layout = buildSlots(parts.slots, round);
+      gsap.set(parts.gallows, { x: layout.gallowsShiftX });
+      document.dispatchEvent(new CustomEvent('hangman:round-ready', {
+        detail: {
+          word: round.word,
+          normalizedWord: round.normalizedWord,
+          hint: round.hint,
+          hint2: round.hint2,
+          hint3: round.hint3,
+          topic: round.topic,
+          letterCount: round.letterCount,
+          isPlaceholder: round.isPlaceholder,
+          gallowsPose: poseIndex,
+          gallowsPoseName: activeGallowsPose.name,
+          gallowsOrder: activeGallowsPose.order.slice()
+        }
+      }));
+
+      if (parts.hero) {
+        parts.hero.classList.add('hangman-active');
       }
-    }));
+      if (parts.floatingCard) {
+        /* Desce e sai da tela, em vez de sumir com fade. A animacao CSS
+           "float" (styles.css) tambem mexe no transform em loop infinito,
+           entao precisa ser neutralizada antes, senao ela briga com o
+           GSAP e o card fica tremendo em vez de deslizar liso. */
+        parts.floatingCard.style.animation = 'none';
+        var floatingCardRect = parts.floatingCard.getBoundingClientRect();
+        var floatingCardTravel = Math.max(
+          window.innerHeight - floatingCardRect.top + 80,
+          floatingCardRect.height + 80
+        );
+        gsap.to(parts.floatingCard, {
+          y: floatingCardTravel,
+          duration: 0.5,
+          ease: 'power2.in',
+          overwrite: true
+        });
+      }
 
-    if (parts.hero) {
-      parts.hero.classList.add('hangman-active');
-    }
-    if (parts.floatingCard) {
-      /* Desce e sai da tela, em vez de sumir com fade. A animacao CSS
-         "float" (styles.css) tambem mexe no transform em loop infinito,
-         entao precisa ser neutralizada antes, senao ela briga com o
-         GSAP e o card fica tremendo em vez de deslizar liso. */
-      parts.floatingCard.style.animation = 'none';
-      var floatingCardRect = parts.floatingCard.getBoundingClientRect();
-      var floatingCardTravel = Math.max(
-        window.innerHeight - floatingCardRect.top + 80,
-        floatingCardRect.height + 80
-      );
-      gsap.to(parts.floatingCard, {
-        y: floatingCardTravel,
-        duration: 0.5,
-        ease: 'power2.in',
-        overwrite: true
-      });
-    }
+      /* Troca instantânea entre a silhueta original e o rig aprovado.
+         A pose 0 (sentado lendo) reproduz a mesma silhueta do mascote
+         original, então a troca não gera flash nem duplicação visível. */
+      gsap.set(parts.restCharacter, { autoAlpha: 0 });
+      gsap.set(parts.rig, { autoAlpha: 1 });
+      gsap.set(parts.book, { autoAlpha: 1 });
 
-    /* Troca instantânea entre a silhueta original e o rig aprovado.
-       A pose 0 (sentado lendo) reproduz a mesma silhueta do mascote
-       original, então a troca não gera flash nem duplicação visível. */
-    gsap.set(parts.restCharacter, { autoAlpha: 0 });
-    gsap.set(parts.rig, { autoAlpha: 1 });
-    gsap.set(parts.book, { autoAlpha: 1 });
+      activeTimeline = buildTimeline(parts, frames, layout);
+      activeTimeline.timeScale(1);
+      showExitControl();
+      playTimelineWithMobileLandscape();
+    });
 
-    activeTimeline = buildTimeline(parts, frames, layout);
-    activeTimeline.timeScale(1);
-    showExitControl();
-    playTimelineWithMobileLandscape();
-    return activeTimeline;
+    return null;
   }
 
   /* Sorteio duplo: primeiro sorteia o TOPICO (cada topico tem a mesma

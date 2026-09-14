@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&family=Caveat:wght@700&family=Permanent+Marker&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&family=Caveat:wght@700&family=Permanent+Marker&family=Fredoka:wght@600;700&display=swap');
 
 :root {
     /* Brand Colors */
@@ -170,7 +170,7 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
 
 .hero-visual {
     position: relative;
-    height: 500px;
+    height: clamp(280px, 60vw, 500px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -187,7 +187,7 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 300px;
+    width: clamp(180px, 55vw, 300px);
     z-index: 2;
 }
 
@@ -257,7 +257,7 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
     background: #FFF;
     border: 2px solid var(--color-blue);
     border-radius: 16px;
-    padding: 2.5rem;
+    padding: clamp(1.5rem, 5vw, 2.5rem);
     display: flex;
     flex-direction: column;
     box-shadow: 8px 8px 0 rgba(0, 78, 181, 0.1);
@@ -479,6 +479,8 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    padding: 8px;
+    margin: -8px;
     transition: transform 0.2s;
 }
 .instagram-link:hover {
@@ -665,9 +667,28 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
   }
 }
 
+/* Telas bem estreitas: reduz o respiro lateral do botão de navegação
+   para não colidir com a logo (mesma lógica do cálculo original, com
+   um piso menor para caber em 320-360px). */
+@media (max-width: 380px) {
+  .nav-container {
+    padding-right: max(1rem, calc(10vw - max(0px, (100vw - 1200px) / 2)));
+  }
+  .logo-svg {
+    max-height: 44px;
+  }
+}
+
+/* Alvo de toque mínimo confortável para links/botões que hoje ficam
+   pequenos em mobile (sem mudar a aparência visual). */
+:is(a, button, .btn, .btn-nav, .faq-q, .mini-faq-q, [role="button"]):focus-visible {
+  outline: 3px solid var(--color-blue);
+  outline-offset: 2px;
+}
+
 /* Estilos do modal */
 .flabel { display: block; font-size: 13px; font-weight: 600; color: var(--color-blue); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
-.fi { width: 100%; padding: 12px; border: 1px solid rgba(0,51,160,0.2); border-radius: 8px; font-family: inherit; font-size: 14px; box-sizing: border-box; }
+.fi { width: 100%; padding: 12px; border: 1px solid rgba(0,51,160,0.2); border-radius: 8px; font-family: inherit; font-size: 16px; box-sizing: border-box; }
 .fi:focus { outline: none; border-color: var(--color-blue); box-shadow: 0 0 0 3px rgba(0,51,160,0.1); }
 .fb { padding: 10px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; background: var(--color-yellow); color: var(--color-blue); transition: all 0.2s; }
 .fb:hover { filter: brightness(0.95); }
@@ -698,4 +719,466 @@ input, textarea, select, [contenteditable="true"] {
 button, a, .abtn, .btn-nav, [role="button"] {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+}
+
+/* Easter egg: interrogacao que aparece pairando sobre a cabeca do mascote
+   (armado apos o 1o clique na cabeca; some no 2o clique ou apos o timeout) */
+.mascot-question-mark {
+  position: fixed;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -100%);
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  color: var(--color-blue);
+  -webkit-text-stroke: 2px var(--color-yellow);
+  paint-order: stroke fill;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  animation:
+    mascot-question-emerge 2s cubic-bezier(0.22, 0.61, 0.36, 1) forwards,
+    mascot-question-hover 1.2s ease-in-out 2s infinite;
+  will-change: transform, opacity;
+}
+
+.mascot-question-mark--float-away {
+  animation: mascot-question-float-away 0.6s ease-out forwards;
+}
+
+/* Nasce "por tras" da cabeca (menor, mais baixo, invisivel) e sobe
+   flutuando ate o ponto de parada em 2s. */
+@keyframes mascot-question-emerge {
+  0% {
+    transform: translate(-50%, -100%) translateY(48px) scale(0.35);
+    opacity: 0;
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -100%) translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes mascot-question-hover {
+  0%, 100% { transform: translate(-50%, -100%) translateY(0); }
+  50%      { transform: translate(-50%, -100%) translateY(-12px); }
+}
+
+@keyframes mascot-question-float-away {
+  from { transform: translate(-50%, -100%) translateY(0); opacity: 1; }
+  to   { transform: translate(-50%, -100%) translateY(-90px); opacity: 0; }
+}
+
+/* --- Revelação inline do código TOTP junto do link ADMIN (rodapé) ---
+   Some ao lado do botão ADMIN sem levar a outra página: aparece com uma
+   animação quando existe um autenticador TOTP verificado. */
+.admin-gate {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.admin-totp-reveal {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    margin-left: 0;
+    transition: max-width 0.35s ease, opacity 0.25s ease, margin-left 0.35s ease;
+}
+.admin-gate.totp-open .admin-totp-reveal {
+    max-width: 160px;
+    opacity: 1;
+    margin-left: 8px;
+}
+.admin-totp-input {
+    width: 84px;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    font: 700 0.85rem 'Inter', sans-serif;
+    letter-spacing: 0.2em;
+    text-align: center;
+    background: #fff;
+    color: var(--color-blue);
+    transition: box-shadow 0.15s ease;
+}
+.admin-totp-input:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-yellow);
+}
+.admin-totp-input--err {
+    animation: adminTotpShake 0.32s ease;
+}
+@keyframes adminTotpShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+.admin-totp-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    padding: 0;
+    border: none;
+    border-radius: 4px;
+    background: var(--color-yellow);
+    color: var(--color-blue);
+    cursor: pointer;
+    transition: filter 0.15s ease;
+}
+.admin-totp-submit:hover,
+.admin-totp-submit:focus-visible {
+    filter: brightness(1.08);
+}
+.admin-totp-submit svg { width: 15px; height: 15px; }
+@media (prefers-reduced-motion: reduce) {
+    .admin-totp-reveal { transition: none; }
+    .admin-totp-input--err { animation: none; }
+}
+
+/* ============ BOTÃO FLUTUANTE WHATSAPP (página principal) ============ */
+/* Fica escondido até a intro terminar (revelado via JS, classe
+   .wa-visible) e flutua na metade da tela — nunca aparece durante a
+   intro. A posição aqui é só o "descanso" final: o JS lê esses números
+   (left/top/margin-top) pra saber pra onde animar o ícone depois que
+   ele "sai do bolso" do boneco. A flutuação/vibração contínua também é
+   feita via JS (GSAP), pra poder alternar aleatoriamente entre uma
+   vibração curta e uma longa — por isso não tem "animation" aqui. */
+#whatsapp-float-btn {
+    position: fixed;
+    left: 160px;
+    top: 50%;
+    margin-top: -90px; /* metade da altura (180px), pra centralizar */
+    z-index: 400;
+    width: 180px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+#whatsapp-float-btn.wa-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+#whatsapp-float-btn img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+}
+@media (max-width: 600px) {
+    #whatsapp-float-btn { left: 76px; width: 156px; height: 156px; margin-top: -78px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #whatsapp-float-btn { transition: none; }
+}
+
+/* Balão de texto do botão do WhatsApp: some/aparece em tempos
+   aleatórios (controlado via JS), mostrando uma frase por vez. */
+#whatsapp-bubble {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-38%) translateY(8px);
+    margin-bottom: 14px;
+    max-width: none;
+    width: max-content;
+    white-space: nowrap;
+    padding: 20px 32px;
+    background: #fff;
+    color: var(--color-blue);
+    border: 2px solid var(--color-blue);
+    border-radius: 20px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.9rem;
+    line-height: 1.3;
+    text-align: center;
+    box-shadow: -6px 6px 0 rgba(0,78,181,0.18);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+    z-index: 1;
+}
+#whatsapp-bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 38%;
+    width: 22px;
+    height: 22px;
+    background: #fff;
+    border-right: 2px solid var(--color-blue);
+    border-bottom: 2px solid var(--color-blue);
+    transform: translateX(-50%) translateY(-65%) rotate(45deg);
+}
+#whatsapp-bubble.wa-bubble-show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-38%) translateY(0);
+    pointer-events: auto;
+}
+@media (max-width: 600px) {
+    #whatsapp-bubble { font-size: 1.56rem; padding: 14px 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #whatsapp-bubble { transition: opacity 0.3s ease; }
+}
+
+/* ============ BALÃO 1: ÍCONE DO WHATSAPP (fala direta) ============ */
+/* Autoexplicativo — só o ícone, sem texto. Fica acima do botão, no
+   mesmo lugar onde aparecia o balão de frases, e aponta pra baixo. */
+.wa-icon-bubble {
+    position: fixed;
+    z-index: 411;
+    width: 93px;
+    height: 93px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 2px solid var(--color-blue);
+    border-radius: 50%;
+    box-shadow: -4px 4px 0 rgba(0,78,181,0.22);
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.9);
+    transform-origin: bottom center;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+    pointer-events: none;
+    text-decoration: none;
+}
+.wa-icon-bubble.wa-icon-open {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+    pointer-events: auto;
+    /* Flutua suavemente só depois que a transição de abertura termina
+       (animation-delay = mesma duração da transição), pra não brigar
+       com o "aparecer" do balão. */
+    animation: waIconFloat 2.6s ease-in-out 0.25s infinite;
+}
+@keyframes waIconFloat {
+    0%, 100% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1) translateY(-8px); }
+}
+.wa-icon-bubble svg {
+    width: 45px;
+    height: 45px;
+    fill: #25D366;
+}
+.wa-icon-bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: 15px;
+    height: 15px;
+    background: #fff;
+    border-right: 2px solid var(--color-blue);
+    border-bottom: 2px solid var(--color-blue);
+    transform: translateX(-50%) translateY(-65%) rotate(45deg);
+}
+.wa-icon-bubble:hover { background: #f3fbf6; }
+@media (prefers-reduced-motion: reduce) {
+    .wa-icon-bubble { transition: opacity 0.2s ease; }
+    .wa-icon-bubble.wa-icon-open { animation: none; }
+}
+
+/* ============ BALÃO 2: PERGUNTAS RÁPIDAS (à direita) ============ */
+/* Mesmo visual do balão de frases (fundo branco, borda azul, sombra
+   deslocada), maior e interativo — já mostra a primeira pergunta sem
+   perguntar antes "quer responder?". Fica ao lado do botão (à direita
+   por padrão; à esquerda, com .wa-chat-flip, quando não há espaço). */
+#wa-chat-popup {
+    position: fixed;
+    z-index: 410;
+    width: min(560px, 92vw);
+    max-height: min(72vh, 620px);
+    overflow-y: auto;
+    background: #fff;
+    border: 2px solid var(--color-blue);
+    border-radius: 18px;
+    box-shadow: -5px 5px 0 rgba(0,78,181,0.22);
+    padding: 28px 28px 24px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(6px) scale(0.97);
+    transform-origin: center left;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+    pointer-events: none;
+}
+#wa-chat-popup.wa-chat-flip { transform-origin: center right; }
+#wa-chat-popup.wa-chat-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0) scale(1);
+    pointer-events: auto;
+}
+#wa-chat-popup::after {
+    content: '';
+    position: absolute;
+    top: 26px;
+    left: -8px;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-left: 2px solid var(--color-blue);
+    border-bottom: 2px solid var(--color-blue);
+    transform: rotate(45deg);
+}
+#wa-chat-popup.wa-chat-flip::after {
+    left: auto;
+    right: -8px;
+    border-left: none;
+    border-bottom: none;
+    border-right: 2px solid var(--color-blue);
+    border-top: 2px solid var(--color-blue);
+}
+.wa-chat-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: rgba(0,78,181,0.08);
+    color: var(--color-blue);
+    border-radius: 50%;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.2s;
+}
+.wa-chat-close:hover { background: rgba(0,78,181,0.16); }
+.wa-chat-eyebrow {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.44rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(0,78,181,0.55);
+    margin: 0 34px 10px 0;
+}
+.wa-chat-msg {
+    font-family: var(--font-body);
+    color: var(--color-blue);
+    font-size: 1.9rem;
+    line-height: 1.4;
+    font-weight: 600;
+    margin: 0 0 18px;
+}
+.wa-chip-group-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(0,78,181,0.55);
+    margin: 14px 0 6px;
+}
+.wa-chip-group-title:first-of-type { margin-top: 0; }
+.wa-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.wa-chip {
+    padding: 14px 26px;
+    border-radius: 999px;
+    border: 2px solid var(--color-blue);
+    background: #fff;
+    color: var(--color-blue);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.64rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+}
+.wa-chip:hover { background: var(--color-yellow); transform: translateY(-1px); }
+.wa-chip:active { transform: translateY(0); }
+.wa-chat-input-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+.wa-chat-input-row input {
+    flex: 1;
+    min-width: 0;
+    padding: 18px 20px;
+    border: 1px solid rgba(0,51,160,0.25);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 1.8rem;
+    box-sizing: border-box;
+}
+.wa-chat-input-row input:focus {
+    outline: none;
+    border-color: var(--color-blue);
+    box-shadow: 0 0 0 3px rgba(0,78,181,0.12);
+}
+.wa-chat-send {
+    border: 2px solid var(--color-blue);
+    background: var(--color-yellow);
+    color: var(--color-blue);
+    border-radius: 8px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.7rem;
+    padding: 0 28px;
+    cursor: pointer;
+}
+.wa-chat-send:hover { filter: brightness(0.96); }
+.wa-chat-cta {
+    display: block;
+    width: 100%;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
+    padding: 22px 28px;
+    border-radius: 10px;
+    border: 2px solid #128C7E;
+    background: #25D366;
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.8rem;
+    box-shadow: -3px 3px 0 #128C7E;
+    cursor: pointer;
+}
+.wa-chat-cta:hover { filter: brightness(1.03); }
+@media (max-width: 600px) {
+    #wa-chat-popup { padding: 24px 24px 20px; width: min(560px, 94vw); }
+    .wa-chat-eyebrow { font-size: 1.2rem; }
+    .wa-chat-msg { font-size: 1.7rem; }
+    .wa-chip-group-title { font-size: 0.95rem; }
+    .wa-chip { font-size: 1.4rem; padding: 12px 22px; }
+    .wa-icon-bubble { width: 81px; height: 81px; }
+    .wa-icon-bubble svg { width: 39px; height: 39px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    #wa-chat-popup { transition: opacity 0.2s ease; }
 }
