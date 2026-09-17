@@ -188,34 +188,143 @@ function renderCardTeaser(post) {
 const MESES_PT = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
   'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 
-// Monta os três seletores com as opções que realmente existem nos posts
-// carregados — nada de oferecer "março de 2025" se não há post nesse mês.
-function montarFiltros(filtrosEl, posts) {
+const ICONE_FILTRO =
+  '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">' +
+  '<path d="M3 5h18M6 12h12M10 19h4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>' +
+  '</svg>';
+
+const ICONE_SETA =
+  '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">' +
+  '<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+  '</svg>';
+
+// Dropdown próprio (não é <select>): as opções de um <select> nativo não
+// aceitam estilo no Windows/Chrome, então elas ficariam cinzas, fora da
+// identidade do site. Aqui é um botão + lista, com o mesmo visual dos cards.
+function montarDropdown(id, rotulo, opcoes) {
+  const itens = [{ valor: '', texto: 'Todos' }].concat(opcoes);
+  return (
+    '<div class="nv-drop" data-drop="' + id + '" data-valor="">' +
+      '<span class="nv-drop-rotulo">' + escaparHtml(rotulo) + '</span>' +
+      '<button type="button" class="nv-drop-btn" aria-haspopup="listbox" aria-expanded="false">' +
+        '<span class="nv-drop-valor">Todos</span>' + ICONE_SETA +
+      '</button>' +
+      '<ul class="nv-drop-lista" role="listbox" hidden>' +
+        itens.map(function (o, i) {
+          return '<li role="option" tabindex="-1" data-valor="' + escaparHtml(String(o.valor)) + '"' +
+            (i === 0 ? ' aria-selected="true" class="nv-drop-ativo"' : ' aria-selected="false"') + '>' +
+            escaparHtml(o.texto) + '</li>';
+        }).join('') +
+      '</ul>' +
+    '</div>'
+  );
+}
+
+function valorDoDropdown(raiz, id) {
+  const el = raiz.querySelector('[data-drop="' + id + '"]');
+  return el ? el.getAttribute('data-valor') : '';
+}
+
+function fecharDropdowns(raiz, exceto) {
+  raiz.querySelectorAll('.nv-drop').forEach(function (drop) {
+    if (drop === exceto) return;
+    drop.classList.remove('nv-drop-aberto');
+    const btn = drop.querySelector('.nv-drop-btn');
+    const lista = drop.querySelector('.nv-drop-lista');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+    if (lista) lista.hidden = true;
+  });
+}
+
+// Monta o botão "Filtros" e o painel, com as opções que realmente existem
+// nos posts carregados — nada de oferecer "março de 2025" sem post no mês.
+function montarFiltros(filtrosEl, posts, aoMudar) {
   if (!filtrosEl) return;
 
   const anos = [...new Set(posts.map((p) => new Date(p.created_at).getFullYear()))]
-    .filter((a) => !isNaN(a))
-    .sort((a, b) => b - a);
+    .filter((a) => !isNaN(a)).sort((a, b) => b - a);
   const meses = [...new Set(posts.map((p) => new Date(p.created_at).getMonth()))]
-    .filter((m) => !isNaN(m))
-    .sort((a, b) => a - b);
+    .filter((m) => !isNaN(m)).sort((a, b) => a - b);
   const temas = [...new Set(posts.map((p) => p.tema))].filter(Boolean);
 
-  function opcoes(lista, rotulo) {
-    return lista.map((v) => `<option value="${escaparHtml(String(v.valor))}">${escaparHtml(v.texto)}</option>`).join('');
+  filtrosEl.innerHTML =
+    '<button type="button" class="novidades-filtros-botao" aria-expanded="false" aria-controls="novidades-filtros-painel">' +
+      '<span>Filtros</span>' + ICONE_FILTRO +
+      '<span class="novidades-filtros-contador" hidden>0</span>' +
+    '</button>' +
+    '<div class="novidades-filtros-painel" id="novidades-filtros-painel" hidden>' +
+      montarDropdown('ano', 'Ano', anos.map((a) => ({ valor: a, texto: String(a) }))) +
+      montarDropdown('mes', 'Mês', meses.map((m) => ({ valor: m, texto: MESES_PT[m].charAt(0).toUpperCase() + MESES_PT[m].slice(1) }))) +
+      montarDropdown('tema', 'Assunto', temas.map((t) => ({ valor: t, texto: temaInfo(t).label }))) +
+      '<button type="button" class="novidades-filtro-limpar" hidden>Limpar</button>' +
+    '</div>';
+
+  const botao = filtrosEl.querySelector('.novidades-filtros-botao');
+  const painel = filtrosEl.querySelector('.novidades-filtros-painel');
+
+  function abrirPainel(abrir) {
+    painel.hidden = !abrir;
+    botao.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+    filtrosEl.classList.toggle('novidades-filtros-abertos', abrir);
+    if (!abrir) fecharDropdowns(filtrosEl, null);
   }
 
-  filtrosEl.innerHTML =
-    '<label class="novidades-filtro"><span>Ano</span>' +
-      '<select id="filtro-ano"><option value="">Todos</option>' +
-      opcoes(anos.map((a) => ({ valor: a, texto: String(a) }))) + '</select></label>' +
-    '<label class="novidades-filtro"><span>Mês</span>' +
-      '<select id="filtro-mes"><option value="">Todos</option>' +
-      opcoes(meses.map((m) => ({ valor: m, texto: MESES_PT[m].charAt(0).toUpperCase() + MESES_PT[m].slice(1) }))) + '</select></label>' +
-    '<label class="novidades-filtro"><span>Assunto</span>' +
-      '<select id="filtro-tema"><option value="">Todos</option>' +
-      opcoes(temas.map((t) => ({ valor: t, texto: temaInfo(t).label }))) + '</select></label>' +
-    '<button type="button" id="filtro-limpar" class="novidades-filtro-limpar" hidden>Limpar filtros</button>';
+  botao.addEventListener('click', function () {
+    abrirPainel(painel.hidden);
+  });
+
+  filtrosEl.addEventListener('click', function (e) {
+    const gatilho = e.target.closest('.nv-drop-btn');
+    if (gatilho) {
+      const drop = gatilho.closest('.nv-drop');
+      const lista = drop.querySelector('.nv-drop-lista');
+      const vaiAbrir = lista.hidden;
+      fecharDropdowns(filtrosEl, drop);
+      lista.hidden = !vaiAbrir;
+      gatilho.setAttribute('aria-expanded', vaiAbrir ? 'true' : 'false');
+      drop.classList.toggle('nv-drop-aberto', vaiAbrir);
+      return;
+    }
+
+    const opcao = e.target.closest('.nv-drop-lista li');
+    if (opcao) {
+      const drop = opcao.closest('.nv-drop');
+      drop.setAttribute('data-valor', opcao.getAttribute('data-valor'));
+      drop.querySelector('.nv-drop-valor').textContent = opcao.textContent;
+      drop.querySelectorAll('li').forEach(function (li) {
+        li.classList.toggle('nv-drop-ativo', li === opcao);
+        li.setAttribute('aria-selected', li === opcao ? 'true' : 'false');
+      });
+      fecharDropdowns(filtrosEl, null);
+      aoMudar();
+      return;
+    }
+
+    if (e.target.closest('.novidades-filtro-limpar')) {
+      filtrosEl.querySelectorAll('.nv-drop').forEach(function (drop) {
+        drop.setAttribute('data-valor', '');
+        drop.querySelector('.nv-drop-valor').textContent = 'Todos';
+        drop.querySelectorAll('li').forEach(function (li, i) {
+          li.classList.toggle('nv-drop-ativo', i === 0);
+          li.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+        });
+      });
+      aoMudar();
+    }
+  });
+
+  // Clicar fora fecha as listas; fora do painel inteiro, fecha o painel.
+  document.addEventListener('click', function (e) {
+    if (filtrosEl.contains(e.target)) return;
+    fecharDropdowns(filtrosEl, null);
+    if (!painel.hidden) abrirPainel(false);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    fecharDropdowns(filtrosEl, null);
+    if (!painel.hidden) abrirPainel(false);
+  });
 }
 
 function aplicarFiltros(posts, filtros) {
@@ -240,17 +349,22 @@ async function initNovidadesCompleto(containerId, quantidade = 100) {
       return;
     }
 
-    montarFiltros(filtrosEl, posts);
-
     function desenhar() {
       const filtros = {
-        ano: (document.getElementById('filtro-ano') || {}).value || '',
-        mes: (document.getElementById('filtro-mes') || {}).value ?? '',
-        tema: (document.getElementById('filtro-tema') || {}).value || '',
+        ano: filtrosEl ? valorDoDropdown(filtrosEl, 'ano') : '',
+        mes: filtrosEl ? valorDoDropdown(filtrosEl, 'mes') : '',
+        tema: filtrosEl ? valorDoDropdown(filtrosEl, 'tema') : '',
       };
       const visiveis = aplicarFiltros(posts, filtros);
-      const limpar = document.getElementById('filtro-limpar');
-      if (limpar) limpar.hidden = !(filtros.ano || filtros.mes !== '' || filtros.tema);
+      const ativos = [filtros.ano, filtros.mes, filtros.tema].filter((v) => v !== '').length;
+      if (filtrosEl) {
+        const limpar = filtrosEl.querySelector('.novidades-filtro-limpar');
+        const contador = filtrosEl.querySelector('.novidades-filtros-contador');
+        const botao = filtrosEl.querySelector('.novidades-filtros-botao');
+        if (limpar) limpar.hidden = ativos === 0;
+        if (contador) { contador.hidden = ativos === 0; contador.textContent = String(ativos); }
+        if (botao) botao.classList.toggle('novidades-filtros-botao-ativo', ativos > 0);
+      }
 
       if (!visiveis.length) {
         container.innerHTML = '<p class="novidades-carregando">Nenhuma novidade com esses filtros. Tente outra combinação.</p>';
@@ -260,19 +374,7 @@ async function initNovidadesCompleto(containerId, quantidade = 100) {
       ativarFallbackDeImagem(container);
     }
 
-    if (filtrosEl) {
-      filtrosEl.addEventListener('change', desenhar);
-      filtrosEl.addEventListener('click', function (e) {
-        if (e.target && e.target.id === 'filtro-limpar') {
-          ['filtro-ano', 'filtro-mes', 'filtro-tema'].forEach(function (id) {
-            const el = document.getElementById(id);
-            if (el) el.value = '';
-          });
-          desenhar();
-        }
-      });
-    }
-
+    montarFiltros(filtrosEl, posts, desenhar);
     desenhar();
 
     // Se veio um link direto pra um post (novidades.html#slug), abre ele e rola até lá
