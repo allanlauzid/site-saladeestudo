@@ -869,6 +869,14 @@ button, a, .abtn, .btn-nav, [role="button"] {
     pointer-events: none;
     transition: opacity 0.4s ease, visibility 0.4s ease;
 }
+/* Enquanto o balao de perguntas esta aberto em telas estreitas, o
+   celular encosta no canto inferior para dar espaco ao balao. */
+#whatsapp-float-btn.wa-btn-docked {
+    top: auto;
+    bottom: 10px;
+    left: 10px;
+    margin-top: 0;
+}
 #whatsapp-float-btn.wa-visible {
     opacity: 1;
     visibility: visible;
@@ -881,12 +889,27 @@ button, a, .abtn, .btn-nav, [role="button"] {
     height: 100%;
     object-fit: contain;
     filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+    transition: filter 0.35s ease;
+}
+/* Sobre o rodape azul o celular (que tambem e azul) se perdia no fundo.
+   Enquanto o botao estiver por cima da faixa azul, o JS liga a classe
+   .wa-on-footer e o icone ganha um contorno branco (as drop-shadows se
+   encadeiam, entao as quatro direcoes fecham tambem as diagonais) mais
+   um brilho suave que substitui a sombra escura. */
+#whatsapp-float-btn.wa-on-footer img {
+    filter:
+        drop-shadow(2px 0 0 #FFFFFF)
+        drop-shadow(-2px 0 0 #FFFFFF)
+        drop-shadow(0 2px 0 #FFFFFF)
+        drop-shadow(0 -2px 0 #FFFFFF)
+        drop-shadow(0 0 10px rgba(255,255,255,0.35));
 }
 @media (max-width: 600px) {
     #whatsapp-float-btn { left: 76px; width: 156px; height: 156px; margin-top: -78px; }
 }
 @media (prefers-reduced-motion: reduce) {
     #whatsapp-float-btn { transition: none; }
+    #whatsapp-float-btn img { transition: none; }
 }
 
 /* Balão de texto do botão do WhatsApp: some/aparece em tempos
@@ -928,6 +951,16 @@ button, a, .abtn, .btn-nav, [role="button"] {
     border-right: 2px solid var(--color-blue);
     border-bottom: 2px solid var(--color-blue);
     transform: translateX(-50%) translateY(-65%) rotate(45deg);
+}
+/* O balao de frases fica ACIMA do icone, entao, quando o celular sai da
+   tela pela rolagem, sozinho ele continuaria preso na borda. Enquanto o
+   celular estiver deslocado, o balao some junto (some com a transicao
+   que ele ja tem) e so volta quando o celular chega na posicao de
+   descanso. Dois ids na regra = prioridade maior que .wa-bubble-show. */
+#whatsapp-float-btn.wa-scroll-away #whatsapp-bubble {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 #whatsapp-bubble.wa-bubble-show {
     opacity: 1;
@@ -996,6 +1029,17 @@ button, a, .abtn, .btn-nav, [role="button"] {
     border-bottom: 2px solid var(--color-blue);
     transform: translateX(-50%) translateY(-65%) rotate(45deg);
 }
+/* Quando o balao de perguntas ocupa a area acima do celular, o balao do
+   icone vai para o lado e a setinha dele passa a apontar para a esquerda
+   (para o celular). */
+.wa-icon-bubble.wa-icon-side::after {
+    top: 50%;
+    left: 0;
+    transform: translateX(-65%) translateY(-50%) rotate(45deg);
+    border-right: none;
+    border-bottom: 2px solid var(--color-blue);
+    border-left: 2px solid var(--color-blue);
+}
 .wa-icon-bubble:hover { background: #f3fbf6; }
 @media (prefers-reduced-motion: reduce) {
     .wa-icon-bubble { transition: opacity 0.2s ease; }
@@ -1010,14 +1054,15 @@ button, a, .abtn, .btn-nav, [role="button"] {
 #wa-chat-popup {
     position: fixed;
     z-index: 410;
-    width: min(560px, 92vw);
-    max-height: min(72vh, 620px);
-    overflow-y: auto;
+    width: min(620px, 92vw);
+    /* sem overflow: o balao dimensiona o conteudo em vh, entao nunca
+       precisa de scroll — e a setinha (::after) fica visivel. */
+    overflow: visible;
     background: #fff;
     border: 2px solid var(--color-blue);
     border-radius: 18px;
     box-shadow: -5px 5px 0 rgba(0,78,181,0.22);
-    padding: 28px 28px 24px;
+    padding: clamp(16px, 2.6vh, 30px) clamp(16px, 2.2vw, 30px) clamp(14px, 2.2vh, 26px);
     opacity: 0;
     visibility: hidden;
     transform: translateX(6px) scale(0.97);
@@ -1032,37 +1077,61 @@ button, a, .abtn, .btn-nav, [role="button"] {
     transform: translateX(0) scale(1);
     pointer-events: auto;
 }
+/* Setinha de balao de fala: aponta para o celular flutuante. O lado e a
+   posicao sao definidos pelo JS (classes wa-arrow-* e as variaveis
+   --wa-arrow-top / --wa-arrow-left). */
 #wa-chat-popup::after {
     content: '';
     position: absolute;
-    top: 26px;
-    left: -8px;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     background: #fff;
+    transform: rotate(45deg);
+    top: var(--wa-arrow-top, 26px);
+    left: -10px;
     border-left: 2px solid var(--color-blue);
     border-bottom: 2px solid var(--color-blue);
-    transform: rotate(45deg);
+    border-right: none;
+    border-top: none;
 }
-#wa-chat-popup.wa-chat-flip::after {
+#wa-chat-popup.wa-arrow-right::after {
     left: auto;
-    right: -8px;
-    border-left: none;
-    border-bottom: none;
+    right: -10px;
+    top: var(--wa-arrow-top, 26px);
+    border: none;
     border-right: 2px solid var(--color-blue);
     border-top: 2px solid var(--color-blue);
 }
+#wa-chat-popup.wa-arrow-bottom::after {
+    top: auto;
+    bottom: -10px;
+    left: var(--wa-arrow-left, 50%);
+    margin-left: -9px;
+    border: none;
+    border-right: 2px solid var(--color-blue);
+    border-bottom: 2px solid var(--color-blue);
+}
+#wa-chat-popup.wa-arrow-top::after {
+    top: -10px;
+    bottom: auto;
+    left: var(--wa-arrow-left, 50%);
+    margin-left: -9px;
+    border: none;
+    border-left: 2px solid var(--color-blue);
+    border-top: 2px solid var(--color-blue);
+}
+#wa-chat-popup.wa-arrow-none::after { display: none; }
 .wa-chat-close {
     position: absolute;
     top: 8px;
     right: 8px;
-    width: 34px;
-    height: 34px;
+    width: clamp(28px, 3.6vh, 34px);
+    height: clamp(28px, 3.6vh, 34px);
     border: none;
     background: rgba(0,78,181,0.08);
     color: var(--color-blue);
     border-radius: 50%;
-    font-size: 24px;
+    font-size: clamp(18px, 2.6vh, 24px);
     line-height: 1;
     cursor: pointer;
     display: flex;
@@ -1075,46 +1144,49 @@ button, a, .abtn, .btn-nav, [role="button"] {
 .wa-chat-eyebrow {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.44rem;
+    font-size: clamp(0.72rem, 1.45vh, 1.44rem);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: rgba(0,78,181,0.55);
-    margin: 0 34px 10px 0;
+    margin: 0 34px clamp(4px, 0.8vh, 10px) 0;
 }
 .wa-chat-msg {
     font-family: var(--font-body);
     color: var(--color-blue);
-    font-size: 1.9rem;
-    line-height: 1.4;
+    font-size: clamp(0.95rem, 2.1vh, 1.9rem);
+    line-height: 1.35;
     font-weight: 600;
-    margin: 0 0 18px;
+    margin: 0 0 clamp(8px, 1.6vh, 18px);
 }
 .wa-chip-group-title {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: clamp(0.66rem, 1.15vh, 1.1rem);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: rgba(0,78,181,0.55);
-    margin: 14px 0 6px;
+    margin: clamp(6px, 1vh, 14px) 0 clamp(3px, 0.5vh, 6px);
 }
 .wa-chip-group-title:first-of-type { margin-top: 0; }
+/* Duas colunas fixas: leitura mais facil e altura previsivel. */
 .wa-chip-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(5px, 0.85vh, 12px) clamp(8px, 1.2vw, 14px);
+    margin-bottom: clamp(4px, 0.6vh, 10px);
 }
 .wa-chip {
-    padding: 14px 26px;
+    padding: clamp(6px, 1vh, 15px) clamp(8px, 1.1vw, 18px);
     border-radius: 999px;
     border: 2px solid var(--color-blue);
     background: #fff;
     color: var(--color-blue);
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.64rem;
-    white-space: nowrap;
+    font-size: clamp(0.88rem, 1.98vh, 1.7rem);
+    line-height: 1.2;
+    white-space: normal;
+    text-align: center;
     cursor: pointer;
     transition: background 0.15s, transform 0.15s;
 }
@@ -1128,11 +1200,11 @@ button, a, .abtn, .btn-nav, [role="button"] {
 .wa-chat-input-row input {
     flex: 1;
     min-width: 0;
-    padding: 18px 20px;
+    padding: clamp(10px, 1.6vh, 18px) clamp(12px, 1.4vw, 20px);
     border: 1px solid rgba(0,51,160,0.25);
     border-radius: 8px;
     font-family: var(--font-body);
-    font-size: 1.8rem;
+    font-size: clamp(0.9rem, 1.9vh, 1.8rem);
     box-sizing: border-box;
 }
 .wa-chat-input-row input:focus {
@@ -1147,8 +1219,8 @@ button, a, .abtn, .btn-nav, [role="button"] {
     border-radius: 8px;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.7rem;
-    padding: 0 28px;
+    font-size: clamp(0.9rem, 1.8vh, 1.7rem);
+    padding: 0 clamp(14px, 1.8vw, 28px);
     cursor: pointer;
 }
 .wa-chat-send:hover { filter: brightness(0.96); }
@@ -1158,24 +1230,20 @@ button, a, .abtn, .btn-nav, [role="button"] {
     text-align: center;
     text-decoration: none;
     box-sizing: border-box;
-    padding: 22px 28px;
+    padding: clamp(12px, 2.2vh, 22px) clamp(16px, 2vw, 28px);
     border-radius: 10px;
     border: 2px solid #128C7E;
     background: #25D366;
     color: #fff;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 1.8rem;
+    font-size: clamp(0.95rem, 1.9vh, 1.8rem);
     box-shadow: -3px 3px 0 #128C7E;
     cursor: pointer;
 }
 .wa-chat-cta:hover { filter: brightness(1.03); }
 @media (max-width: 600px) {
-    #wa-chat-popup { padding: 24px 24px 20px; width: min(560px, 94vw); }
-    .wa-chat-eyebrow { font-size: 1.2rem; }
-    .wa-chat-msg { font-size: 1.7rem; }
-    .wa-chip-group-title { font-size: 0.95rem; }
-    .wa-chip { font-size: 1.4rem; padding: 12px 22px; }
+    #wa-chat-popup { width: min(620px, 94vw); }
     .wa-icon-bubble { width: 81px; height: 81px; }
     .wa-icon-bubble svg { width: 39px; height: 39px; }
 }

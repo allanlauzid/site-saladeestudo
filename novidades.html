@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novidades - Sala de Estudo</title>
+    <meta name="description" content="Novidades sobre ENEM, vestibulares, dicas de estudo e educação em Recife/PE — atualizado toda semana.">
+    <link rel="canonical" href="https://allanlauzid.github.io/site-saladeestudo/novidades.html">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Sala de Estudo">
+    <meta property="og:title" content="Novidades - Sala de Estudo">
+    <meta property="og:description" content="Novidades sobre ENEM, vestibulares, dicas de estudo e educação em Recife/PE.">
+    <meta property="og:url" content="https://allanlauzid.github.io/site-saladeestudo/novidades.html">
+    <meta property="og:image" content="https://allanlauzid.github.io/site-saladeestudo/png/sala-de-estudo-social.png">
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="svg/logo-completa.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="png/sala-de-estudo-icon-180.png">
+    <meta name="theme-color" content="#FFD100">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&family=Caveat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="novidades.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-bg"></div>
+        <div class="container nav-container" style="position: relative; z-index: 2;">
+            <div class="brand-logo">
+                <a href="index.html"><img src="svg/logo-completa.svg" class="logo-svg" alt="Sala de Estudo"></a>
+            </div>
+            <a href="index.html#contato" class="btn btn-nav">Agendar Diagnóstico</a>
+        </div>
+    </nav>
+
+    <header class="hero" style="padding-bottom: 2rem;">
+        <div class="container">
+            <span class="badge">Atualizado toda semana</span>
+            <h1 style="margin-top: 0.75rem;">Novidades</h1>
+            <p>ENEM, vestibulares, dicas de estudo e educação em Recife/PE — resumido pra você, sem enrolação.</p>
+        </div>
+    </header>
+
+    <section class="bento-section">
+        <div class="container">
+            <div id="novidades-lista" class="bento-grid" style="display: grid; gap: 1.25rem;">
+                <p class="novidades-carregando">Carregando novidades…</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="footer-outer" style="overflow: hidden; padding-top: 800px; margin-top: -800px;">
+        <footer id="contato" class="footer">
+            <div class="container">
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <h2>Pronto para ver a diferença?</h2>
+                        <p>Agende uma conversa rápida no WhatsApp para marcarmos as aulas.</p>
+                        <div style="margin: 1.5rem 0;">
+                            <a href="https://wa.me/5581999824123" class="btn" style="background:#25D366; color:#FFF; border-color:#25D366; box-shadow: -4px 4px 0 #128C7E;">Falar no WhatsApp</a>
+                        </div>
+                        <div style="margin-top: 1rem;">
+                            <p style="margin-bottom: 0.5rem; font-size: 1.1rem;"><strong>Endereço:</strong><br>Rua Antenor Navarro, 81 - Sala 108<br>Galeria Estação Jaqueira, Recife - PE</p>
+                            <p style="font-size: 1.1rem;"><strong>Telefone:</strong> (81) 99982-4123</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <div class="footer-bottom-left">
+                        <span>&copy; 2026 Sala de Estudo - Profª Rubia Lima</span>
+                        <a href="admin.html" class="admin-link">ADMIN</a>
+                    </div>
+                    <a href="https://instagram.com/reforco_se" class="instagram-link">
+                        <img src="png/icon-instagram-branco.png" alt="Instagram" style="width: 70px; height: auto;">
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="novidades.js"></script>
+    <script>
+      initNovidadesCompleto('novidades-lista', 30);
+    </script>
+</body>
+</html>

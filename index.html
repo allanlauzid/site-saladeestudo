@@ -29,6 +29,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&family=Caveat:wght@700&family=Permanent+Marker&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="intro.css">
+    <link rel="stylesheet" href="novidades.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/0.6.5/opentype.min.js"></script>
 </head>
 <body>
@@ -312,6 +313,19 @@
         </div>
     </section>
 
+    <!-- ============ NOVIDADES (3 posts mais recentes) ============ -->
+    <!-- Preenchida pelo novidades.js a partir da tabela `novidades` do
+         Supabase. Sem posts publicados, a seção se remove sozinha. -->
+    <section class="bento-section novidades-section">
+        <div class="container">
+            <div class="novidades-header">
+                <h2>Novidades</h2>
+                <a href="novidades.html">Ver todas &rarr;</a>
+            </div>
+            <div id="novidades-teaser" class="bento-grid"></div>
+        </div>
+    </section>
+
     <section class="faq">
         <div class="container">
             <div class="faq-header">
@@ -411,7 +425,7 @@
       aria-label="Falar no WhatsApp"
       data-tooltip="Falar no WhatsApp"
     >
-      <img src="icons/icone_whatsapp_celular.webp" alt="" aria-hidden="true">
+      <img src="icons/icone_whatsapp_celular.svg" alt="" aria-hidden="true">
       <span id="whatsapp-bubble" aria-hidden="true"></span>
     </a>
 
@@ -792,9 +806,17 @@
         iconBubble.href = directWaUrl(DEFAULT_TEXT);
 
         const steps = [
-          { key: 'materia', label: 'Matéria com mais dificuldade', msg: 'Oi! 👋 Rapidinho: em qual matéria seu filho(a) tem mais dificuldade?', options: [
-            'Português', 'Redação', 'Literatura', 'Matemática', 'Ciências', 'Biologia', 'Física', 'Química',
-            'História', 'Geografia', 'Filosofia', 'Sociologia', 'Inglês', 'Espanhol', 'Outra'
+          // A ordem importa: as matérias ficam em duas colunas, então os
+          // pares abaixo caem lado a lado, agrupados por afinidade.
+          { key: 'materia', label: 'Matéria com mais dificuldade', msg: 'Oi! 👋 Rapidinho: em qual matéria<br>seu filho(a) tem mais dificuldade?', options: [
+            'Português', 'Matemática',
+            'Redação', 'Literatura',
+            'Física', 'Química',
+            'Ciências', 'Biologia',
+            'História', 'Geografia',
+            'Filosofia', 'Sociologia',
+            'Inglês', 'Espanhol',
+            'Outro'
           ] },
           { key: 'serie', label: 'Série', msg: 'Show! E em que série ele(a) está?', groups: [
             { title: 'Ensino Médio', options: [
@@ -824,6 +846,7 @@
         ];
 
         let stepIndex = 0;
+        let docked = false;
         const answers = {};
 
         function summaryText(){
@@ -867,6 +890,9 @@
               render();
             });
           });
+          // A altura muda a cada pergunta: reposiciona o balão (e a
+          // setinha) para continuar centrado no celular e sem scroll.
+          if(popup.classList.contains('wa-chat-open')) positionBubbles();
         }
 
         function renderFinal(){
@@ -877,34 +903,123 @@
             '<a class="wa-chat-cta" id="wa-chat-cta" target="_blank" rel="noopener" href="' + href + '">Continuar no WhatsApp</a>';
           const cta = document.getElementById('wa-chat-cta');
           if(cta) cta.addEventListener('click', function(){ closeAssist(); });
+          if(popup.classList.contains('wa-chat-open')) positionBubbles();
         }
 
         // Balão 1 (ícone) fica acima do botão, igual à posição do balão
-        // de frases. Balão 2 (perguntas) fica à direita — ou à esquerda,
-        // se não houver espaço na tela.
+        // de frases. Balão 2 (perguntas) fica ao lado do celular — à
+        // direita por padrão, à esquerda se não houver espaço, e acima
+        // ou abaixo quando nenhum dos lados cabe. A setinha do balão
+        // (::after) é posicionada pelo JS para sempre apontar para o
+        // centro do celular, deixando claro que é um balão de fala.
+        // A animação de abertura (intro) termina deixando left/top inline
+        // no celular, então uma classe CSS sozinha não consegue movê-lo:
+        // o encaixe no canto é feito com estilo inline e desfeito depois.
+        let dockSaved = null;
+        function setDock(on){
+          if(on){
+            if(!dockSaved){
+              dockSaved = { top: btn.style.top, left: btn.style.left, marginTop: btn.style.marginTop };
+            }
+            btn.classList.add('wa-btn-docked');
+            btn.style.marginTop = '0px';
+            btn.style.left = '10px';
+            btn.style.top = Math.max(10, window.innerHeight - btn.offsetHeight - 10) + 'px';
+          } else {
+            btn.classList.remove('wa-btn-docked');
+            if(dockSaved){
+              btn.style.top = dockSaved.top;
+              btn.style.left = dockSaved.left;
+              btn.style.marginTop = dockSaved.marginTop;
+              dockSaved = null;
+            }
+          }
+        }
+
+        function bestSide(rect, pw, ph, vw, vh, margin, gap){
+          if(rect.right + gap + pw <= vw - margin) return 'right';
+          if(rect.left - gap - pw >= margin) return 'left';
+          if(rect.top - gap - ph >= margin) return 'above';
+          if(rect.bottom + gap + ph <= vh - margin) return 'below';
+          return null;
+        }
+
         function positionBubbles(){
-          const rect = btn.getBoundingClientRect();
-
-          const iconWidth = iconBubble.offsetWidth || 62;
-          let iconLeft = rect.left + rect.width / 2 - iconWidth / 2;
-          iconLeft = Math.max(10, Math.min(iconLeft, window.innerWidth - iconWidth - 10));
-          iconBubble.style.left = iconLeft + 'px';
-          iconBubble.style.bottom = Math.max(10, window.innerHeight - rect.top + 14) + 'px';
-
+          const vw = window.innerWidth;
+          const vh = window.innerHeight;
+          const margin = 8;
+          const gap = 16;
           const popupWidth = popup.offsetWidth || 300;
           const popupHeight = popup.offsetHeight || 220;
-          let flip = false;
-          let popupLeft = rect.right + 16;
-          if(popupLeft + popupWidth > window.innerWidth - 10){
-            flip = true;
-            popupLeft = rect.left - popupWidth - 16;
+
+          // Enquanto o balão estiver aberto o celular não volta pro meio
+          // da tela a cada pergunta (evita "pulos"): uma vez encostado,
+          // fica encostado até fechar.
+          if(!docked) setDock(false);
+          let rect = btn.getBoundingClientRect();
+          let side = bestSide(rect, popupWidth, popupHeight, vw, vh, margin, gap);
+          if(!side){
+            docked = true;
+            // Telas estreitas: o celular está no meio da tela e o balão
+            // não cabe em nenhum lado sem cobri-lo. Encostamos o celular
+            // no canto inferior e o balão fala de cima dele.
+            setDock(true);
+            rect = btn.getBoundingClientRect();
+            side = bestSide(rect, popupWidth, popupHeight, vw, vh, margin, gap) || 'above';
           }
-          popupLeft = Math.max(10, Math.min(popupLeft, window.innerWidth - popupWidth - 10));
-          let popupTop = rect.top + rect.height / 2 - popupHeight / 2;
-          popupTop = Math.max(10, Math.min(popupTop, window.innerHeight - popupHeight - 10));
+
+          // Balão 1 (ícone do WhatsApp): normalmente acima do celular;
+          // quando o balão de perguntas está acima, vai pro lado pra não
+          // cobrir a setinha.
+          const iconWidth = iconBubble.offsetWidth || 62;
+          const iconHeight = iconBubble.offsetHeight || iconWidth;
+          iconBubble.classList.toggle('wa-icon-side', side === 'above');
+          if(side === 'above'){
+            let iconLeft = rect.right + 12;
+            if(iconLeft + iconWidth > vw - 10) iconLeft = rect.left - iconWidth - 12;
+            iconLeft = Math.max(10, Math.min(iconLeft, vw - iconWidth - 10));
+            iconBubble.style.left = iconLeft + 'px';
+            const iconBottom = vh - rect.bottom + (rect.height - iconHeight) / 2;
+            iconBubble.style.bottom = Math.max(10, iconBottom) + 'px';
+          } else {
+            let iconLeft = rect.left + rect.width / 2 - iconWidth / 2;
+            iconLeft = Math.max(10, Math.min(iconLeft, vw - iconWidth - 10));
+            iconBubble.style.left = iconLeft + 'px';
+            iconBubble.style.bottom = Math.max(10, vh - rect.top + 14) + 'px';
+          }
+
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
+
+          let popupLeft, popupTop;
+          if(side === 'right' || side === 'left'){
+            popupLeft = (side === 'right') ? rect.right + gap : rect.left - gap - popupWidth;
+            popupTop = cy - popupHeight / 2;
+          } else {
+            popupLeft = cx - popupWidth / 2;
+            popupTop = (side === 'below') ? rect.bottom + gap : rect.top - gap - popupHeight;
+          }
+          popupLeft = Math.max(margin, Math.min(popupLeft, vw - popupWidth - margin));
+          popupTop = Math.max(margin, Math.min(popupTop, vh - popupHeight - margin));
           popup.style.left = popupLeft + 'px';
           popup.style.top = popupTop + 'px';
-          popup.classList.toggle('wa-chat-flip', flip);
+
+          // Setinha sempre voltada para o celular.
+          ['wa-arrow-left','wa-arrow-right','wa-arrow-top','wa-arrow-bottom','wa-arrow-none']
+            .forEach(function(c){ popup.classList.remove(c); });
+          popup.classList.toggle('wa-chat-flip', side === 'left');
+
+          if(side === 'right' || side === 'left'){
+            popup.classList.add(side === 'right' ? 'wa-arrow-left' : 'wa-arrow-right');
+            let arrowTop = cy - popupTop - 9;
+            arrowTop = Math.max(14, Math.min(arrowTop, popupHeight - 32));
+            popup.style.setProperty('--wa-arrow-top', arrowTop + 'px');
+          } else {
+            popup.classList.add(side === 'below' ? 'wa-arrow-top' : 'wa-arrow-bottom');
+            let arrowLeft = cx - popupLeft;
+            arrowLeft = Math.max(24, Math.min(arrowLeft, popupWidth - 24));
+            popup.style.setProperty('--wa-arrow-left', arrowLeft + 'px');
+          }
         }
 
         function assistOpen(){
@@ -913,6 +1028,8 @@
 
         function openAssist(){
           stepIndex = 0;
+          docked = false;
+          if(window.__waFloatSnap) window.__waFloatSnap();
           for(const k in answers) delete answers[k];
           render();
           positionBubbles();
@@ -936,6 +1053,8 @@
           popup.classList.remove('wa-chat-open');
           popup.setAttribute('aria-hidden', 'true');
           window.__waAssistOpen = false;
+          docked = false;
+          setDock(false);
           document.removeEventListener('click', outsideClick, true);
           window.removeEventListener('resize', positionBubbles);
         }
@@ -959,6 +1078,143 @@
         document.addEventListener('keydown', function(e){
           if(e.key === 'Escape' && assistOpen()) closeAssist();
         });
+      })();
+
+      // Celular flutuante x rolagem da página: em vez de ficar grudado
+      // na tela, o celular fica "preso" ao ponto da página e sai de cena
+      // pela borda; 1,5 segundo depois de sumir ele começa a voltar,
+      // flutuando devagar, para a posição de descanso — se a pessoa
+      // continuar rolando, ele segue atrás, sempre com atraso. Usa a propriedade CSS `translate`
+      // (independente de `transform`) pra não brigar com a flutuação e a
+      // vibração que o GSAP já aplica no mesmo elemento.
+      (function(){
+        const btn = document.getElementById('whatsapp-float-btn');
+        if(!btn) return;
+        if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const DELAY = 1500;   // ms fora da tela antes de começar a voltar
+        const TAU = 900;      // quanto maior, mais devagar ele volta
+        let offset = 0;       // deslocamento atual em px (negativo = acima)
+        let pendingSince = 0; // instante a partir do qual contam os 2s
+        let estavaFora = false; // ele já estava fora da tela na última rolagem?
+        let lastY = window.scrollY || window.pageYOffset || 0;
+        let raf = null;
+        let lastFrame = 0;
+
+        // O celular pode sair da tela: o limite é só o suficiente para
+        // ele ficar totalmente fora (mais uma folga), pra não acumular
+        // deslocamento à toa numa rolagem longa.
+        const FOLGA = 40;
+        function medidas(){
+          const r = btn.getBoundingClientRect();
+          return { baseTop: r.top - offset, altura: r.height };
+        }
+
+        function apply(){
+          btn.style.translate = offset ? ('0px ' + offset.toFixed(2) + 'px') : '';
+          // O balão de frases some junto com o celular: ele fica acima
+          // do ícone, então, se continuasse visível, ficaria sozinho na
+          // tela depois que o celular já tivesse saído pela borda.
+          // Volta assim que o celular retorna à posição de descanso.
+          btn.classList.toggle('wa-scroll-away', offset !== 0);
+        }
+
+        // Chamado quando o balão de perguntas abre: o balão é posicionado
+        // a partir da posição do celular, então ele precisa estar parado.
+        window.__waFloatSnap = function(){
+          offset = 0;
+          pendingSince = 0;
+          estavaFora = false;
+          lastFrame = 0;
+          lastY = window.scrollY || window.pageYOffset || 0;
+          apply();
+        };
+
+        function schedule(){
+          if(raf === null) raf = requestAnimationFrame(frame);
+        }
+
+        function frame(now){
+          raf = null;
+          const dt = lastFrame ? Math.min(now - lastFrame, 80) : 16;
+          lastFrame = now;
+          if(pendingSince && now - pendingSince >= DELAY){
+            // Decaimento exponencial: rápido no começo, suave no fim.
+            offset *= Math.exp(-dt / TAU);
+            if(Math.abs(offset) < 0.3){ offset = 0; pendingSince = 0; estavaFora = false; }
+            apply();
+          }
+          if(offset !== 0) schedule();
+          else lastFrame = 0;
+        }
+
+        window.addEventListener('scroll', function(){
+          const y = window.scrollY || window.pageYOffset || 0;
+          const d = y - lastY;
+          lastY = y;
+          if(!d) return;
+          // Com o balão de perguntas aberto o celular fica firme, senão a
+          // setinha do balão deixa de apontar pra ele.
+          if(window.__waAssistOpen){ window.__waFloatSnap(); return; }
+          const m = medidas();
+          const vh = window.innerHeight;
+          const paraCima = m.baseTop + m.altura + FOLGA;
+          const paraBaixo = (vh - m.baseTop) + FOLGA;
+          offset = Math.max(-paraCima, Math.min(paraBaixo, offset - d));
+
+          // O 1,5 segundo começa a contar no instante em que ele some
+          // da tela. Se a rolagem foi curta e ele nem chegou a sair,
+          // contam a partir do momento em que começou a se deslocar.
+          const topo = m.baseTop + offset;
+          const foraAgora = (topo + m.altura <= 0) || (topo >= vh);
+          if(foraAgora && !estavaFora) pendingSince = performance.now();
+          else if(!pendingSince) pendingSince = performance.now();
+          estavaFora = foraAgora;
+
+          apply();
+          schedule();
+        }, { passive: true });
+
+        window.addEventListener('resize', function(){
+          const m = medidas();
+          const vh = window.innerHeight;
+          offset = Math.max(-(m.baseTop + m.altura + FOLGA), Math.min((vh - m.baseTop) + FOLGA, offset));
+          apply();
+        });
+      })();
+
+      // Celular flutuante x rodapé azul: o ícone é azul, então em cima
+      // da faixa azul ele se perdia no fundo. Enquanto o botão estiver
+      // sobreposto ao rodapé, a classe .wa-on-footer liga um contorno
+      // branco no ícone (o desenho em si fica no CSS). A checagem roda
+      // na rolagem/redimensionamento e continua por alguns segundos
+      // depois, porque o celular ainda se move sozinho (flutuação do
+      // GSAP e o retorno suave à posição de descanso).
+      (function(){
+        const btn = document.getElementById('whatsapp-float-btn');
+        const footer = document.getElementById('contato');
+        if(!btn || !footer) return;
+
+        const FOLGA = 6;     // o desenho é um pouco menor que a caixa
+        const CAUDA = 3000;  // ms de checagem após a última rolagem
+        let raf = null;
+        let ate = 0;
+
+        function check(){
+          raf = null;
+          const b = btn.getBoundingClientRect();
+          const f = footer.getBoundingClientRect();
+          const sobrepoe = (b.bottom - FOLGA) > f.top && (b.top + FOLGA) < f.bottom
+                        && (b.right - FOLGA) > f.left && (b.left + FOLGA) < f.right;
+          btn.classList.toggle('wa-on-footer', sobrepoe);
+          if(performance.now() < ate) schedule();
+        }
+        function schedule(){ if(raf === null) raf = requestAnimationFrame(check); }
+        function acorda(){ ate = performance.now() + CAUDA; schedule(); }
+
+        window.addEventListener('scroll', acorda, { passive: true });
+        window.addEventListener('resize', acorda);
+        acorda();
       })();
 
       // "Agendar Diagnóstico" / "Conhecer a Sala de Estudo" pulam pra
@@ -1101,6 +1357,10 @@
             window.location.href = 'admin.html';
         }
     })();
+    </script>
+    <script src="novidades.js"></script>
+    <script>
+      initNovidadesTeaser('novidades-teaser', 3);
     </script>
 </body>
 </html>

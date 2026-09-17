@@ -86,6 +86,8 @@
     if(byHost) return byHost;
     const value = String(keyValue || '').trim();
     if(/^AIza[\w-]{20,}$/i.test(value)) return 'google';
+    // Formato novo das chaves do Google AI Studio (substitui as "AIza").
+    if(/^AQ\.[\w.-]{10,}$/i.test(value)) return 'google';
     if(/^sk-ant-/i.test(value)) return 'anthropic';
     if(/^sk-or-v1-/i.test(value)) return 'openrouter';
     if(/^gsk_/i.test(value)) return 'groq';

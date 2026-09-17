@@ -1,0 +1,49 @@
+name: Gerar novidade semanal
+
+on:
+  schedule:
+    # Toda segunda-feira às 09:00 (horário de Recife/UTC-3) = 12:00 UTC
+    - cron: "0 12 * * 1"
+  workflow_dispatch:
+    inputs:
+      tema_forcado:
+        description: "Tema desta execução (auto = usa o rodízio semanal normal)"
+        required: false
+        type: choice
+        default: auto
+        options:
+          - auto
+          - enem_vestibular
+          - dicas_estudo
+          - educacao_pe
+
+# O robô só lê o repositório (escreve no Supabase, não aqui).
+permissions:
+  contents: read
+
+# Evita duas execuções simultâneas gravando dois posts.
+concurrency:
+  group: gerar-novidades
+  cancel-in-progress: false
+
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Gerar e publicar a novidade da semana
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          TEMA_FORCADO: ${{ inputs.tema_forcado }}
+        run: node scripts/gerar-novidade.mjs
