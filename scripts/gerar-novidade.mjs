@@ -268,6 +268,36 @@ Inclua em "fontes" apenas as notícias que você realmente usou como base (pode 
   return JSON.parse(textoGerado);
 }
 
+// ---------- 3b. Conferir as fontes citadas ----------
+
+function validarFontes(fontes, noticias) {
+  if (!Array.isArray(fontes) || fontes.length === 0) return [];
+  const linksReais = new Set(noticias.map((n) => n.link));
+  const validas = [];
+
+  for (const f of fontes) {
+    if (!f || typeof f !== 'object') continue;
+    const link = String(f.link || '').trim();
+    const veiculo = String(f.veiculo || '').trim();
+    const titulo = String(f.titulo || '').trim();
+
+    // A notícia precisa ser uma das que o script buscou.
+    if (!linksReais.has(link)) continue;
+    // Nome de veículo/título gigante é sinal de texto inventado.
+    if (veiculo.length > 60 || titulo.length > 160) continue;
+    if (!/^https?:\/\//i.test(link)) continue;
+
+    validas.push({ titulo: titulo.slice(0, 160), veiculo: veiculo.slice(0, 60), link });
+    if (validas.length === 4) break;
+  }
+
+  const descartadas = fontes.length - validas.length;
+  if (descartadas > 0) {
+    console.warn(`${descartadas} fonte(s) descartada(s) por não corresponderem às notícias buscadas.`);
+  }
+  return validas;
+}
+
 // ---------- 4. Salvar no Supabase ----------
 
 function gerarSlug(titulo) {
@@ -332,6 +362,11 @@ async function main() {
   console.log(`Notícias encontradas: ${noticias.length}`);
 
   const post = await gerarPostComGemini(tema, noticias);
+
+  // Trava anti-invenção: a IA só pode citar como fonte uma notícia que o
+  // script realmente buscou. Se ela inventar (o que acontece quando a busca
+  // volta vazia), a fonte é descartada em vez de virar lixo no site.
+  post.fontes = validarFontes(post.fontes, noticias);
 
   // A tabela exige titulo/resumo/corpo não nulos: se a IA devolver algo
   // vazio, é melhor falhar aqui com mensagem clara do que gravar lixo.

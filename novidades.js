@@ -114,10 +114,16 @@ function renderCardCompleto(post) {
     .split(/\n{2,}/)
     .map((p) => `<p>${escaparHtml(p)}</p>`)
     .join('');
-  const fontesHtml = fontes.length
-    ? `<div class="novidade-fontes"><strong>Fontes:</strong> ${fontes
-        .map((f) => `<a href="${escaparHtml(f.link)}" target="_blank" rel="noopener">${escaparHtml(f.veiculo || f.titulo)}</a>`)
-        .join(', ')}</div>`
+  // As fontes aparecem só como nome do veículo, em texto — sem link.
+  // Os links do Google News são enormes (redirecionamentos) e, quando a IA
+  // erra, viram blocos de texto sem sentido. Aqui cortamos nomes longos
+  // demais e mostramos no máximo 4.
+  const nomesFontes = fontes
+    .map((f) => String((f && (f.veiculo || f.titulo)) || '').trim())
+    .filter((nome) => nome.length > 1 && nome.length <= 60)
+    .slice(0, 4);
+  const fontesHtml = nomesFontes.length
+    ? `<div class="novidade-fontes"><strong>Fontes:</strong> ${nomesFontes.map(escaparHtml).join(' · ')}</div>`
     : '';
 
   return `

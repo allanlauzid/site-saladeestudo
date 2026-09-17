@@ -839,7 +839,7 @@
               { label: 'Outro', value: 'Outro' }
             ] }
           ] },
-          { key: 'turno', label: 'Turno', msg: 'Perfeito. Estuda em qual turno?', options: ['Manhã', 'Tarde', 'Noite'] },
+          { key: 'turno', label: 'Turno de interesse pro Reforço', msg: 'Perfeito. Qual o turno de interesse para as aulas de Reforço?', options: ['Manhã', 'Tarde', 'Noite'] },
           { key: 'colegio', label: 'Colégio', msg: 'Última coisa: qual o nome do colégio?', options: [
             'Damas', 'Marista/São Luis', 'Agnes/Mackenzie', 'Equipe', 'Núcleo', 'Cognitivo', 'CBV', 'GGE', 'Motivo', 'Outro'
           ] }
@@ -1242,7 +1242,11 @@
       })();
     </script>
     <script src="mascote-pose-data.js?v=10"></script>
-    <script src="hangman-animation.js?v=31"></script>
+    <!-- Prancha com as 5 poses do boneco na forca. O hangman-animation.js
+         lê window.HANGMAN_POSES_SVG daqui para montar o boneco pendurado;
+         sem este arquivo as peças aparecem soltas, sem formar o boneco. -->
+    <script src="hangman-poses-inline.js?v=1"></script>
+    <script src="hangman-animation.js?v=32"></script>
     <script src="hangman-gameplay.js?v=12"></script>
     <script src="game-jogodavelha.js?v=2"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
