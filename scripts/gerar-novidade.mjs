@@ -26,6 +26,13 @@ const GEMINI_API_KEY = requireEnv('GEMINI_API_KEY');
 const SUPABASE_URL = requireEnv('SUPABASE_URL').replace(/\/+$/, '');
 const SUPABASE_SERVICE_ROLE_KEY = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
+// Se o modelo principal estiver sobrecarregado (erro 503 "high demand") ou
+// não existir mais (404), o script tenta os seguintes, em ordem. Dá pra
+// mudar a lista com a variável GEMINI_MODELOS_RESERVA (separada por vírgula).
+const MODELOS_RESERVA = (process.env.GEMINI_MODELOS_RESERVA ||
+  'gemini-3.8-flash,gemini-3.7-flash,gemini-3.5-flash,gemini-2.5-flash')
+  .split(',').map((m) => m.trim()).filter(Boolean);
+const MODELOS = [GEMINI_MODEL, ...MODELOS_RESERVA.filter((m) => m !== GEMINI_MODEL)];
 
 function requireEnv(name) {
   const v = process.env[name];
@@ -41,19 +48,19 @@ function requireEnv(name) {
 const TEMAS = {
   enem_vestibular: {
     label: 'ENEM e vestibulares (SSA)',
-    query: '(ENEM OR vestibular OR "SSA UPE" OR "SSA Pernambuco") quando:7d',
+    query: '(ENEM OR vestibular OR "SSA UPE" OR "SSA Pernambuco") when:7d',
     instrucaoExtra:
       'Foque em prazos, editais, mudanças na prova, datas de inscrição ou resultados do ENEM e de vestibulares como o SSA/UPE. Se não houver nada realmente novo nas notícias, escreva uma dica prática de preparação relacionada ao que foi encontrado.',
   },
   dicas_estudo: {
     label: 'Dicas de estudo e educação',
-    query: '("técnica de estudo" OR "método de estudo" OR produtividade OR aprendizagem OR neurociência estudo) quando:7d',
+    query: '("técnica de estudo" OR "método de estudo" OR produtividade OR aprendizagem OR neurociência estudo) when:7d',
     instrucaoExtra:
       'Transforme as notícias em uma dica prática e aplicável para estudantes do ensino fundamental e médio, sempre citando de onde veio a informação (pesquisa, especialista, matéria).',
   },
   educacao_pe: {
     label: 'Educação em Recife/PE',
-    query: '(educação OR escola OR "secretaria de educação") (Recife OR Pernambuco) quando:7d',
+    query: '(educação OR escola OR "secretaria de educação") (Recife OR Pernambuco) when:7d',
     instrucaoExtra:
       'Foque em calendário escolar, iniciativas da Secretaria de Educação de PE/Recife, ou eventos educacionais locais relevantes para pais e alunos da região.',
   },
@@ -164,7 +171,6 @@ Inclua em "fontes" apenas as notícias que você realmente usou como base (pode 
   // forma recomendada pelo Google, evita a chave aparecer em log de URL e
   // funciona tanto com as chaves antigas (AIza...) quanto com as novas
   // (AQ.Ab...).
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
   const body = {
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     generationConfig: {
@@ -192,28 +198,69 @@ Inclua em "fontes" apenas as notícias que você realmente usou como base (pode 
     },
   };
 
-  // Até 3 tentativas: 429 (limite de uso) e 5xx costumam passar sozinhos.
-  let res;
+  // Percorre a lista de modelos. Em cada um: até 3 tentativas, com espera
+  // crescente, porque 503 ("high demand") e 429 costumam passar sozinhos.
+  // Se o modelo não existir (404) ou continuar indisponível, passa pro
+  // próximo da lista em vez de desistir da semana inteira.
+  let res = null;
   let ultimoErro = '';
-  for (let tentativa = 1; tentativa <= 3; tentativa++) {
-    res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': GEMINI_API_KEY,
-      },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(120000),
-    });
-    if (res.ok) break;
-    ultimoErro = (await res.text()).slice(0, 500);
-    const vaiAdiantarTentarDeNovo = res.status === 429 || res.status >= 500;
-    if (!vaiAdiantarTentarDeNovo || tentativa === 3) {
-      throw new Error(`Gemini respondeu ${res.status}: ${ultimoErro}`);
+
+  for (const modelo of MODELOS) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`;
+    let deuCerto = false;
+
+    for (let tentativa = 1; tentativa <= 3; tentativa++) {
+      let resposta;
+      try {
+        resposta = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': GEMINI_API_KEY,
+          },
+          body: JSON.stringify(body),
+          signal: AbortSignal.timeout(120000),
+        });
+      } catch (err) {
+        ultimoErro = `${modelo}: falha de rede (${err.message})`;
+        console.warn(`Erro de rede chamando ${modelo}: ${err.message}`);
+        break;
+      }
+
+      if (resposta.ok) {
+        res = resposta;
+        deuCerto = true;
+        if (modelo !== MODELOS[0]) console.log(`Gerado com o modelo reserva ${modelo}.`);
+        break;
+      }
+
+      const texto = (await resposta.text()).slice(0, 400);
+      ultimoErro = `${modelo} respondeu ${resposta.status}: ${texto}`;
+
+      // 400/401/403 = problema na chave ou na requisição: trocar de modelo
+      // não resolve, então para aqui com a mensagem original.
+      if (resposta.status === 400 || resposta.status === 401 || resposta.status === 403) {
+        throw new Error(`Gemini respondeu ${resposta.status} (problema na chave ou na requisição): ${texto}`);
+      }
+      // 404 = modelo não existe/não liberado pra essa chave: próximo da lista.
+      if (resposta.status === 404) {
+        console.warn(`Modelo ${modelo} não encontrado (404). Tentando o próximo.`);
+        break;
+      }
+      if (tentativa === 3) {
+        console.warn(`Modelo ${modelo} não respondeu depois de 3 tentativas (${resposta.status}). Tentando o próximo.`);
+        break;
+      }
+      const espera = tentativa * 15000;
+      console.warn(`${modelo} respondeu ${resposta.status}. Tentando de novo em ${espera / 1000}s (tentativa ${tentativa + 1}/3).`);
+      await new Promise((r) => setTimeout(r, espera));
     }
-    const espera = tentativa * 15000;
-    console.warn(`Gemini respondeu ${res.status}. Tentando de novo em ${espera / 1000}s (tentativa ${tentativa + 1}/3).`);
-    await new Promise((r) => setTimeout(r, espera));
+
+    if (deuCerto) break;
+  }
+
+  if (!res) {
+    throw new Error(`Nenhum modelo do Gemini respondeu. Modelos tentados: ${MODELOS.join(', ')}. Último erro — ${ultimoErro}`);
   }
   const json = await res.json();
   const textoGerado = json?.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -272,7 +319,16 @@ async function main() {
   const tema = temaDaSemana();
   console.log(`Tema desta execução: ${tema} (${TEMAS[tema].label})`);
 
-  const noticias = await buscarNoticias(TEMAS[tema].query);
+  let noticias = await buscarNoticias(TEMAS[tema].query);
+  if (noticias.length === 0) {
+    // O filtro de data (when:7d) às vezes devolve lista vazia. Tenta de
+    // novo sem ele, aceitando notícias um pouco mais antigas.
+    const semFiltroDeData = TEMAS[tema].query.replace(/\s*when:\d+[dhm]\s*/i, ' ').trim();
+    if (semFiltroDeData !== TEMAS[tema].query) {
+      console.log('Nenhuma notícia dos últimos 7 dias. Buscando sem o filtro de data...');
+      noticias = await buscarNoticias(semFiltroDeData);
+    }
+  }
   console.log(`Notícias encontradas: ${noticias.length}`);
 
   const post = await gerarPostComGemini(tema, noticias);
