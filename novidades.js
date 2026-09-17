@@ -81,6 +81,60 @@ function imagemDoPost(post) {
   return NOVIDADES_PASTA_IMG + padrao + '.webp';
 }
 
+// ---------- hashtags do post ----------
+// Geradas a partir do próprio texto do post, sem depender da IA: todas as
+// entradas cujos termos aparecem no título/resumo entram, na ordem abaixo,
+// até o limite de 5. Assim vale para os posts já publicados e para os
+// futuros, sem risco de hashtag inventada.
+const NOVIDADES_HASHTAGS = [
+  { tag: 'ENEM',              termos: ['enem'] },
+  { tag: 'SSA',               termos: ['ssa', 'seriad'] },
+  { tag: 'UPE',               termos: ['upe'] },
+  { tag: 'Vestibular',        termos: ['vestibular', 'processo seletivo'] },
+  { tag: 'Inscricoes',        termos: ['inscri', 'edital', 'isen', 'taxa'] },
+  { tag: 'Prazos',            termos: ['prazo', 'cronograma', 'data', 'calendário'] },
+  { tag: 'Resultado',         termos: ['resultado', 'nota de corte', 'aprovad', 'convoca', 'classifica'] },
+  { tag: 'SISU',              termos: ['sisu'] },
+  { tag: 'ProUni',            termos: ['prouni'] },
+  { tag: 'Redacao',           termos: ['redação'] },
+  { tag: 'Simulado',          termos: ['simulado', 'gabarito', 'prova'] },
+  { tag: 'Neurociencia',      termos: ['neuroci', 'cérebro'] },
+  { tag: 'Memoria',           termos: ['memór', 'retenção', 'revisão'] },
+  { tag: 'Foco',              termos: ['foco', 'concentra', 'distra', 'procrastin'] },
+  { tag: 'Rotina',            termos: ['rotina', 'hábito', 'horário', 'planejamento', 'organiz'] },
+  { tag: 'TecnicasDeEstudo',  termos: ['técnica de estudo', 'método de estudo', 'resumo', 'anota', 'leitura'] },
+  { tag: 'Produtividade',     termos: ['produtiv', 'tempo', 'rendimento'] },
+  { tag: 'Aprendizagem',      termos: ['aprendiz', 'aprender'] },
+  { tag: 'Ansiedade',         termos: ['ansiedade', 'saúde mental', 'estresse'] },
+  { tag: 'VoltaAsAulas',      termos: ['volta às aulas', 'matrícula', 'bimestre', 'semestre'] },
+  { tag: 'Recife',            termos: ['recife'] },
+  { tag: 'Pernambuco',        termos: ['pernambuco', ' pe '] },
+  { tag: 'EscolaPublica',     termos: ['rede estadual', 'rede municipal', 'secretaria de educação', 'escola pública'] },
+  { tag: 'EnsinoMedio',       termos: ['ensino médio'] },
+  { tag: 'EnsinoFundamental', termos: ['ensino fundamental'] },
+];
+
+// Toda novidade recebe pelo menos a hashtag do seu tema.
+const NOVIDADES_HASHTAG_TEMA = {
+  enem_vestibular: 'ENEM',
+  dicas_estudo: 'DicasDeEstudo',
+  educacao_pe: 'EducacaoEmPE',
+};
+
+function hashtagsDoPost(post) {
+  const texto = ' ' + ((post.titulo || '') + ' ' + (post.resumo || '') + ' ' + (post.corpo || '')).toLowerCase() + ' ';
+  const tags = [];
+  const doTema = NOVIDADES_HASHTAG_TEMA[post.tema];
+  if (doTema) tags.push(doTema);
+  for (const item of NOVIDADES_HASHTAGS) {
+    if (tags.length >= 5) break;
+    if (tags.indexOf(item.tag) !== -1) continue;
+    if (item.termos.some((termo) => texto.includes(termo))) tags.push(item.tag);
+  }
+  if (tags.length === 0) tags.push('Novidades');
+  return tags;
+}
+
 // Se o arquivo ainda não existir, o bloco da imagem se remove sozinho em vez
 // de deixar um ícone de imagem quebrada no card.
 function ativarFallbackDeImagem(container) {
@@ -131,9 +185,53 @@ function renderCardTeaser(post) {
 
 // ---------- página completa (novidades.html): todos os posts, expansíveis ----------
 
-async function initNovidadesCompleto(containerId, quantidade = 30) {
+const MESES_PT = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+  'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+
+// Monta os três seletores com as opções que realmente existem nos posts
+// carregados — nada de oferecer "março de 2025" se não há post nesse mês.
+function montarFiltros(filtrosEl, posts) {
+  if (!filtrosEl) return;
+
+  const anos = [...new Set(posts.map((p) => new Date(p.created_at).getFullYear()))]
+    .filter((a) => !isNaN(a))
+    .sort((a, b) => b - a);
+  const meses = [...new Set(posts.map((p) => new Date(p.created_at).getMonth()))]
+    .filter((m) => !isNaN(m))
+    .sort((a, b) => a - b);
+  const temas = [...new Set(posts.map((p) => p.tema))].filter(Boolean);
+
+  function opcoes(lista, rotulo) {
+    return lista.map((v) => `<option value="${escaparHtml(String(v.valor))}">${escaparHtml(v.texto)}</option>`).join('');
+  }
+
+  filtrosEl.innerHTML =
+    '<label class="novidades-filtro"><span>Ano</span>' +
+      '<select id="filtro-ano"><option value="">Todos</option>' +
+      opcoes(anos.map((a) => ({ valor: a, texto: String(a) }))) + '</select></label>' +
+    '<label class="novidades-filtro"><span>Mês</span>' +
+      '<select id="filtro-mes"><option value="">Todos</option>' +
+      opcoes(meses.map((m) => ({ valor: m, texto: MESES_PT[m].charAt(0).toUpperCase() + MESES_PT[m].slice(1) }))) + '</select></label>' +
+    '<label class="novidades-filtro"><span>Assunto</span>' +
+      '<select id="filtro-tema"><option value="">Todos</option>' +
+      opcoes(temas.map((t) => ({ valor: t, texto: temaInfo(t).label }))) + '</select></label>' +
+    '<button type="button" id="filtro-limpar" class="novidades-filtro-limpar" hidden>Limpar filtros</button>';
+}
+
+function aplicarFiltros(posts, filtros) {
+  return posts.filter((p) => {
+    const d = new Date(p.created_at);
+    if (filtros.ano && d.getFullYear() !== Number(filtros.ano)) return false;
+    if (filtros.mes !== '' && d.getMonth() !== Number(filtros.mes)) return false;
+    if (filtros.tema && p.tema !== filtros.tema) return false;
+    return true;
+  });
+}
+
+async function initNovidadesCompleto(containerId, quantidade = 100) {
   const container = document.getElementById(containerId);
   if (!container) return;
+  const filtrosEl = document.getElementById('novidades-filtros');
   container.innerHTML = '<p class="novidades-carregando">Carregando novidades…</p>';
   try {
     const posts = await buscarNovidades(quantidade);
@@ -141,8 +239,41 @@ async function initNovidadesCompleto(containerId, quantidade = 30) {
       container.innerHTML = '<p class="novidades-carregando">Ainda não há novidades publicadas — volte em breve!</p>';
       return;
     }
-    container.innerHTML = posts.map(renderCardCompleto).join('');
-    ativarFallbackDeImagem(container);
+
+    montarFiltros(filtrosEl, posts);
+
+    function desenhar() {
+      const filtros = {
+        ano: (document.getElementById('filtro-ano') || {}).value || '',
+        mes: (document.getElementById('filtro-mes') || {}).value ?? '',
+        tema: (document.getElementById('filtro-tema') || {}).value || '',
+      };
+      const visiveis = aplicarFiltros(posts, filtros);
+      const limpar = document.getElementById('filtro-limpar');
+      if (limpar) limpar.hidden = !(filtros.ano || filtros.mes !== '' || filtros.tema);
+
+      if (!visiveis.length) {
+        container.innerHTML = '<p class="novidades-carregando">Nenhuma novidade com esses filtros. Tente outra combinação.</p>';
+        return;
+      }
+      container.innerHTML = visiveis.map(renderCardCompleto).join('');
+      ativarFallbackDeImagem(container);
+    }
+
+    if (filtrosEl) {
+      filtrosEl.addEventListener('change', desenhar);
+      filtrosEl.addEventListener('click', function (e) {
+        if (e.target && e.target.id === 'filtro-limpar') {
+          ['filtro-ano', 'filtro-mes', 'filtro-tema'].forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+          });
+          desenhar();
+        }
+      });
+    }
+
+    desenhar();
 
     // Se veio um link direto pra um post (novidades.html#slug), abre ele e rola até lá
     const alvo = decodeURIComponent(location.hash.replace('#', ''));
@@ -161,22 +292,15 @@ async function initNovidadesCompleto(containerId, quantidade = 30) {
 
 function renderCardCompleto(post) {
   const tema = temaInfo(post.tema);
-  const fontes = Array.isArray(post.fontes) ? post.fontes : [];
   const corpoParagrafos = (post.corpo || '')
     .split(/\n{2,}/)
     .map((p) => `<p>${escaparHtml(p)}</p>`)
     .join('');
-  // As fontes aparecem só como nome do veículo, em texto — sem link.
-  // Os links do Google News são enormes (redirecionamentos) e, quando a IA
-  // erra, viram blocos de texto sem sentido. Aqui cortamos nomes longos
-  // demais e mostramos no máximo 4.
-  const nomesFontes = fontes
-    .map((f) => String((f && (f.veiculo || f.titulo)) || '').trim())
-    .filter((nome) => nome.length > 1 && nome.length <= 60)
-    .slice(0, 4);
-  const fontesHtml = nomesFontes.length
-    ? `<div class="novidade-fontes"><strong>Fontes:</strong> ${nomesFontes.map(escaparHtml).join(' · ')}</div>`
-    : '';
+  // No lugar das fontes, hashtags do assunto. As fontes continuam gravadas
+  // no banco (rastreabilidade), só não aparecem mais no site.
+  const hashtagsHtml = `<div class="novidade-hashtags">${hashtagsDoPost(post)
+    .map((tag) => `<span class="novidade-hashtag">#${escaparHtml(tag)}</span>`)
+    .join('')}</div>`;
 
   return `
     <article class="bento-card card-full novidade-card-completo" data-slug="${escaparHtml(post.slug)}" style="grid-column: 1 / -1;">
@@ -189,7 +313,7 @@ function renderCardCompleto(post) {
       </div>
       <div class="novidade-corpo" style="display:none; margin-top:1rem;">
         ${corpoParagrafos}
-        ${fontesHtml}
+        ${hashtagsHtml}
       </div>
     </article>`;
 }
