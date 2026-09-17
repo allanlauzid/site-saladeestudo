@@ -43,6 +43,55 @@ function temaInfo(tema) {
   return NOVIDADES_TEMAS[tema] || { label: 'Novidades', cor: 'var(--color-blue)' };
 }
 
+// ---------- ilustração do post ----------
+// Cada post ganha uma imagem fixa, escolhida por palavras-chave do título e
+// do resumo. Não depende de nada gerado pela IA nem de coluna nova no banco:
+// funciona inclusive nos posts que já estão publicados. A ordem importa — o
+// primeiro subtópico que casar vence — e, se nada casar, cai na imagem
+// padrão do tema.
+const NOVIDADES_PASTA_IMG = 'png/novidades/';
+
+const NOVIDADES_SUBTOPICOS = [
+  { img: 'ssa-upe',           termos: ['ssa', 'upe', 'seriad'] },
+  { img: 'enem-inscricao',    termos: ['inscri', 'edital', 'isen', 'taxa', 'prazo', 'cronograma'] },
+  { img: 'enem-resultado',    termos: ['resultado', 'sisu', 'prouni', 'fies', 'aprovad', 'convoca', 'classifica', 'nota de corte'] },
+  { img: 'enem-prova',        termos: ['prova', 'gabarito', 'simulado', 'quest', 'redação do enem', 'tri'] },
+  { img: 'estudo-memoria',    termos: ['memór', 'neuroci', 'cérebro', 'retenção', 'revisão', 'aprendizagem'] },
+  { img: 'estudo-foco',       termos: ['foco', 'concentra', 'distra', 'procrastin', 'ansiedade', 'celular'] },
+  { img: 'estudo-leitura',    termos: ['leitura', 'resumo', 'anota', 'caderno', 'livro', 'interpretação', 'redação'] },
+  { img: 'estudo-rotina',     termos: ['rotina', 'cronograma de estudo', 'organiz', 'planejamento', 'horário', 'tempo', 'hábito'] },
+  { img: 'escola-calendario', termos: ['calendário', 'volta às aulas', 'férias', 'matrícula', 'bimestre', 'semestre', 'greve'] },
+  { img: 'escola-recife',     termos: ['recife', 'pernambuco', 'secretaria de educação', 'rede estadual', 'rede municipal'] },
+];
+
+const NOVIDADES_IMG_PADRAO = {
+  enem_vestibular: 'enem-prova',
+  dicas_estudo: 'estudo-rotina',
+  educacao_pe: 'escola-recife',
+};
+
+function imagemDoPost(post) {
+  const texto = ((post.titulo || '') + ' ' + (post.resumo || '')).toLowerCase();
+  for (const sub of NOVIDADES_SUBTOPICOS) {
+    if (sub.termos.some((termo) => texto.includes(termo))) {
+      return NOVIDADES_PASTA_IMG + sub.img + '.webp';
+    }
+  }
+  const padrao = NOVIDADES_IMG_PADRAO[post.tema] || 'novidades-geral';
+  return NOVIDADES_PASTA_IMG + padrao + '.webp';
+}
+
+// Se o arquivo ainda não existir, o bloco da imagem se remove sozinho em vez
+// de deixar um ícone de imagem quebrada no card.
+function ativarFallbackDeImagem(container) {
+  container.querySelectorAll('.novidade-media img').forEach(function (img) {
+    img.addEventListener('error', function () {
+      const media = img.closest('.novidade-media');
+      if (media) media.remove();
+    });
+  });
+}
+
 function escaparHtml(str) {
   const div = document.createElement('div');
   div.textContent = str || '';
@@ -61,6 +110,7 @@ async function initNovidadesTeaser(containerId, quantidade = 3) {
       return;
     }
     container.innerHTML = posts.map(renderCardTeaser).join('');
+    ativarFallbackDeImagem(container);
   } catch (e) {
     console.error(e);
     container.closest('.novidades-section')?.remove();
@@ -71,6 +121,7 @@ function renderCardTeaser(post) {
   const tema = temaInfo(post.tema);
   return `
     <a class="bento-card card-feature novidade-card" href="novidades.html#${escaparHtml(post.slug)}">
+      <span class="novidade-media"><img src="${escaparHtml(imagemDoPost(post))}" alt="" loading="lazy"></span>
       <span class="novidade-badge" style="background:${tema.cor}">${escaparHtml(tema.label)}</span>
       <h3>${escaparHtml(post.titulo)}</h3>
       <p style="margin-top:0.5rem;">${escaparHtml(post.resumo)}</p>
@@ -91,6 +142,7 @@ async function initNovidadesCompleto(containerId, quantidade = 30) {
       return;
     }
     container.innerHTML = posts.map(renderCardCompleto).join('');
+    ativarFallbackDeImagem(container);
 
     // Se veio um link direto pra um post (novidades.html#slug), abre ele e rola até lá
     const alvo = decodeURIComponent(location.hash.replace('#', ''));
@@ -129,6 +181,7 @@ function renderCardCompleto(post) {
   return `
     <article class="bento-card card-full novidade-card-completo" data-slug="${escaparHtml(post.slug)}" style="grid-column: 1 / -1;">
       <div class="novidade-cabecalho" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">
+        <div class="novidade-media novidade-media-larga"><img src="${escaparHtml(imagemDoPost(post))}" alt="" loading="lazy"></div>
         <span class="novidade-badge" style="background:${tema.cor}">${escaparHtml(tema.label)}</span>
         <span class="novidade-data">${formatarDataNovidade(post.created_at)}</span>
         <h3 style="margin: 0.5rem 0 0;">${escaparHtml(post.titulo)}</h3>
