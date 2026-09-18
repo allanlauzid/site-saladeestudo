@@ -3,7 +3,7 @@
 11 ilustrações fixas. O `novidades.js` escolhe qual usar por palavras-chave do
 título e do resumo do post; se nenhuma casar, usa a padrão do tema.
 
-Salve os arquivos **nesta pasta** (`png/novidades/`) com o nome exato da lista.
+Salve os arquivos **nesta pasta** (`assets/img/png/novidades/`) com o nome exato da lista.
 Formato final: `.webp`. Se o ChatGPT devolver `.png`, salve assim mesmo e peça
 ao Claude para converter.
 

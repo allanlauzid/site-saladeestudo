@@ -575,7 +575,7 @@
   var activeParts = null;
   var pageScrollLock = null;
 
-  var WORD_BANK_URL = 'hangman-words.json';
+  var WORD_BANK_URL = 'assets/data/hangman-words.json';
   // Banco reserva, embutido no proprio arquivo (nao depende de fetch): usado quando
   // a pagina e aberta offline (file://) e o fetch do hangman-words.json e bloqueado
   // pelo navegador. Cobre os 13 topicos, entao o sorteio duplo continua variando

@@ -102,7 +102,7 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
     left: -10vw;
     width: calc(100% + 10vw - 30px); /* Garante 30px de respiro no lado direito para a ponta não ser cortada */
     height: 200%;
-    background-image: url('svg/seta-amarela-com-sombra.svg');
+    background-image: url('../img/svg/seta-amarela-com-sombra.svg');
     background-size: 100% 100%;
     background-position: right center;
     background-repeat: no-repeat;

@@ -28,9 +28,7 @@
   var gameActive = false;
   var pageShiftWrapper = null;
 
-  // Tags que representam conteudo real (imagem, botao, link, etc.) -- clicar
-  // nelas nunca conta como "fundo", mesmo que o proprio elemento nao tenha
-  // cor de fundo definida via CSS.
+  // Tags que representam conteudo real (imagem, botao, link, etc.).
   var CONTENT_TAGS = { IMG: 1, SVG: 1, BUTTON: 1, A: 1, INPUT: 1, TEXTAREA: 1, SELECT: 1, CANVAS: 1, VIDEO: 1, IFRAME: 1 };
 
   function isTransparentBackground(el) {
@@ -45,21 +43,11 @@
     return false; // rgb(...) sem alpha -> tem cor solida, nao e transparente
   }
 
-  function isBackgroundClick(target) {
-    // A malha quadriculada e pintada no <body>; varios elementos por cima dela
-    // (nav, header, secoes) nao tem cor/imagem de fundo propria, entao o que
-    // se ve nesses pontos e o proprio fundo aparecendo por transparencia.
-    // Conta como clique no fundo quando TODA a cadeia de elementos ate o body
-    // e transparente e nenhuma delas e um elemento de conteudo real.
-    if (!target || target === document.documentElement) return false;
-    var el = target;
-    while (el && el !== document.body && el !== document.documentElement) {
-      if (CONTENT_TAGS[el.tagName]) return false;
-      if (!isTransparentBackground(el)) return false;
-      el = el.parentElement;
-    }
-    return !!el; // chegou ate o body sem achar nada opaco/de conteudo no caminho
-  }
+  // A deteccao de "clique no fundo da pagina" (isBackgroundClick) NAO mora
+  // mais aqui: ela foi para o game-loader.js, que e carregado sempre, porque
+  // este arquivo agora so e baixado sob demanda -- e o contador de cliques do
+  // game-trigger.js precisa da deteccao desde o primeiro clique da visita.
+  // As duas funcoes acima ficaram porque o resto deste arquivo tambem usa.
 
   function ensurePageShiftWrapper() {
     if (pageShiftWrapper) return pageShiftWrapper;
@@ -700,5 +688,4 @@
     start: startGame,
     isActive: function () { return gameActive; }
   };
-  window.isBackgroundClick = isBackgroundClick;
 })();

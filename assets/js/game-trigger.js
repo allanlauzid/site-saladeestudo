@@ -55,6 +55,30 @@
     return GAMES.some(function (game) { return game.isActive(); });
   }
 
+  // ---------------------------------------------------------------------
+  // Carregamento sob demanda (game-loader.js)
+  //
+  // Os arquivos dos minigames (~425 KB) nao vem mais no carregamento da
+  // pagina. aquecer() dispara o download assim que alguem da o primeiro
+  // sinal de que talvez va jogar; abrir() garante que tudo ja executou
+  // antes de chamar o start() do jogo sorteado.
+  // ---------------------------------------------------------------------
+  var abrindo = false;
+
+  function aquecer() {
+    if (window.GameLoader) window.GameLoader.carregar();
+  }
+
+  function abrir(iniciar) {
+    if (abrindo) return;           // ja tem um jogo a caminho
+    if (!window.GameLoader) return; // sem o carregador nao ha o que abrir
+    abrindo = true;
+    window.GameLoader.carregar().then(function () {
+      abrindo = false;
+      iniciar();
+    });
+  }
+
   // Registra no Supabase (via game-analytics.js) o inicio de uma partida e
   // fica de olho em isActiveFn() para gravar o fim assim que o jogo parar de
   // estar ativo (vitoria, derrota ou o usuario simplesmente fechando/saindo).
@@ -109,10 +133,15 @@
       lastBgClickTime = now;
       bgClickCount++;
 
+      // Primeiro clique no fundo: ja comeca a baixar os jogos em segundo
+      // plano, para que o 10o clique abra na hora, sem espera.
+      if (bgClickCount === 1) aquecer();
+
       if (bgClickCount >= CLICKS_TO_TRIGGER) {
         bgClickCount = 0;
         skipIntroIfNeeded();
-        pickRandomGame().start(e.clientX, e.clientY);
+        var x = e.clientX, y = e.clientY;
+        abrir(function () { pickRandomGame().start(x, y); });
       }
     },
     true
@@ -210,6 +239,7 @@
 
   function armHead(head) {
     headArmed = true;
+    aquecer(); // 1o clique na cabeca: ja baixa os jogos enquanto o usuario decide
     showQuestionMark(head);
     headArmTimer = setTimeout(function () {
       disarmHead(true);
@@ -231,12 +261,13 @@
           } else {
             disarmHead(false);
             skipIntroIfNeeded();
-            if (window.HangmanAnimation) {
+            abrir(function () {
+              if (!window.HangmanAnimation) return;
               window.HangmanAnimation.startRandom();
               trackGameLaunch('forca', 'mascote', function () {
                 return !!(window.HangmanAnimation && window.HangmanAnimation.isActive());
               });
-            }
+            });
           }
         },
         true

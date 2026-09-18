@@ -3,17 +3,19 @@
 // rápido e funcionar como app instalável. Tudo que é dado (Supabase,
 // APIs, imagens da galeria hospedadas) sempre vai direto pra rede —
 // nunca fica em cache, pra nunca mostrar conteúdo desatualizado.
-const CACHE_NAME = 'sde-admin-shell-v1';
+const CACHE_NAME = 'sde-admin-shell-v2'; // v2: arquivos foram para assets/
 const SHELL_FILES = [
   'admin.html',
-  'styles.css',
-  'admin-gallery.css',
-  'admin-gallery.js',
-  'post-image-assets.js',
+  'assets/css/styles.css',
+  'assets/css/admin.css',
+  'assets/css/admin-gallery.css',
+  'assets/js/admin.js',
+  'assets/js/admin-gallery.js',
+  'assets/js/post-image-assets.js',
   'manifest.webmanifest',
-  'icons/pwa/icon-192.png',
-  'icons/pwa/icon-512.png',
-  'icons/pwa/icon-512-maskable.png'
+  'assets/img/icons/pwa/icon-192.png',
+  'assets/img/icons/pwa/icon-512.png',
+  'assets/img/icons/pwa/icon-512-maskable.png'
 ];
 
 self.addEventListener('install', function (event) {

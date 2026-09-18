@@ -12,24 +12,24 @@
     <meta property="og:title" content="Sala de Estudo - Profª Rubia Lima">
     <meta property="og:description" content="Reforço escolar em Recife com acompanhamento em todas as disciplinas e preparação para ENEM e SSA.">
     <meta property="og:url" content="https://allanlauzid.github.io/site-saladeestudo/">
-    <meta property="og:image" content="https://allanlauzid.github.io/site-saladeestudo/png/sala-de-estudo-social.png">
+    <meta property="og:image" content="https://allanlauzid.github.io/site-saladeestudo/assets/img/png/sala-de-estudo-social.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="Sala de Estudo - Profª Rubia Lima">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Sala de Estudo - Profª Rubia Lima">
     <meta name="twitter:description" content="Reforço escolar em Recife com acompanhamento em todas as disciplinas e preparação para ENEM e SSA.">
-    <meta name="twitter:image" content="https://allanlauzid.github.io/site-saladeestudo/png/sala-de-estudo-social.png">
+    <meta name="twitter:image" content="https://allanlauzid.github.io/site-saladeestudo/assets/img/png/sala-de-estudo-social.png">
     <link rel="icon" href="favicon.ico" sizes="any">
-    <link rel="icon" href="svg/logo-completa.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="png/sala-de-estudo-icon-180.png">
+    <link rel="icon" href="assets/img/svg/logo-completa.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/img/png/sala-de-estudo-icon-180.png">
     <meta name="theme-color" content="#FFD100">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&family=Caveat:wght@700&family=Permanent+Marker&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="intro.css">
-    <link rel="stylesheet" href="novidades.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/intro.css">
+    <link rel="stylesheet" href="assets/css/novidades.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/0.6.5/opentype.min.js"></script>
 </head>
 <body>
@@ -59,7 +59,7 @@
         <div class="navbar-bg"></div>
         <div class="container nav-container" style="position: relative; z-index: 2;">
             <div class="brand-logo">
-                <img src="svg/logo-completa.svg" class="logo-svg" alt="Sala de Estudo">
+                <img src="assets/img/svg/logo-completa.svg" class="logo-svg" alt="Sala de Estudo">
             </div>
             <a href="#contato" class="btn btn-nav">Agendar Diagnóstico</a>
         </div>
@@ -386,7 +386,7 @@
                         </div>
                     </div>
                     <a href="https://instagram.com/reforco_se" class="instagram-link">
-                        <img src="png/icon-instagram-branco.png" alt="Instagram" style="width: 70px; height: auto;">
+                        <img src="assets/img/png/icon-instagram-branco.png" alt="Instagram" style="width: 70px; height: auto;">
                     </a>
                 </div>
             </div>
@@ -425,7 +425,7 @@
       aria-label="Falar no WhatsApp"
       data-tooltip="Falar no WhatsApp"
     >
-      <img src="icons/icone_whatsapp_celular.svg" alt="" aria-hidden="true">
+      <img src="assets/img/icons/icone_whatsapp_celular.svg" alt="" aria-hidden="true">
       <span id="whatsapp-bubble" aria-hidden="true"></span>
     </a>
 
@@ -585,7 +585,7 @@
         if (e.key === 'Escape') closeContactKupimModal();
       }
     </script>
-    <script src="intro.js?v=2"></script>
+    <script src="assets/js/intro.js?v=2"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
     <script>
       // Botão flutuante do WhatsApp: só aparece depois que a intro termina
@@ -1241,17 +1241,13 @@
         });
       })();
     </script>
-    <script src="mascote-pose-data.js?v=10"></script>
-    <!-- Prancha com as 5 poses do boneco na forca. O hangman-animation.js
-         lê window.HANGMAN_POSES_SVG daqui para montar o boneco pendurado;
-         sem este arquivo as peças aparecem soltas, sem formar o boneco. -->
-    <script src="hangman-poses-inline.js?v=1"></script>
-    <script src="hangman-animation.js?v=32"></script>
-    <script src="hangman-gameplay.js?v=12"></script>
-    <script src="game-jogodavelha.js?v=2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="game-analytics.js?v=1"></script>
-    <script src="game-trigger.js?v=3"></script>
+    <!-- Minigames (easter eggs): os ~425 KB de JavaScript da forca e do jogo
+         da velha NÃO vêm mais no carregamento da página. O game-loader.js
+         (5 KB) detecta o clique no fundo e baixa os arquivos pesados sob
+         demanda; o game-trigger.js conta os cliques e sorteia o jogo.
+         A lista dos arquivos baixados está dentro do game-loader.js. -->
+    <script src="assets/js/game-loader.js?v=1"></script>
+    <script src="assets/js/game-trigger.js?v=4"></script>
     <script>
     // ---- Botão ADMIN: se já existir TOTP verificado, revela o campo de
     // código ali mesmo (sem abrir a tela de login em admin.html). Se não
@@ -1272,6 +1268,27 @@
         let sbClient = null;
         let factorsCache = null;
         let checking = false;
+        let supabasePromise = null;
+
+        // A biblioteca do Supabase (~120 KB) só é usada por este botão, que
+        // praticamente só a Rubia e o Allan clicam. Em vez de baixá-la em toda
+        // visita, ela vem sob demanda: no hover/toque do link (pra não ter
+        // espera no clique) ou, no pior caso, no próprio clique.
+        function carregarSupabase(){
+            if(window.supabase) return Promise.resolve(true);
+            if(!supabasePromise){
+                supabasePromise = new Promise(function(resolve){
+                    const s = document.createElement('script');
+                    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+                    s.onload = function(){ resolve(!!window.supabase); };
+                    s.onerror = function(){ resolve(false); };
+                    document.body.appendChild(s);
+                });
+            }
+            return supabasePromise;
+        }
+        link.addEventListener('pointerenter', carregarSupabase, { once: true });
+        link.addEventListener('touchstart', carregarSupabase, { once: true, passive: true });
 
         function getClient(){
             if(!sbClient && window.supabase){ sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); }
@@ -1295,12 +1312,17 @@
         link.addEventListener('click', function(e){
             if(gate.classList.contains('totp-open')){ e.preventDefault(); return; }
             if(checking){ e.preventDefault(); return; }
-            const client = getClient();
-            if(!client) return; // supabase não carregou: mantém o link normal
             e.preventDefault();
             checking = true;
             (async function(){
                 try{
+                    await carregarSupabase();
+                    const client = getClient();
+                    if(!client){ // supabase não carregou: cai na tela de login normal
+                        checking = false;
+                        window.location.href = 'admin.html';
+                        return;
+                    }
                     await ensureSharedSession(client);
                     const factors = await getVerifiedFactors(client);
                     checking = false;
@@ -1362,7 +1384,7 @@
         }
     })();
     </script>
-    <script src="novidades.js"></script>
+    <script src="assets/js/novidades.js"></script>
     <script>
       initNovidadesTeaser('novidades-teaser', 3);
     </script>

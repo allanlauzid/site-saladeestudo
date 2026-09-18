@@ -1,0 +1,3566 @@
+/* =========================================================================
+   Logica do painel administrativo (admin.html).
+
+   Este bloco era um <script> de ~3.560 linhas no fim do admin.html. Foi
+   separado em arquivo proprio; continua sendo carregado na mesma posicao
+   (fim do <body>, depois de post-image-assets.js e admin-gallery.js), entao
+   o comportamento e identico -- so que agora da pra achar as coisas.
+   ========================================================================= */
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+window.scrollTo(0, 0);
+window.addEventListener('load', function() {
+  window.scrollTo(0, 0);
+});
+
+// ================= SUPABASE CONFIG =================
+const SUPABASE_URL = 'https://fesejrbindspzafiyssm.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_mGEU6ouQVdIt1G97ENAq_w_tX8uknCK';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Shared technical account used as the underlying identity for everyone.
+// Not a secret in itself — the real security boundary is each person's TOTP factor.
+const SHARED_EMAIL = 'kupimdigital@gmail.com';
+const SHARED_PASSWORD = 'Supabase91!';
+
+const LS_MODEL_TEXT = 'se_admin_model_text'; // kept for in-memory fallback labels only
+const LS_MODEL_IMAGE = 'se_admin_model_image';
+
+// ================= SESSION PERSISTENCE =================
+const SESSION_TTL_MS = 2 * 60 * 60 * 1000;
+const LS_LOGIN_AT = 'se_admin_login_at';
+const LS_LOGIN_NOME = 'se_admin_login_nome';
+// Setado pela página inicial quando o código TOTP já foi verificado ali
+// mesmo (campo revelado ao lado do botão ADMIN), pra não pedir de novo
+// aqui a tela de "bem-vindo de volta" logo em seguida.
+const SS_SKIP_RESUME_GATE = 'se_admin_skip_gate';
+let panelCountdownInterval = null;
+let currentUserNome = null;
+
+// Whether the TOTP login gate is enforced. Off by default (absence of the key = false)
+// so the panel works while TOTP enrollment is broken on Supabase's dashboard.
+const LS_REQUIRE_LOGIN = 'se_admin_require_login';
+function isLoginRequired(){ return localStorage.getItem(LS_REQUIRE_LOGIN) === 'true'; }
+
+const ICON_LOGOUT_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
+const ICON_GEAR_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009.6 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9.6a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>';
+
+const LS_THEMES = 'se_admin_themes'; // legacy key, read-only, used for one-time migration
+
+const DEFAULT_THEMES = [
+  {
+    id: "p0_otimizador",
+    nome: "Otimizador de prompt",
+    templateTexto: "Atue como um especialista em engenharia de prompts.\n\nVou fornecer um prompt abaixo. Sua tarefa é analisá-lo e produzir uma versão otimizada, mantendo exatamente o objetivo e a intenção original.\n\nAo otimizar:\n\n1. Identifique ambiguidades, contradições, redundâncias ou instruções pouco claras.\n2. Torne as instruções mais específicas, objetivas e difíceis de interpretar incorretamente.\n3. Organize o prompt em uma estrutura lógica e fácil de seguir.\n4. Preserve todos os requisitos importantes do prompt original.\n5. Não invente novos requisitos que alterem o resultado pretendido.\n6. Elimine repetições desnecessárias.\n7. Quando útil, transforme instruções implícitas em regras explícitas.\n8. Defina claramente:\n\n   * objetivo;\n   * contexto;\n   * entradas;\n   * tarefa;\n   * regras;\n   * restrições;\n   * formato de saída esperado.\n9. Antecipe possíveis interpretações erradas do modelo e ajuste o prompt para evitá-las.\n10. Priorize instruções de acordo com sua importância quando houver risco de conflito.\n\nAntes de apresentar a versão final, faça uma análise breve contendo:\n\n* problemas encontrados;\n* ambiguidades;\n* redundâncias;\n* informações que poderiam melhorar o prompt.\n\nDepois apresente:\n\n## Prompt otimizado\n\nEntregue o prompt completo, pronto para copiar e usar.\n\nNão execute a tarefa descrita no prompt. Apenas analise e otimize o prompt.\n\nPROMPT ORIGINAL:\n\n{tema}",
+    templateImagem: "",
+    origem: "padrao"
+  },
+  {
+    id: "p01",
+    nome: "Oferta Geral de Reforço Escolar",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Oferta geral de reforço escolar\nObjetivo de comunicação: informar ou vender\nPúblico principal: pais e alunos do fundamental e médio\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Reconheça a dificuldade real do aluno, apresente a proposta de reforço personalizado (todas as matérias, todos os anos) e mencione a modalidade disponível (presencial, online ou domiciliar).\n\nChamada para ação (CTA): agendar uma aula ou conhecer a metodologia pelo WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Oferta geral de reforço escolar\nPúblico principal: pais e alunos do fundamental e médio\n\nDireção visual: foto de aluno estudando ou elemento gráfico neutro, hierarquia clara entre título e CTA, sem texto denso\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p02",
+    nome: "Matrículas e Captação de Vagas",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Matrículas e captação de vagas\nObjetivo de comunicação: vender\nPúblico principal: pais decidindo matrícula\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Anuncie a abertura de matrículas ou turma, destaque o benefício de agir agora sem inventar urgência, cite a série e modalidade atendidas.\n\nChamada para ação (CTA): reservar a vaga pelo WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Matrículas e captação de vagas\nPúblico principal: pais decidindo matrícula\n\nDireção visual: bloco de destaque com a cor de CTA da marca, ícone de calendário se houver prazo real, layout limpo com uma mensagem só\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p03",
+    nome: "Promoções e Condições Comerciais",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Promoções e condições comerciais\nObjetivo de comunicação: vender\nPúblico principal: pais avaliando custo-benefício\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Apresente a condição comercial, para quem ela vale, a validade e como aproveitar — apenas com dados reais e confirmados.\n\nChamada para ação (CTA): falar no WhatsApp para confirmar a condição\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Promoções e condições comerciais\nPúblico principal: pais avaliando custo-benefício\n\nDireção visual: selo de condição especial, destaque tipográfico para o valor/benefício, alto contraste sem poluir a peça\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p04",
+    nome: "Preparação para Provas e Recuperação",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Preparação para provas e recuperação\nObjetivo de comunicação: informar ou vender\nPúblico principal: alunos em período de avaliação e pais\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Reconheça a pressão do momento de provas e ofereça apoio concreto (revisão, tira-dúvidas), citando a disciplina se houver.\n\nChamada para ação (CTA): agendar uma revisão ou tirar dúvidas pelo WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Preparação para provas e recuperação\nPúblico principal: alunos em período de avaliação e pais\n\nDireção visual: elementos de estudo sem clichê exagerado, tom visual sóbrio e acolhedor\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p05",
+    nome: "ENEM, SSA e Vestibulares",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: ENEM, SSA e vestibulares\nObjetivo de comunicação: informar ou vender\nPúblico principal: alunos do médio se preparando para ENEM, SSA ou vestibular\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Contextualize o exame/etapa, explique o que a turma ou aula oferece (disciplinas, formato) e reforce a preparação especializada.\n\nChamada para ação (CTA): garantir vaga na turma ou saber mais pelo WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: ENEM, SSA e vestibulares\nPúblico principal: alunos do médio se preparando para ENEM, SSA ou vestibular\n\nDireção visual: elementos que remetam ao exame sem copiar identidade oficial, tipografia técnica, hierarquia clara\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p06",
+    nome: "Disciplinas e Conteúdos Escolares",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Disciplinas e conteúdos escolares\nObjetivo de comunicação: informar\nPúblico principal: alunos e pais com dificuldade numa matéria específica\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Nomeie dificuldades comuns da disciplina em questão e explique como a Sala de Estudo apoia o aluno nela.\n\nChamada para ação (CTA): agendar aula da disciplina ou mandar dúvida pelo WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Disciplinas e conteúdos escolares\nPúblico principal: alunos e pais com dificuldade numa matéria específica\n\nDireção visual: ícone ou cor associada à disciplina dentro da paleta da marca, imagem de material didático genérico\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p07",
+    nome: "Resultados, Feedbacks e Aprovação",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Resultados, feedbacks e aprovação\nObjetivo de comunicação: provar resultado ou celebrar\nPúblico principal: pais buscando validação antes de matricular\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Conte o caso real (com autorização), a evolução relatada e agradeça a confiança da família, sem inventar números ou nomes.\n\nChamada para ação (CTA): conhecer a Sala de Estudo (CTA suave, não é o foco do post)\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Resultados, feedbacks e aprovação\nPúblico principal: pais buscando validação antes de matricular\n\nDireção visual: formato de citação/aspas, foto real se autorizada ou fundo neutro da marca, tom humano e não comercial\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p08",
+    nome: "Motivação e Coaching do Estudante",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Motivação e coaching do estudante\nObjetivo de comunicação: motivar\nPúblico principal: estudantes de todas as idades\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Crie uma frase motivacional original conectada à rotina de estudos, sem tom comercial forte e sem culpabilizar quem tem dificuldade.\n\nChamada para ação (CTA): nenhum CTA comercial obrigatório\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Motivação e coaching do estudante\nPúblico principal: estudantes de todas as idades\n\nDireção visual: tipografia como protagonista, composição limpa, paleta da marca em tom mais suave\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p09",
+    nome: "Educação e Valorização do Estudo",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Educação e valorização do estudo\nObjetivo de comunicação: informar ou motivar\nPúblico principal: pais e alunos em geral\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Reforce o valor da educação e do conhecimento, conectando com uma dica prática ou reflexão real sobre rotina de estudos.\n\nChamada para ação (CTA): acompanhar a página ou conhecer o trabalho da Sala de Estudo\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Educação e valorização do estudo\nPúblico principal: pais e alunos em geral\n\nDireção visual: visual institucional mais sóbrio, elementos como livro, caderno ou ambiente de estudo\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p10",
+    nome: "Datas Comemorativas e Saudações",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Datas comemorativas e saudações\nObjetivo de comunicação: celebrar ou motivar\nPúblico principal: toda a base de seguidores\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Escreva uma saudação original para a data comemorativa, conectando com o universo escolar, sem repetir frases de anos anteriores.\n\nChamada para ação (CTA): nenhum CTA comercial obrigatório\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Datas comemorativas e saudações\nPúblico principal: toda a base de seguidores\n\nDireção visual: elementos visuais sazonais combinados à identidade da marca, sem clichês genéricos de banco de imagens\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p11",
+    nome: "Equipe, Professores e Cultura Interna",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Equipe, professores e cultura interna\nObjetivo de comunicação: celebrar ou informar\nPúblico principal: comunidade em geral e pais\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Apresente o contexto do profissional ou da equipe (com autorização), destacando uma qualidade real e específica, com tom acolhedor.\n\nChamada para ação (CTA): nenhum CTA comercial obrigatório\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Equipe, professores e cultura interna\nPúblico principal: comunidade em geral e pais\n\nDireção visual: foto real do ambiente/equipe com autorização, tom caloroso e autêntico, evitando estúdio genérico\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p12",
+    nome: "Institucional, Endereço e Contato",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Institucional, endereço e contato\nObjetivo de comunicação: informar ou vender\nPúblico principal: pais e alunos da região da Jaqueira, Recife\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Reforce a localização e facilidade de acesso, convide para conhecer o espaço presencialmente e informe os canais de contato reais.\n\nChamada para ação (CTA): agendar visita ou chamar no WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Institucional, endereço e contato\nPúblico principal: pais e alunos da região da Jaqueira, Recife\n\nDireção visual: foto real do espaço físico quando disponível, ícone de localização, paleta institucional\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p13",
+    nome: "Horários, Feriados e Funcionamento",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Horários, feriados e funcionamento\nObjetivo de comunicação: informar\nPúblico principal: alunos e pais que precisam saber sobre disponibilidade de atendimento\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Anuncie com clareza a mudança de funcionamento, o período exato e o que muda na prática, em tom objetivo e não promocional.\n\nChamada para ação (CTA): falar no WhatsApp em caso de dúvidas sobre o horário\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Horários, feriados e funcionamento\nPúblico principal: alunos e pais que precisam saber sobre disponibilidade de atendimento\n\nDireção visual: layout de aviso/comunicado, ícone de relógio ou calendário, tipografia objetiva e legível\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p14",
+    nome: "Modalidades e Formatos de Aula",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Modalidades e formatos de aula\nObjetivo de comunicação: informar ou vender\nPúblico principal: pais e alunos avaliando o formato de aula ideal\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Explique como funciona a modalidade (presencial, online, domiciliar, individual, em grupo), para quem é mais indicada e o benefício prático.\n\nChamada para ação (CTA): saber mais sobre a modalidade pelo WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Modalidades e formatos de aula\nPúblico principal: pais e alunos avaliando o formato de aula ideal\n\nDireção visual: ícones representando cada modalidade dentro da paleta da marca\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p15",
+    nome: "Orientação Vocacional e Carreira",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Orientação vocacional e carreira\nObjetivo de comunicação: informar ou motivar\nPúblico principal: estudantes do médio em fase de decisão profissional\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Levante a dúvida comum sobre escolha profissional e ofereça uma reflexão ou dica prática, em tom reflexivo, não prescritivo.\n\nChamada para ação (CTA): conversar sobre o assunto com a equipe (CTA leve)\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Orientação vocacional e carreira\nPúblico principal: estudantes do médio em fase de decisão profissional\n\nDireção visual: elementos que remetam a caminhos e decisão de forma sutil, paleta institucional\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p16",
+    nome: "Infância, Alfabetização e Ensino Fundamental I",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Infância, alfabetização e ensino fundamental\nObjetivo de comunicação: informar ou vender\nPúblico principal: pais de crianças em fase de alfabetização ou fundamental I\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Reconheça a importância dessa fase inicial e apresente o suporte oferecido (apoio a tarefas, alfabetização), em tom acolhedor.\n\nChamada para ação (CTA): saber mais pelo WhatsApp\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Infância, alfabetização e ensino fundamental\nPúblico principal: pais de crianças em fase de alfabetização ou fundamental I\n\nDireção visual: cores mais lúdicas dentro da paleta da marca, imagem de criança estudando com autorização ou ilustração amigável\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p17",
+    nome: "Formato: Carrossel Educativo",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Transversal — combine com qualquer pilar estruturável em etapas\nObjetivo de comunicação: informar, motivar ou vender\nPúblico principal: varia conforme o pilar combinado\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Estruture o conteúdo em slides: capa com gancho, um ponto por slide intermediário, e um slide final com síntese e CTA.\n\nChamada para ação (CTA): depende do pilar combinado — salvar, compartilhar, agendar aula ou saber mais\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Transversal — combine com qualquer pilar estruturável em etapas\nPúblico principal: varia conforme o pilar combinado\n\nDireção visual: estrutura visual consistente entre slides, mesma grade e paleta, capa com maior contraste para parar o scroll\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "p18",
+    nome: "Formato: Reel de Engajamento",
+    templateTexto: "Você é o social media da Sala de Estudo, escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, todas as disciplinas, ENEM e SSA). Marca com azul (#004EB5) e amarelo (#FFD100), tom acolhedor, direto, educativo e local.\n\nPilar editorial: Transversal — combine com qualquer pilar adaptável a vídeo\nObjetivo de comunicação: motivar, informar ou vender\nPúblico principal: varia conforme o pilar combinado\n\nEscreva a legenda de um post de Instagram sobre: {tema}\n\nEstrutura da legenda: Descreva um roteiro curto de reel: gancho nos 2 primeiros segundos, 2 a 3 cenas de desenvolvimento, texto na tela reforçando pontos-chave e CTA final.\n\nChamada para ação (CTA): depende do pilar combinado — agendar aula, seguir a página, comentar ou compartilhar\n\nRegras:\n- Não inventar preço, data, telefone, horário, vaga ou resultado — use [a confirmar] quando necessário.\n- Não prometer aprovação ou nota garantida.\n- Não copiar frases, slogans ou textos de posts já publicados.\n- 3 a 6 frases curtas, fáceis de ler no celular, linguagem acolhedora e sem jargão pedagógico.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "Marca: Sala de Estudo, reforço escolar em Recife. Paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno e acolhedor.\n\nPilar editorial: Transversal — combine com qualquer pilar adaptável a vídeo\nPúblico principal: varia conforme o pilar combinado\n\nDireção visual: enquadramento vertical, boa iluminação, texto legível mesmo sem áudio, fechamento com logo/contato\n\nTema da imagem: {tema}\n\nRegras:\n- Sem texto embutido na imagem, a menos que o formato seja arte tipográfica com frase curta.\n- Sem clichês genéricos de banco de imagens.\n- Não copiar composições, personagens ou elementos de posts já publicados da conta.",
+    origem: "padrao"
+  },
+  {
+    id: "legado_texto",
+    nome: "Post motivacional (legenda)",
+    templateTexto: "Você é o social media da Sala de Estudo, uma escola de reforço escolar em Recife (aulas presenciais, domiciliares e online, para todas as disciplinas, ENEM e vestibulares). A marca usa azul (#004EB5) e amarelo (#FFD100), tom acolhedor, confiável e motivador, linguagem simples para pais e responsáveis.\n\nEscreva uma legenda de Instagram sobre: {tema}\n\nRegras:\n- 3 a 6 frases curtas, fáceis de ler no celular.\n- Sem jargão pedagógico.\n- Termine com uma chamada para agendar um diagnóstico gratuito.\n- Sugira de 5 a 8 hashtags em português no final.",
+    templateImagem: "",
+    origem: "padrao"
+  },
+  {
+    id: "legado_imagem",
+    nome: "Post educativo (imagem)",
+    templateTexto: "",
+    templateImagem: "Crie uma imagem quadrada para Instagram no estilo da marca Sala de Estudo: paleta principal azul #004EB5 e amarelo #FFD100, visual limpo, moderno, acolhedor, com elementos de estudo (livros, cadernos, lápis, quadro), estilo ilustração flat/vetorial, sem nenhum texto embutido na imagem.\n\nTema da imagem: {tema}",
+    origem: "padrao"
+  }
+];
+
+
+
+// in-memory settings row cache (single row, id=true)
+let SETTINGS = null;
+
+// ---------- ACCORDIONS (skills, keys, emergência) ----------
+function setupAccordion(toggleId, bodyId){
+  const toggle = document.getElementById(toggleId);
+  const body = document.getElementById(bodyId);
+  const card = toggle.closest('.admin-card');
+  toggle.addEventListener('click', function(){
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    body.classList.toggle('open', !expanded);
+  });
+  if(card){
+    card.addEventListener('click', function(e){
+      const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      if(isOpen) return;
+      if(e.target === toggle || toggle.contains(e.target)) return;
+      toggle.click();
+    });
+  }
+  return {
+    open: function(){
+      toggle.setAttribute('aria-expanded', 'true');
+      body.classList.add('open');
+    }
+  };
+}
+
+// ---------- TEMAS E SKILLS (Supabase) ----------
+let editingThemeId = null;
+let THEMES_CACHE = [];
+
+function mapThemeRow(row){
+  return {
+    id: row.id,
+    nome: row.nome,
+    templateTexto: row.template_texto || '',
+    templateImagem: row.template_imagem || '',
+    origem: row.origem || 'personalizado'
+  };
+}
+
+async function getThemes(){
+  const { data, error } = await sb.from('themes').select('*').order('created_at');
+  if(error){ console.error('Erro ao buscar temas:', error); return []; }
+  THEMES_CACHE = (data || []).map(mapThemeRow);
+  return THEMES_CACHE;
+}
+
+async function seedThemesIfEmpty(){
+  const { count, error } = await sb.from('themes').select('id', { count: 'exact', head: true });
+  if(error){ console.error('Erro ao checar temas existentes:', error); return; }
+  if(count && count > 0) return;
+
+  let source = DEFAULT_THEMES;
+  try{
+    const raw = localStorage.getItem(LS_THEMES);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(Array.isArray(parsed) && parsed.length) source = parsed;
+    }
+  }catch(e){}
+
+  const rows = source.map(function(t){
+    return {
+      id: t.id,
+      nome: t.nome,
+      template_texto: t.templateTexto || '',
+      template_imagem: t.templateImagem || '',
+      origem: t.origem || 'personalizado'
+    };
+  });
+  const { error: insErr } = await sb.from('themes').insert(rows);
+  if(insErr) console.error('Erro ao semear temas iniciais:', insErr);
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+async function renderThemeList(){
+  const list = await getThemes();
+  const el = document.getElementById('themeList');
+  const genSelect = document.getElementById('genTheme');
+  const baseSelect = document.getElementById('ntBase');
+  const prevGenValue = genSelect.value;
+  const prevBaseValue = baseSelect.value;
+  el.innerHTML = '';
+  el.classList.add('edit-mode');
+  genSelect.innerHTML = '';
+  baseSelect.innerHTML = '<option value="">— Nenhum, começar do zero —</option>';
+
+  list.forEach(function(theme){
+    const item = document.createElement('div');
+    item.className = 'skill-item';
+    const origemTag = theme.origem === 'ia' ? '<span class="theme-origin ia">gerado por ia</span>' : (theme.origem === 'personalizado' ? '<span class="theme-origin">personalizado</span>' : '');
+    const themeToggleId = 'themeToggle_' + theme.id;
+    const themeBodyId = 'themeBody_' + theme.id;
+    item.innerHTML =
+      '<div class="skill-item-head">' +
+        '<button class="theme-toggle" id="' + themeToggleId + '" type="button" aria-expanded="false" aria-controls="' + themeBodyId + '">' +
+          '<span><strong>' + escapeHtml(theme.nome) + '</strong>' + origemTag + '</span>' +
+          '<span class="chev">&#9662;</span>' +
+        '</button>' +
+        '<div class="skill-item-actions">' +
+          '<button data-edit="' + theme.id + '" type="button" aria-label="Editar" data-tooltip="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
+          '<button data-del="' + theme.id + '" type="button" aria-label="Excluir" data-tooltip="Excluir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="theme-body" id="' + themeBodyId + '">' +
+        '<div class="theme-body-inner">' +
+          '<div class="theme-subblock">' +
+            '<div class="subblock-head">' +
+              '<span class="skill-tag texto">texto</span>' +
+              '<div class="prompt-actions">' +
+                '<button type="button" data-copy-prompt="' + theme.id + '" data-prompt-field="templateTexto"' + (theme.templateTexto ? '' : ' disabled') + ' style="display:inline-flex; align-items:center; gap:6px;"><img src="assets/img/icons/icon_copy.webp" style="width:16px; height:16px; object-fit:contain;"> Copiar</button>' +
+                '<button type="button" class="use-prompt" data-use-prompt="' + theme.id + '" data-use-type="texto"' + (theme.templateTexto ? '' : ' disabled') + '>+ Usar</button>' +
+              '</div>' +
+            '</div>' +
+            '<pre>' + (theme.templateTexto ? escapeHtml(theme.templateTexto) : '(sem prompt de texto configurado)') + '</pre>' +
+          '</div>' +
+          '<div class="theme-subblock">' +
+            '<div class="subblock-head">' +
+              '<span class="skill-tag imagem">imagem</span>' +
+              '<div class="prompt-actions">' +
+                '<button type="button" data-copy-prompt="' + theme.id + '" data-prompt-field="templateImagem"' + (theme.templateImagem ? '' : ' disabled') + ' style="display:inline-flex; align-items:center; gap:6px;"><img src="assets/img/icons/icon_copy.webp" style="width:16px; height:16px; object-fit:contain;"> Copiar</button>' +
+                '<button type="button" class="use-prompt" data-use-prompt="' + theme.id + '" data-use-type="imagem"' + (theme.templateImagem ? '' : ' disabled') + '>+ Usar</button>' +
+              '</div>' +
+            '</div>' +
+            '<pre>' + (theme.templateImagem ? escapeHtml(theme.templateImagem) : '(sem prompt de imagem configurado)') + '</pre>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    el.appendChild(item);
+
+    const opt = document.createElement('option');
+    opt.value = theme.id;
+    opt.textContent = theme.nome;
+    genSelect.appendChild(opt);
+
+    const baseOpt = document.createElement('option');
+    baseOpt.value = theme.id;
+    baseOpt.textContent = theme.nome;
+    baseSelect.appendChild(baseOpt);
+  });
+
+  if(prevGenValue && list.some(function(t){ return t.id === prevGenValue; })){
+    genSelect.value = prevGenValue;
+  }
+  if(prevBaseValue && list.some(function(t){ return t.id === prevBaseValue; })){
+    baseSelect.value = prevBaseValue;
+  }
+  if(typeof syncGenThemeDisplay === 'function') syncGenThemeDisplay();
+
+  el.querySelectorAll('.theme-toggle').forEach(function(toggle){
+    const body = document.getElementById(toggle.getAttribute('aria-controls'));
+    toggle.addEventListener('click', function(){
+      const expanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!expanded));
+      body.classList.toggle('open', !expanded);
+    });
+  });
+
+  el.querySelectorAll('[data-del]').forEach(function(btn){
+    btn.addEventListener('click', async function(e){
+      e.stopPropagation();
+      const ok = await confirmDestructiveAction('Excluir este tema (skill de texto e de imagem)?');
+      if(!ok) return;
+      const id = btn.getAttribute('data-del');
+      const { error } = await sb.from('themes').delete().eq('id', id);
+      if(error){ alert('Erro ao excluir tema: ' + error.message); return; }
+      if(editingThemeId === id) closeThemeForm();
+      await renderThemeList();
+    });
+  });
+
+  el.querySelectorAll('[data-edit]').forEach(function(btn){
+    btn.addEventListener('click', async function(e){
+      e.stopPropagation();
+      const id = btn.getAttribute('data-edit');
+      const theme = (await getThemes()).find(function(t){ return t.id === id; });
+      if(!theme) return;
+      openThemeForm(theme);
+    });
+  });
+
+  el.querySelectorAll('[data-copy-prompt]').forEach(function(btn){
+    btn.addEventListener('click', async function(e){
+      e.stopPropagation();
+      const id = btn.getAttribute('data-copy-prompt');
+      const field = btn.getAttribute('data-prompt-field');
+      const theme = (await getThemes()).find(function(t){ return t.id === id; });
+      if(!theme || !theme[field]) return;
+      copyText(theme[field]);
+      const original = btn.textContent;
+      btn.textContent = 'Copiado!';
+      setTimeout(function(){ btn.textContent = original; }, 1500);
+    });
+  });
+
+  el.querySelectorAll('[data-use-prompt]').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      const id = btn.getAttribute('data-use-prompt');
+      const type = btn.getAttribute('data-use-type');
+      useThemeInGenerator(id, type);
+    });
+  });
+}
+
+function useThemeInGenerator(themeId, type){
+  const genSelect = document.getElementById('genTheme');
+  genSelect.value = themeId;
+  if(typeof syncGenThemeDisplay === 'function') syncGenThemeDisplay();
+  if(typeof setGenType === 'function') setGenType(type);
+  const genCard = document.getElementById('genTheme').closest('.admin-card');
+  genCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const tema = document.getElementById('genTema');
+  if(tema) tema.focus();
+}
+
+// ---- Skill única com toggle TEXTO/IMAGEM (substitui as duas textareas antigas) ----
+let ntCurrentType = 'texto';
+let ntDraft = { texto: '', imagem: '' };
+
+function syncNtDraft(){
+  ntDraft[ntCurrentType] = document.getElementById('ntSkillContent').value;
+}
+
+function loadNtDraft(type){
+  ntCurrentType = type;
+  document.getElementById('ntSkillContent').value = ntDraft[type] || '';
+  document.getElementById('ntSkillContent').placeholder = type === 'imagem'
+    ? 'Digite ou cole aqui o prompt de IMAGEM pronto...'
+    : 'Digite ou cole aqui o prompt de TEXTO pronto...';
+  const btnTexto = document.getElementById('ntSkillTypeBtnTexto');
+  const btnImagem = document.getElementById('ntSkillTypeBtnImagem');
+  btnTexto.classList.toggle('active', type === 'texto');
+  btnTexto.setAttribute('aria-pressed', String(type === 'texto'));
+  btnImagem.classList.toggle('active', type === 'imagem');
+  btnImagem.setAttribute('aria-pressed', String(type === 'imagem'));
+}
+
+document.getElementById('ntSkillTypeBtnTexto').addEventListener('click', function(){
+  if(ntCurrentType === 'texto') return;
+  syncNtDraft();
+  loadNtDraft('texto');
+});
+document.getElementById('ntSkillTypeBtnImagem').addEventListener('click', function(){
+  if(ntCurrentType === 'imagem') return;
+  syncNtDraft();
+  loadNtDraft('imagem');
+});
+
+function openThemeForm(theme){
+  editingThemeId = theme ? theme.id : null;
+  document.getElementById('ntNome').value = theme ? theme.nome : '';
+  ntDraft = { texto: theme ? (theme.templateTexto || '') : '', imagem: theme ? (theme.templateImagem || '') : '' };
+  loadNtDraft('texto');
+  document.getElementById('ntBase').value = '';
+  document.getElementById('ntBaseField').hidden = !!theme;
+  document.getElementById('btnSaveSkill').textContent = theme ? 'Salvar alterações' : 'Salvar tema';
+  document.getElementById('newSkillModalTitle').textContent = theme ? 'Editar tema' : 'Novo tema';
+  document.getElementById('newSkillModal').hidden = false;
+}
+
+function closeThemeForm(){
+  editingThemeId = null;
+  document.getElementById('newSkillModal').hidden = true;
+  document.getElementById('ntNome').value = '';
+  ntDraft = { texto: '', imagem: '' };
+  loadNtDraft('texto');
+  document.getElementById('ntBase').value = '';
+  document.getElementById('btnSaveSkill').textContent = 'Salvar tema';
+  clearThemePasteGuide();
+}
+
+
+
+document.getElementById('btnNewSkill').addEventListener('click', function(){
+  openThemeForm(null);
+});
+document.getElementById('btnCancelSkill').addEventListener('click', function(){
+  closeThemeForm();
+});
+document.getElementById('newSkillModalClose').addEventListener('click', function(){
+  closeThemeForm();
+});
+document.getElementById('newSkillModal').addEventListener('click', function(e){
+  if(e.target === this) closeThemeForm();
+});
+document.getElementById('btnSaveSkill').addEventListener('click', async function(){
+  syncNtDraft();
+  const nome = document.getElementById('ntNome').value.trim();
+  const templateTexto = ntDraft.texto.trim();
+  const templateImagem = ntDraft.imagem.trim();
+  if(!nome){ alert('Dê um nome ao tema.'); return; }
+  if(!templateTexto && !templateImagem){ alert('Preencha ao menos o prompt de texto ou o de imagem.'); return; }
+  if(editingThemeId){
+    const { error } = await sb.from('themes').update({
+      nome: nome, template_texto: templateTexto, template_imagem: templateImagem
+    }).eq('id', editingThemeId);
+    if(error){ alert('Erro ao salvar tema: ' + error.message); return; }
+  } else {
+    const { error } = await sb.from('themes').insert({
+      id: 't' + Date.now(), nome: nome, template_texto: templateTexto, template_imagem: templateImagem, origem: 'personalizado'
+    });
+    if(error){ alert('Erro ao criar tema: ' + error.message); return; }
+  }
+  closeThemeForm();
+  await renderThemeList();
+});
+
+document.getElementById('ntBase').addEventListener('change', async function(){
+  const id = this.value;
+  if(!id) return;
+  const base = (await getThemes()).find(function(t){ return t.id === id; });
+  if(!base) return;
+  if(!editingThemeId && !document.getElementById('ntNome').value.trim()){
+    document.getElementById('ntNome').value = base.nome + ' (cópia)';
+  }
+  ntDraft = { texto: base.templateTexto || '', imagem: base.templateImagem || '' };
+  loadNtDraft(ntCurrentType);
+});
+
+function clearThemePasteGuide(){}
+
+// ---- "Criar tema": modal próprio com campo de ideia + IA já com o meta-prompt embutido ----
+const THEME_META_PROMPT = [
+  'Você vai me ajudar a criar um novo TEMA de conteúdo para o Instagram/Facebook da "Sala de Estudo",',
+  'um projeto de reforço escolar da professora Rúbia Lima, focado em alunos do ensino médio e no ENEM.',
+  '',
+  'Um tema é composto por um NOME curto e duas "skills" — um prompt de TEXTO e um prompt de IMAGEM —',
+  'que serão reaproveitados depois para gerar vários posts. Ambas as skills devem usar o marcador {tema}',
+  'exatamente no lugar onde o assunto específico de cada post futuro vai entrar.',
+  '',
+  'Regras importantes:',
+  '- O tema final tem que fazer sentido dentro do contexto de reforço escolar / ENEM / rotina de estudos.',
+  '  Se a ideia enviada abaixo estiver vaga, incompleta ou fora desse escopo, adapte-a para caber na',
+  '  temática da Sala de Estudo em vez de recusar ou fugir do assunto original.',
+  '- O prompt de TEXTO deve gerar uma legenda de post com tom acessível e direto, adequado a estudantes e responsáveis.',
+  '- O prompt de IMAGEM deve gerar uma imagem coerente com a identidade visual do projeto (educacional,',
+  '  acolhedora, cores azul e amarelo).',
+  '',
+  'Responda EXATAMENTE neste formato, para eu poder copiar cada parte para o campo certo:',
+  '',
+  'NOME: <nome curto do tema>',
+  '',
+  'SKILL DE TEXTO:',
+  '<prompt completo de texto, com {tema} onde o assunto entra>',
+  '',
+  'SKILL DE IMAGEM:',
+  '<prompt completo de imagem, com {tema} onde o assunto entra>'
+].join('\n');
+
+function openCreateThemeModal(){
+  document.getElementById('createThemePromptInput').value = '';
+  document.getElementById('createThemeModal').hidden = false;
+  document.getElementById('createThemePromptInput').focus();
+}
+function closeCreateThemeModal(){
+  document.getElementById('createThemeModal').hidden = true;
+}
+
+document.getElementById('btnCreateTheme').addEventListener('click', openCreateThemeModal);
+document.getElementById('createThemeModalClose').addEventListener('click', closeCreateThemeModal);
+document.getElementById('createThemeModal').addEventListener('click', function(e){
+  if(e.target === this) closeCreateThemeModal();
+});
+
+document.getElementById('btnOpenCreateThemeAI').addEventListener('click', async function(){
+  const userIdea = document.getElementById('createThemePromptInput').value.trim();
+  if(!userIdea){ alert('Escreva a ideia do tema antes de abrir a IA.'); return; }
+  const combinedPrompt = THEME_META_PROMPT + '\n\n---\n\nIdeia enviada pelo usuário:\n' + userIdea;
+
+  const previousPromptState = currentPromptState;
+  currentPromptState = { prompt: combinedPrompt, type: 'texto', tema: '', theme: null };
+
+  const choice = await openGenChoiceModal(true);
+  if(choice === 'claude-optimize'){
+    runExternalExecution({ ...currentPromptState, prompt: 'otimize o prompt a seguir:\n\n' + currentPromptState.prompt }, 'claude');
+  } else if(choice){
+    runExternalExecution(currentPromptState, choice);
+  }
+
+  currentPromptState = previousPromptState;
+  closeCreateThemeModal();
+});
+
+document.getElementById('genChoiceCopyThemePrompt').addEventListener('click', function(){
+  if(currentPromptState) copyText(currentPromptState.prompt);
+});
+document.getElementById('genChoiceDownloadThemePrompt').addEventListener('click', function(){
+  if(!currentPromptState) return;
+  const blob = new Blob([currentPromptState.prompt], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'prompt-gerar-tema.md';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+});
+
+function openGenChoiceModal(themeMode){
+  return new Promise(function(resolve){
+    const modal = document.getElementById('genChoiceModal');
+    const chatgptBtn = document.getElementById('genChoiceChatgpt');
+    const claudeBtn = document.getElementById('genChoiceClaude');
+    const geminiBtn = document.getElementById('genChoiceGemini');
+    const closeBtn = document.getElementById('genChoiceClose');
+
+    const screen1 = document.getElementById('genChoiceScreen1');
+    const screen3 = document.getElementById('genChoiceScreen3');
+
+    const btnGeminiCopy = document.getElementById('genChoiceGeminiCopy');
+    const btnGeminiOpen = document.getElementById('genChoiceGeminiOpen');
+
+    const isImage = currentPromptState && currentPromptState.type === 'imagem';
+
+    document.getElementById('genChoiceTitle').textContent = themeMode ? 'Onde deseja gerar este tema?' : 'Onde deseja gerar este conteúdo?';
+    document.getElementById('genChoiceThemeExtraActions').hidden = !themeMode;
+
+    screen1.hidden = false;
+    screen3.hidden = true;
+    btnGeminiOpen.disabled = true;
+    
+    let claudeWarningShown = false;
+    const claudeWarning = document.getElementById('genChoiceClaudeWarning');
+    claudeWarning.style.display = 'none';
+    
+    if (isImage) {
+      claudeBtn.style.filter = 'grayscale(100%)';
+      claudeBtn.style.opacity = '0.6';
+    } else {
+      claudeBtn.style.filter = 'none';
+      claudeBtn.style.opacity = '1';
+    }
+
+    function cleanup(choice){
+      modal.hidden = true;
+      chatgptBtn.removeEventListener('click', onChatgpt);
+      claudeBtn.removeEventListener('click', onClaude);
+      geminiBtn.removeEventListener('click', onGemini);
+      closeBtn.removeEventListener('click', onClose);
+      btnGeminiCopy.removeEventListener('click', onGeminiCopy);
+      btnGeminiOpen.removeEventListener('click', onGeminiOpen);
+      modal.removeEventListener('click', onOverlayClick);
+      document.removeEventListener('keydown', onKeydown);
+      resolve(choice);
+    }
+    
+    function onChatgpt(){ cleanup('chatgpt'); }
+    function onClaude(){
+      if (isImage) {
+        if (!claudeWarningShown) {
+          claudeWarningShown = true;
+          claudeWarning.style.display = 'block';
+          claudeBtn.style.filter = 'none';
+          claudeBtn.style.opacity = '1';
+        } else {
+          cleanup('claude-optimize');
+        }
+      } else {
+        cleanup('claude');
+      }
+    }
+    function onGemini(){
+      screen1.hidden = true;
+      screen3.hidden = false;
+    }
+    function onGeminiCopy(){
+      if(currentPromptState) copyText(currentPromptState.prompt);
+      btnGeminiOpen.disabled = false;
+    }
+    function onGeminiOpen(){ cleanup('gemini'); }
+    
+    function onClose(){ cleanup(null); }
+    function onOverlayClick(e){ if(e.target === modal) cleanup(null); }
+    function onKeydown(e){ if(e.key === 'Escape') cleanup(null); }
+    
+    chatgptBtn.addEventListener('click', onChatgpt);
+    claudeBtn.addEventListener('click', onClaude);
+    geminiBtn.addEventListener('click', onGemini);
+    closeBtn.addEventListener('click', onClose);
+    btnGeminiCopy.addEventListener('click', onGeminiCopy);
+    btnGeminiOpen.addEventListener('click', onGeminiOpen);
+    modal.addEventListener('click', onOverlayClick);
+    document.addEventListener('keydown', onKeydown);
+    modal.hidden = false;
+  });
+}
+
+// ---------- toggle Texto/Imagem, configurações recolhíveis, prompt e execução ----------
+let genPromptBoxRevealed = false;
+let currentPromptState = null;
+
+function setGenType(type){
+  const select = document.getElementById('genType');
+  const changed = select.value !== type;
+  if(changed){
+    select.value = type;
+    select.dispatchEvent(new Event('change'));
+  }
+  const btnTexto = document.getElementById('genTypeBtnTexto');
+  const btnImagem = document.getElementById('genTypeBtnImagem');
+  btnTexto.classList.toggle('active', type === 'texto');
+  btnTexto.setAttribute('aria-pressed', String(type === 'texto'));
+  btnImagem.classList.toggle('active', type === 'imagem');
+  btnImagem.setAttribute('aria-pressed', String(type === 'imagem'));
+  document.getElementById('genCardRoot').classList.toggle('gen-image-mode', type === 'imagem');
+  const executeBtnLabel = document.getElementById('btnExecutePromptLabel');
+  if(executeBtnLabel) executeBtnLabel.textContent = type === 'imagem' ? 'IMAGEM' : 'TEXTO';
+  if(typeof updateImgFormatCurrentBtn === 'function') updateImgFormatCurrentBtn();
+  const personalizarBtn = document.getElementById('btnPersonalizar');
+  if(personalizarBtn) personalizarBtn.hidden = (type !== 'imagem');
+  if(changed){
+    const box = document.getElementById('genPromptBox');
+    const textarea = document.getElementById('genPromptText');
+    if (box && textarea) {
+      textarea.value = '';
+      box.classList.add('empty');
+      const copyBtn = document.getElementById('btnCopyPrompt');
+      const execBtn = document.getElementById('btnExecutePrompt');
+      const saveBtn = document.getElementById('btnSavePrompt');
+      if(copyBtn) copyBtn.disabled = true;
+      if(execBtn) execBtn.disabled = true;
+      if(saveBtn) saveBtn.style.visibility = 'hidden';
+    }
+    currentPromptState = null;
+  }
+}
+document.getElementById('genTypeBtnTexto').addEventListener('click', function(){ setGenType('texto'); });
+document.getElementById('genTypeBtnImagem').addEventListener('click', function(){
+  setGenType('imagem');
+  openImgFormatModal();
+});
+
+// ---------- Formato da imagem (Feed quadrado / retangular / Story) ----------
+// Padrão é sempre "Feed quadrado (1:1)": se o usuário clicar em "Imagem" e
+// fechar o modal sem escolher nada, o formato continua sendo o quadrado.
+const IMAGE_FORMATS = {
+  '1:1': { label: 'Feed quadrado', ratio: '1:1', instrucao: 'Formato da imagem: post quadrado para feed, proporção 1:1 (ex.: 1080x1080px).' },
+  '4:5': { label: 'Feed retangular', ratio: '4:5', instrucao: 'Formato da imagem: post retangular para feed, proporção 4:5 (ex.: 1080x1350px).' },
+  '9:16': { label: 'Story', ratio: '9:16', instrucao: 'Formato da imagem: Story/Reels vertical, proporção 9:16 (ex.: 1080x1920px).' }
+};
+let genImageFormat = '1:1';
+
+function updateImgFormatCurrentBtn(){
+  const btn = document.getElementById('imgFormatCurrentBtn');
+  if(!btn) return;
+  const type = document.getElementById('genType').value;
+  if(type !== 'imagem'){ btn.hidden = true; return; }
+  const fmt = IMAGE_FORMATS[genImageFormat] || IMAGE_FORMATS['1:1'];
+  btn.hidden = false;
+  btn.textContent = 'Formato: ' + fmt.label + ' (' + fmt.ratio + ') · trocar';
+}
+document.getElementById('imgFormatCurrentBtn').addEventListener('click', openImgFormatModal);
+
+function setImgFormat(format){
+  if(!IMAGE_FORMATS[format]) return;
+  genImageFormat = format;
+  document.querySelectorAll('.img-format-option').forEach(function(opt){
+    opt.classList.toggle('selected', opt.getAttribute('data-format') === format);
+  });
+  updateImgFormatCurrentBtn();
+}
+
+function openImgFormatModal(){
+  const overlay = document.getElementById('imgFormatOverlay');
+  if(!overlay) return;
+  document.querySelectorAll('.img-format-option').forEach(function(opt){
+    opt.classList.toggle('selected', opt.getAttribute('data-format') === genImageFormat);
+  });
+  overlay.hidden = false;
+}
+function closeImgFormatModal(){
+  const overlay = document.getElementById('imgFormatOverlay');
+  if(overlay) overlay.hidden = true;
+}
+document.querySelectorAll('.img-format-option').forEach(function(opt){
+  opt.addEventListener('click', function(){
+    setImgFormat(opt.getAttribute('data-format'));
+    closeImgFormatModal();
+  });
+});
+document.getElementById('imgFormatBack').addEventListener('click', closeImgFormatModal);
+document.getElementById('imgFormatClose').addEventListener('click', closeImgFormatModal);
+document.getElementById('imgFormatOverlay').addEventListener('click', function(e){
+  if(e.target === this) closeImgFormatModal();
+});
+document.addEventListener('keydown', function(e){
+  const overlay = document.getElementById('imgFormatOverlay');
+  if(e.key === 'Escape' && overlay && !overlay.hidden) closeImgFormatModal();
+});
+
+// Injeta a instrução de formato (1:1 / 4:5 / 9:16) no prompt de imagem:
+// se o template do tema tiver um {formato}, substitui nele; senão,
+// acrescenta a instrução ao final. Prompts de texto não são alterados.
+function applyImgFormatToPrompt(prompt, genType){
+  if(genType !== 'imagem') return prompt;
+  const fmt = IMAGE_FORMATS[genImageFormat] || IMAGE_FORMATS['1:1'];
+  if(/\{formato\}/i.test(prompt)) return prompt.replace(/\{formato\}/gi, fmt.instrucao);
+  return prompt + '\n\n' + fmt.instrucao;
+}
+
+// ---------- Personalizar post (texto embutido, personagem isolado, marca) ----------
+// Os posts de imagem sempre saem com um padrão genérico; este modal deixa
+// alinhar ao visual da empresa antes de gerar o prompt. As opções de marca
+// (mascote/logo/setas) inserem o base64 da imagem correspondente direto no
+// prompt, pra quem for gerar/editar a imagem já ter o arquivo em mãos.
+const ASSET_LABELS = {
+  mascote: 'Só mascote',
+  logoMascote: 'Logo com mascote',
+  setaLogo: 'Seta amarela com logo',
+  setaAmarela: 'Seta amarela'
+};
+let personalizarState = {
+  textoEmbutido: false,
+  soPersonagem: false,
+  mascote: false,
+  logoMascote: false,
+  setaLogo: false,
+  setaAmarela: false
+};
+
+(function initPersonalizarThumbs(){
+  const assets = window.POST_IMAGE_ASSETS || {};
+  document.querySelectorAll('.pz-check-row-img').forEach(function(row){
+    const key = row.getAttribute('data-asset');
+    const img = row.querySelector('.pz-thumb');
+    if(img && assets[key]) img.src = assets[key];
+  });
+})();
+
+document.querySelectorAll('.pz-check-row').forEach(function(row){
+  const key = row.getAttribute('data-key');
+  const input = row.querySelector('.pz-check-input');
+  if(!key || !input) return;
+  input.checked = !!personalizarState[key];
+  input.addEventListener('change', function(){
+    personalizarState[key] = input.checked;
+  });
+});
+
+function openPersonalizarModal(){
+  const overlay = document.getElementById('personalizarOverlay');
+  if(overlay) overlay.hidden = false;
+}
+function closePersonalizarModal(){
+  const overlay = document.getElementById('personalizarOverlay');
+  if(overlay) overlay.hidden = true;
+}
+document.getElementById('btnPersonalizar').addEventListener('click', openPersonalizarModal);
+document.getElementById('personalizarDone').addEventListener('click', closePersonalizarModal);
+document.getElementById('personalizarBack').addEventListener('click', closePersonalizarModal);
+document.getElementById('personalizarClose').addEventListener('click', closePersonalizarModal);
+document.getElementById('personalizarOverlay').addEventListener('click', function(e){
+  if(e.target === this) closePersonalizarModal();
+});
+document.addEventListener('keydown', function(e){
+  const overlay = document.getElementById('personalizarOverlay');
+  if(e.key === 'Escape' && overlay && !overlay.hidden) closePersonalizarModal();
+});
+
+// Acrescenta ao prompt de imagem as instruções de personalização e, para
+// cada elemento de marca marcado, o base64 correspondente (já em
+// window.POST_IMAGE_ASSETS, carregado de post-image-assets.js).
+function applyPersonalizacaoToPrompt(prompt, genType){
+  if(genType !== 'imagem') return prompt;
+  const linhas = [];
+  linhas.push('Texto embutido na imagem: ' + (personalizarState.textoEmbutido ? 'habilitado.' : 'desabilitado — não inserir texto embutido na imagem.'));
+  if(personalizarState.soPersonagem){
+    linhas.push('Gerar somente o personagem/mascote, sem cenário nem elementos ao redor, sobre fundo branco liso.');
+  }
+  const assets = window.POST_IMAGE_ASSETS || {};
+  Object.keys(ASSET_LABELS).forEach(function(key){
+    if(personalizarState[key] && assets[key]){
+      linhas.push('Elemento de marca a inserir (' + ASSET_LABELS[key] + '), imagem em base64: ' + assets[key]);
+    }
+  });
+  if(!linhas.length) return prompt;
+  return prompt + '\n\n' + linhas.join('\n');
+}
+
+function showGeneratedPrompt(text, type){
+  const box = document.getElementById('genPromptBox');
+  const textarea = document.getElementById('genPromptText');
+  textarea.value = text;
+
+  box.classList.remove('empty');
+  document.getElementById('btnCopyPrompt').disabled = false;
+  document.getElementById('btnExecutePrompt').disabled = false;
+  document.getElementById('btnSavePrompt').style.display = 'none';
+
+  document.getElementById('btnExecutePromptLabel').textContent = type.toUpperCase();
+}
+
+document.getElementById('genPromptText').addEventListener('input', function(){
+  const box = document.getElementById('genPromptBox');
+  const text = this.value.trim();
+  if(!text){
+    box.classList.add('empty');
+    document.getElementById('btnCopyPrompt').disabled = true;
+    document.getElementById('btnExecutePrompt').disabled = true;
+    document.getElementById('btnSavePrompt').style.display = 'none';
+  } else {
+    box.classList.remove('empty');
+    document.getElementById('btnCopyPrompt').disabled = false;
+    document.getElementById('btnExecutePrompt').disabled = false;
+    document.getElementById('btnSavePrompt').style.display = 'block';
+    if (currentPromptState) {
+      currentPromptState.prompt = this.value;
+    }
+  }
+});
+
+document.getElementById('btnSavePrompt').addEventListener('click', async function(){
+  if(!currentPromptState || !currentPromptState.theme) return;
+  const newPrompt = document.getElementById('genPromptText').value;
+  const isText = currentPromptState.type === 'texto';
+  const updateObj = isText ? { texto_base: newPrompt } : { imagem_base: newPrompt };
+  
+  this.textContent = 'Salvando...';
+  const { error } = await sb.from('skills').update(updateObj).eq('id', currentPromptState.theme.id);
+  if(!error){
+    this.textContent = 'Salvo!';
+    if (isText) currentPromptState.theme.templateTexto = newPrompt;
+    else currentPromptState.theme.templateImagem = newPrompt;
+    setTimeout(() => {
+      this.textContent = 'Salvar PROMPT';
+      this.hidden = true;
+    }, 2000);
+  } else {
+    this.textContent = 'Erro';
+    setTimeout(() => { this.textContent = 'Salvar PROMPT'; }, 2000);
+  }
+});
+
+document.getElementById('btnCopyPrompt').addEventListener('click', function(){
+  copyText(document.getElementById('genPromptText').value);
+});
+
+function runExternalExecution(state, provider = 'chatgpt'){
+  const statusEl = document.getElementById('genStatus');
+  copyText(state.prompt);
+  
+  if (provider === 'claude') {
+    window.open('https://claude.ai/new?q=' + encodeURIComponent(state.prompt), '_blank', 'noopener');
+    statusEl.textContent = 'Prompt aberto no Claude (se a caixa estiver vazia, cole usando Ctrl+V).';
+  } else if (provider === 'gemini') {
+    window.open('https://gemini.google.com/', '_blank', 'noopener');
+    statusEl.textContent = 'Prompt copiado. Cole na aba do Gemini que foi aberta (Ctrl+V).';
+  } else {
+    window.open('https://chatgpt.com/?q=' + encodeURIComponent(state.prompt), '_blank', 'noopener');
+    statusEl.textContent = 'Prompt aberto no ChatGPT (se a caixa estiver vazia, cole usando Ctrl+V).';
+  }
+  
+  statusEl.className = 'admin-status ok';
+}
+
+function setupCfgToggle(groupId, dbKey){
+  const container = document.getElementById(groupId);
+  if(!container) return;
+  const currentVal = (SETTINGS && SETTINGS[dbKey]) || 'perguntar';
+  const btns = container.querySelectorAll('.type-toggle-btn');
+  btns.forEach(function(btn){
+    if (btn.getAttribute('data-val') === currentVal) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+    btn.addEventListener('click', async function(){
+      btns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      const val = btn.getAttribute('data-val');
+      SETTINGS[dbKey] = val;
+      await sb.from('settings').update({ [dbKey]: val }).eq('id', true);
+    });
+  });
+}
+
+function getCfg(cfgId){
+  const dbKey = cfgId === 'cfgToggleImagem' ? 'cfg_imagem' : (cfgId === 'cfgToggleTexto' ? 'cfg_texto' : 'cfg_prompt');
+  return (SETTINGS && SETTINGS[dbKey]) || 'perguntar';
+}
+
+document.getElementById('btnExecutePrompt').addEventListener('click', async function(){
+  if(!currentPromptState) return;
+  // garante que usamos a versão atualizada do textarea caso o usuário tenha editado
+  currentPromptState.prompt = document.getElementById('genPromptText').value;
+
+  const isImage = currentPromptState.type === 'imagem';
+  const cfgId = isImage ? 'cfgToggleImagem' : 'cfgToggleTexto';
+  let choice = getCfg(cfgId);
+
+  // 'api' era uma opção antiga (geração via API); se ainda estiver salva nas
+  // configurações de alguém, trata como "perguntar" em vez de quebrar.
+  if (choice === 'api') choice = 'perguntar';
+
+  if (choice !== 'chatgpt' && choice !== 'claude' && choice !== 'gemini' && choice !== 'claude-optimize') {
+    choice = await openGenChoiceModal();
+    if(choice === null) return;
+  }
+
+  if(choice === 'claude-optimize'){
+    const optimizedState = { ...currentPromptState, prompt: "otimize o prompt a seguir:\n\n" + currentPromptState.prompt };
+    runExternalExecution(optimizedState, 'claude');
+  } else {
+    runExternalExecution(currentPromptState, choice);
+  }
+});
+
+const chkOtimizar = document.getElementById('chkOtimizar');
+const iconOtimizar = document.getElementById('iconOtimizar');
+if (chkOtimizar && iconOtimizar) {
+  let sparkLayer = document.getElementById('sparkLayer');
+  if (!sparkLayer) {
+    sparkLayer = document.createElement('div');
+    sparkLayer.id = 'sparkLayer';
+    // position:absolute (nao fixed) ancorado no documento inteiro, para que o espalhamento
+    // possa de fato alcancar qualquer ponto da PAGINA (rolagem incluida), nao so o viewport visivel.
+    sparkLayer.style.cssText = 'position:absolute; top:0; left:0; z-index:2147483647; pointer-events:none;';
+    document.body.appendChild(sparkLayer);
+  }
+
+  function syncSparkLayerSize() {
+    sparkLayer.style.width = document.documentElement.scrollWidth + 'px';
+    sparkLayer.style.height = document.documentElement.scrollHeight + 'px';
+  }
+  syncSparkLayerSize();
+  window.addEventListener('resize', syncSparkLayerSize);
+
+  // ---- Estado do "acumulo de espalhamento" (itens 1-8 do combo de reativacao) ----
+  const BASE_MAX_DISTANCE = 110; // maior valor possivel de "40 + Math.random()*70"
+  const GROWTH_SECONDS_TO_MAX = 6;  // 6s de cliques rapidos continuos -> teto (mais facil de sentir o efeito)
+  const DECAY_SECONDS_FROM_MAX = 20; // 20s parado (apos estar no teto) -> quase 1.0x
+  const FAST_MS = 800;   // <=800ms => intensidade de crescimento maxima (1.0) -- ritmo humano normal ja conta
+  const SLOW_MS = 4000;  // >=4000ms => intensidade de crescimento minima (0.0)
+
+  let spreadMultiplier = 1.0;
+  let lastSpreadUpdateTime = performance.now();
+  let lastDeactivationTime = null;
+  let lastAnyActivityTime = performance.now(); // ultima vez que o checkbox foi clicado (ligado ou desligado) -- usado pelas particulas "permanentes"
+
+  function currentMaxSpreadMultiplier() {
+    // Teto = a animacao no maximo precisa alcancar a diagonal da PAGINA INTEIRA
+    // (documento completo, incluindo o que só aparece rolando), nao apenas do viewport visivel.
+    const pageWidth = document.documentElement.scrollWidth;
+    const pageHeight = document.documentElement.scrollHeight;
+    const diagonal = Math.hypot(pageWidth, pageHeight);
+    return diagonal / BASE_MAX_DISTANCE;
+  }
+
+  function growthIntensity(deltaMs) {
+    if (deltaMs <= FAST_MS) return 1;
+    if (deltaMs >= SLOW_MS) return 0;
+    return 1 - (deltaMs - FAST_MS) / (SLOW_MS - FAST_MS);
+  }
+
+  // Aplica o decaimento de TODOS os estagios (sempre, baseado em tempo real decorrido) e devolve o teto atual
+  // "factor" (0..1) controla quanto do decaimento realmente se aplica nesse intervalo:
+  // factor=0 (clique bem rapido, intensity=1) -> decaimento praticamente zero, nao compete com o crescimento.
+  // factor=1 (clique bem lento / tempo parado, intensity=0) -> decaimento cheio, como um tempo realmente ocioso.
+  function applyDecay(now, factor) {
+    if (factor === undefined) factor = 1;
+    const maxSpread = currentMaxSpreadMultiplier();
+    const elapsedSec = ((now - lastSpreadUpdateTime) / 1000) * factor;
+
+    const decayRate = (maxSpread - 1) / DECAY_SECONDS_FROM_MAX; // por segundo
+    spreadMultiplier = Math.max(1, spreadMultiplier - decayRate * elapsedSec);
+
+    stainProgress = Math.max(0, stainProgress - elapsedSec / STAGE2_DECAY_SECONDS);
+    glitchProgress = Math.max(0, glitchProgress - elapsedSec / STAGE3_DECAY_SECONDS);
+
+    lastSpreadUpdateTime = now;
+    return maxSpread;
+  }
+
+  // ---- Estagio 2 (item 9): manchas de "alvejante" -- so cresce quando o estagio 1 ja esta no teto ----
+  const STAGE2_GROWTH_SECONDS = 60;
+  const STAGE2_DECAY_SECONDS = 120;
+  const MAX_STAINS = 26;
+  let stainProgress = 0; // 0..1
+  let stainBlobs = null;
+
+  function ensureStainBlobs() {
+    if (stainBlobs) return stainBlobs;
+    let stainLayer = document.getElementById('stainLayer');
+    if (!stainLayer) {
+      stainLayer = document.createElement('div');
+      stainLayer.id = 'stainLayer';
+      stainLayer.style.cssText = 'position:fixed; inset:0; z-index:2147483645; pointer-events:none; mix-blend-mode:color-burn;';
+      document.body.appendChild(stainLayer);
+    }
+    // Cores propositalmente fora da paleta do site (azul/dourado/creme): branco "estourado" no centro,
+    // anel "queimado"/oxidado, e borda em cor toxica (verde acido / magenta eletrico).
+    const stainPalettes = [
+      ['#FFFDE7', '#8B6F47', '#CCFF00'],
+      ['#FFFFFF', '#A67C52', '#FF00E5'],
+      ['#FFF9E0', '#7A5C3A', '#39FF14'],
+    ];
+    stainBlobs = [];
+    for (let i = 0; i < MAX_STAINS; i++) {
+      const [c1, c2, c3] = stainPalettes[i % stainPalettes.length];
+      const size = 120 + Math.random() * 260;
+      const el = document.createElement('div');
+      el.style.cssText = `
+        position:absolute;
+        left:${Math.random() * 100}%;
+        top:${Math.random() * 100}%;
+        width:${size}px; height:${size}px;
+        margin-left:${-size / 2}px; margin-top:${-size / 2}px;
+        border-radius:50%;
+        background: radial-gradient(circle, ${c1} 0%, ${c2} 55%, ${c3} 85%, transparent 100%);
+        filter: blur(${6 + Math.random() * 10}px);
+        opacity:0;
+        transition: opacity 1.4s ease;
+        transform: rotate(${Math.random() * 360}deg);
+      `;
+      stainLayer.appendChild(el);
+      stainBlobs.push(el);
+    }
+    return stainBlobs;
+  }
+
+  function updateStainVisual() {
+    const blobs = ensureStainBlobs();
+    const activeCount = Math.round(stainProgress * MAX_STAINS);
+    for (let i = 0; i < blobs.length; i++) {
+      blobs[i].style.opacity = i < activeCount ? String(0.35 + 0.5 * stainProgress) : '0';
+    }
+  }
+
+  // ---- Estagio 3 (item 10): glitch RGB/scanlines -- so cresce quando o estagio 2 ja esta no maximo ----
+  const STAGE3_GROWTH_SECONDS = 60;
+  const STAGE3_DECAY_SECONDS = 120;
+  const DRAMATIC_SUSTAIN_MS = 30000;      // 30s de glitch no maximo, sustentado, ate o flash dramatico comecar
+  const DRAMATIC_FLASH_INTERVAL_MS = 10000;
+  const DRAMATIC_FLASH_DURATION_MS = 220;
+
+  let glitchProgress = 0; // 0..1
+  let glitchLayerEls = null;
+  let glitchJitterHandle = null;
+  let glitchMaxSinceTime = null;
+  let dramaticIntervalHandle = null;
+
+  function ensureGlitchLayer() {
+    if (glitchLayerEls) return glitchLayerEls;
+    const layer = document.createElement('div');
+    layer.id = 'glitchLayer';
+    layer.style.cssText = 'position:fixed; inset:0; z-index:2147483646; pointer-events:none;';
+    document.body.appendChild(layer);
+
+    const redGhost = document.createElement('div');
+    redGhost.style.cssText = 'position:absolute; inset:0; background:rgba(255,0,60,0); mix-blend-mode:screen;';
+    const cyanGhost = document.createElement('div');
+    cyanGhost.style.cssText = 'position:absolute; inset:0; background:rgba(0,255,255,0); mix-blend-mode:screen;';
+    const scanlines = document.createElement('div');
+    scanlines.style.cssText = 'position:absolute; inset:-4px; opacity:0; background:repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 1px, transparent 1px, transparent 3px);';
+
+    layer.appendChild(redGhost);
+    layer.appendChild(cyanGhost);
+    layer.appendChild(scanlines);
+    glitchLayerEls = { layer, redGhost, cyanGhost, scanlines };
+    return glitchLayerEls;
+  }
+
+  function updateGlitchVisual() {
+    const { redGhost, cyanGhost, scanlines } = ensureGlitchLayer();
+    scanlines.style.opacity = String(0.5 * glitchProgress);
+
+    if (glitchProgress <= 0) {
+      redGhost.style.background = 'rgba(255,0,60,0)';
+      cyanGhost.style.background = 'rgba(0,255,255,0)';
+      if (glitchJitterHandle) { clearInterval(glitchJitterHandle); glitchJitterHandle = null; }
+      return;
+    }
+
+    const alpha = 0.22 * glitchProgress;
+    const offset = 6 * glitchProgress;
+    redGhost.style.background = `rgba(255,0,60,${alpha})`;
+    cyanGhost.style.background = `rgba(0,255,255,${alpha})`;
+
+    if (!glitchJitterHandle) {
+      glitchJitterHandle = setInterval(() => {
+        const jx = (Math.random() - 0.5) * 2 * offset;
+        const jy = (Math.random() - 0.5) * 2 * offset;
+        redGhost.style.transform = `translate(${jx}px, ${jy}px)`;
+        cyanGhost.style.transform = `translate(${-jx}px, ${-jy}px)`;
+      }, 90);
+    }
+  }
+
+  // Flash "dramatico": inversao de cor via mix-blend-mode (nao mexe em filter/transform do body,
+  // entao nao quebra o posicionamento das camadas fixed de sparks/manchas/glitch).
+  function triggerDramaticFlash() {
+    const flash = document.createElement('div');
+    flash.style.cssText = 'position:fixed; inset:0; z-index:2147483647; pointer-events:none; background:#fff; mix-blend-mode:difference;';
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), DRAMATIC_FLASH_DURATION_MS);
+  }
+
+  function updateDramaticStage(now) {
+    if (glitchProgress >= 0.999) {
+      if (glitchMaxSinceTime === null) glitchMaxSinceTime = now;
+      const sustainedMs = now - glitchMaxSinceTime;
+      if (sustainedMs >= DRAMATIC_SUSTAIN_MS && !dramaticIntervalHandle) {
+        dramaticIntervalHandle = setInterval(triggerDramaticFlash, DRAMATIC_FLASH_INTERVAL_MS);
+      }
+    } else {
+      glitchMaxSinceTime = null;
+      if (dramaticIntervalHandle) { clearInterval(dramaticIntervalHandle); dramaticIntervalHandle = null; }
+    }
+  }
+
+  function resetSpread() {
+    spreadMultiplier = 1.0;
+    lastDeactivationTime = null;
+    lastSpreadUpdateTime = performance.now();
+    stainProgress = 0;
+    glitchProgress = 0;
+    glitchMaxSinceTime = null;
+    if (dramaticIntervalHandle) { clearInterval(dramaticIntervalHandle); dramaticIntervalHandle = null; }
+    updateStainVisual();
+    updateGlitchVisual();
+  }
+
+  function createSparkles(element, spreadMultiplierArg) {
+    const spread = Math.max(1, spreadMultiplierArg || 1);
+    syncSparkLayerSize(); // a pagina pode ter crescido/mudado desde o ultimo burst
+    const rect = element.getBoundingClientRect();
+    // rect.left/top sao relativos ao viewport; como o sparkLayer agora e' position:absolute
+    // ancorado no documento, somamos o scroll atual para converter para coordenadas do documento.
+    const centerX = rect.left + rect.width / 2 + window.scrollX;
+    const centerY = rect.top + rect.height / 2 + window.scrollY;
+    const colors = ["#FFD100", "#FFF4A3", "#004EB5", "#5398FF", "#FFFFFF"];
+    const BASE_DURATION = 1200; // ms
+    // Duracao escala proporcionalmente ao espalhamento, mas com teto para nao virar uma animacao
+    // absurdamente longa quando o espalhamento cobre a tela inteira (item 2 + ajuste de bom senso).
+    const DURATION = Math.min(BASE_DURATION * spread, BASE_DURATION * 3);
+    // mais particulas conforme o espalhamento cresce, pra nao ficar "vazio" no centro; teto de 90 evita excesso de elementos no DOM
+    const PARTICLE_COUNT = Math.min(90, Math.round(30 * (1 + (spread - 1) * 0.3)));
+    const STICKY_RATIO = 0.50; // ~50% das particulas "grudam" na tela em vez de sumir por completo
+    const STICKY_FLOOR_OPACITY = 0.4; // opacidade em que a particula grudenta fica parada
+    const STICKY_LINGER_TIERS_MS = [8000, 20000, 50000]; // das grudentas, 1/3 some em 8s, 1/3 em 20s, 1/3 em 50s
+    const STICKY_FADE_MS = 600; // duracao do fade final da particula grudenta
+    const PERMANENT_RATIO = 0.10; // +10% adicional (alem dos 50% grudentos) que so comeca a sumir quando o usuario parar de clicar
+    const PERMANENT_IDLE_MS = 15000; // tempo parado (sem nenhum clique, ligar ou desligar) para essas particulas comecarem a sumir
+    const PERMANENT_FADE_MS = 1200; // duracao do fade dessas particulas quando o tempo parado e atingido
+
+    const stickyCount = Math.round(PARTICLE_COUNT * STICKY_RATIO);
+    const stickyIndices = new Set();
+    while (stickyIndices.size < stickyCount) {
+      stickyIndices.add(Math.floor(Math.random() * PARTICLE_COUNT));
+    }
+    // distribui as particulas grudentas em 3 grupos iguais, cada um com um tempo de permanencia diferente
+    const stickyShuffled = Array.from(stickyIndices);
+    for (let i = stickyShuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [stickyShuffled[i], stickyShuffled[j]] = [stickyShuffled[j], stickyShuffled[i]];
+    }
+    const stickyLingerByIndex = new Map();
+    stickyShuffled.forEach((idx, pos) => {
+      stickyLingerByIndex.set(idx, STICKY_LINGER_TIERS_MS[pos % STICKY_LINGER_TIERS_MS.length]);
+    });
+
+    // +10% adicional, distinto das grudentas, que nao tem tempo fixo -- so comeca a sumir com inatividade
+    const permanentCount = Math.round(PARTICLE_COUNT * PERMANENT_RATIO);
+    const permanentIndices = new Set();
+    while (permanentIndices.size < permanentCount) {
+      const idx = Math.floor(Math.random() * PARTICLE_COUNT);
+      if (!stickyIndices.has(idx)) permanentIndices.add(idx);
+    }
+
+    const particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const distance = (40 + Math.random() * 70) * spread;
+      const size = 6 + Math.random() * 10;
+
+      const el = document.createElement("div");
+      el.className = "spark";
+      el.style.width = `${size}px`;
+      el.style.height = `${size}px`;
+      el.style.left = `${centerX}px`;
+      el.style.top = `${centerY}px`;
+      el.style.background = colors[Math.floor(Math.random() * colors.length)];
+      el.style.boxShadow = `0 0 8px 2px ${colors[Math.floor(Math.random() * colors.length)]}`;
+      el.style.transform = "translate(-50%, -50%) scale(0)";
+      el.style.opacity = "1";
+      sparkLayer.appendChild(el);
+
+      particles.push({
+        el,
+        angleX: Math.cos(angle) * distance,
+        angleY: Math.sin(angle) * distance,
+        startTime: performance.now() + Math.random() * 80, // pequeno atraso escalonado entre particulas
+        sticky: stickyIndices.has(i),
+        lingerMs: stickyLingerByIndex.get(i) || STICKY_LINGER_TIERS_MS[0],
+        permanent: permanentIndices.has(i),
+      });
+    }
+
+    function tick(now) {
+      let anyAlive = false;
+
+      for (const p of particles) {
+        const elapsed = now - p.startTime;
+        if (elapsed < 0) { anyAlive = true; continue; }
+
+        const t = Math.min(elapsed / DURATION, 1);
+
+        // ease-out: rapido no comeco, desacelera no fim
+        const eased = 1 - Math.pow(1 - t, 3);
+        const scale = t < 0.15 ? (t / 0.15) : (1 - (t - 0.15) / 0.85) * 1; // cresce rapido, encolhe devagar
+        const dx = p.angleX * eased;
+        const dy = p.angleY * eased;
+        p.el.style.transform = `translate(-50%, -50%) translate(${dx}px, ${dy}px) scale(${Math.max(scale, 0)})`;
+
+        if (p.permanent) {
+          // trajetoria normal ate assentar numa opacidade baixa; a partir dai, so comeca a sumir
+          // quando o USUARIO PARAR DE CLICAR (atividade global) por tempo suficiente -- enquanto ele
+          // continuar clicando (mesmo devagar), essas particulas se acumulam indefinidamente.
+          if (t < 0.7) {
+            p.el.style.opacity = '1';
+          } else {
+            const settleT = Math.min((t - 0.7) / 0.3, 1);
+            p.el.style.opacity = `${Math.max(1 - (1 - STICKY_FLOOR_OPACITY) * settleT, STICKY_FLOOR_OPACITY)}`;
+          }
+          if (t < 1) { anyAlive = true; continue; }
+
+          const idleMs = now - lastAnyActivityTime;
+          if (idleMs < PERMANENT_IDLE_MS) {
+            p.el.style.opacity = `${STICKY_FLOOR_OPACITY}`;
+            anyAlive = true;
+          } else {
+            const fadeT = Math.min((idleMs - PERMANENT_IDLE_MS) / PERMANENT_FADE_MS, 1);
+            p.el.style.opacity = `${Math.max(STICKY_FLOOR_OPACITY * (1 - fadeT), 0)}`;
+            if (fadeT >= 1) { p.el.remove(); } else { anyAlive = true; }
+          }
+          continue;
+        }
+
+        if (!p.sticky) {
+          // comportamento normal: some por completo ao fim da animacao
+          const opacity = t < 0.7 ? 1 : 1 - (t - 0.7) / 0.3;
+          p.el.style.opacity = `${Math.max(opacity, 0)}`;
+          anyAlive = anyAlive || t < 1;
+          if (t >= 1) { p.el.remove(); }
+          continue;
+        }
+
+        // particula "grudenta": termina o trajeto normal, mas ao inves de sumir,
+        // fica parada numa opacidade baixa por um bom tempo antes do fade final.
+        const lingerElapsed = elapsed - DURATION; // tempo desde que o trajeto normal terminou
+        if (lingerElapsed < 0) {
+          const opacity = t < 0.7 ? 1 : 1 - (1 - STICKY_FLOOR_OPACITY) * (t - 0.7) / 0.3;
+          p.el.style.opacity = `${Math.max(opacity, STICKY_FLOOR_OPACITY)}`;
+          anyAlive = true;
+        } else if (lingerElapsed < p.lingerMs) {
+          p.el.style.opacity = `${STICKY_FLOOR_OPACITY}`;
+          anyAlive = true;
+        } else {
+          const fadeT = Math.min((lingerElapsed - p.lingerMs) / STICKY_FADE_MS, 1);
+          p.el.style.opacity = `${Math.max(STICKY_FLOOR_OPACITY * (1 - fadeT), 0)}`;
+          if (fadeT >= 1) {
+            p.el.remove();
+          } else {
+            anyAlive = true;
+          }
+        }
+      }
+
+      if (anyAlive) {
+        requestAnimationFrame(tick);
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  chkOtimizar.addEventListener('change', function() {
+    iconOtimizar.src = this.checked ? 'assets/img/icons/icon_magic_wand1.webp' : 'assets/img/icons/icon_magic_wand2.webp';
+    iconOtimizar.style.opacity = this.checked ? '1' : '0.7';
+
+    const now = performance.now();
+    lastAnyActivityTime = now; // qualquer clique (ligar ou desligar) conta como atividade
+
+    if (this.checked) {
+      let intensity = 0;
+      let gapSec = 0;
+      if (lastDeactivationTime !== null) {
+        const deltaMs = now - lastDeactivationTime;
+        intensity = growthIntensity(deltaMs);
+        gapSec = deltaMs / 1000;
+      }
+
+      // decaimento so leva em conta a parcela "lenta" desse intervalo -- um clique rapido
+      // (intensity alta) praticamente nao decai, entao nao compete mais com o proprio crescimento.
+      const maxSpread = applyDecay(now, 1 - intensity);
+
+      if (lastDeactivationTime !== null) {
+        const growthRate1 = (maxSpread - 1) / GROWTH_SECONDS_TO_MAX; // por segundo, na intensidade maxima
+        spreadMultiplier = Math.min(maxSpread, spreadMultiplier + intensity * growthRate1 * gapSec);
+
+        // Estagio 2 (manchas) so cresce quando o estagio 1 ja esta praticamente no teto
+        if (spreadMultiplier >= maxSpread - 0.001) {
+          const growthRate2 = 1 / STAGE2_GROWTH_SECONDS;
+          stainProgress = Math.min(1, stainProgress + intensity * growthRate2 * gapSec);
+        }
+
+        // Estagio 3 (glitch) so cresce quando o estagio 2 (manchas) ja esta no maximo
+        if (stainProgress >= 0.999) {
+          const growthRate3 = 1 / STAGE3_GROWTH_SECONDS;
+          glitchProgress = Math.min(1, glitchProgress + intensity * growthRate3 * gapSec);
+        }
+      }
+
+      updateStainVisual();
+      updateGlitchVisual();
+      updateDramaticStage(now);
+
+      createSparkles(iconOtimizar, spreadMultiplier);
+      iconOtimizar.classList.remove('checkbox-glow');
+      void iconOtimizar.offsetWidth;
+      iconOtimizar.classList.add('checkbox-glow');
+      setTimeout(() => iconOtimizar.classList.remove('checkbox-glow'), 500);
+    } else {
+      applyDecay(now, 1); // tempo realmente parado (desativado) sempre decai em cheio
+      lastDeactivationTime = now;
+    }
+  });
+
+  // Item 5: clicar em GerarPROMPT reseta o acumulo de espalhamento por completo
+  const btnGenerateForSparkReset = document.getElementById('btnGenerate');
+  if (btnGenerateForSparkReset) {
+    btnGenerateForSparkReset.addEventListener('click', resetSpread);
+  }
+}
+
+document.getElementById('btnGenerate').addEventListener('click', async function(){
+  const themeId = document.getElementById('genTheme').value;
+  const genType = document.getElementById('genType').value;
+  const tema = document.getElementById('genTema').value.trim();
+  const statusEl = document.getElementById('genStatus');
+  const hintEl = document.getElementById('genHint');
+  const theme = (await getThemes()).find(function(t){ return t.id === themeId; });
+
+  hintEl.style.display = 'none';
+  statusEl.className = 'admin-status';
+  statusEl.textContent = '';
+
+  if(!theme){ statusEl.textContent = 'Selecione um tema.'; statusEl.className = 'admin-status err'; return; }
+  const template = genType === 'texto' ? theme.templateTexto : theme.templateImagem;
+  if(!template){
+    statusEl.textContent = 'Este tema não tem um prompt de ' + genType + ' configurado. Edite o tema em "Temas e Skills".';
+    statusEl.className = 'admin-status err';
+    return;
+  }
+  if(!tema){
+    statusEl.textContent = 'Descreva o assunto do post.';
+    statusEl.className = 'admin-status err';
+
+    let promptPlaceholder = applyPersonalizacaoToPrompt(applyImgFormatToPrompt(template.replace(/\{tema\}/gi, '[[[ ASSUNTO DO POST ]]]'), genType), genType);
+    const chkOti = document.getElementById('chkOtimizar');
+    if (chkOti && chkOti.checked) {
+      const otimizador = (await getThemes()).find(function(t){ return t.nome === 'Otimizador de prompt'; });
+      if (otimizador && otimizador.templateTexto) {
+        promptPlaceholder = otimizador.templateTexto.replace(/\{tema\}/gi, promptPlaceholder);
+      }
+    }
+    currentPromptState = { prompt: promptPlaceholder, type: genType, tema: '', theme: theme };
+    showGeneratedPrompt(promptPlaceholder, genType);
+    
+    const temaInput = document.getElementById('genTema');
+    temaInput.classList.add('flash-yellow');
+    const removeFlash = () => {
+      temaInput.classList.remove('flash-yellow');
+      temaInput.removeEventListener('click', removeFlash);
+      temaInput.removeEventListener('focus', removeFlash);
+    };
+    temaInput.addEventListener('click', removeFlash);
+    temaInput.addEventListener('focus', removeFlash);
+
+    setTimeout(() => {
+      const textarea = document.getElementById('genPromptText');
+      const idx = promptPlaceholder.indexOf('[[[ ASSUNTO DO POST ]]]');
+      if (idx !== -1) {
+        textarea.focus();
+        textarea.setSelectionRange(idx, idx + '[[[ ASSUNTO DO POST ]]]'.length);
+      }
+    }, 50);
+
+    return; 
+  }
+
+  let prompt = applyPersonalizacaoToPrompt(applyImgFormatToPrompt(template.replace(/\{tema\}/gi, tema), genType), genType);
+  const chkOti = document.getElementById('chkOtimizar');
+  if (chkOti && chkOti.checked) {
+    const otimizador = (await getThemes()).find(function(t){ return t.nome === 'Otimizador de prompt'; });
+    if (otimizador && otimizador.templateTexto) {
+      prompt = otimizador.templateTexto.replace(/\{tema\}/gi, prompt);
+    }
+  }
+
+  currentPromptState = { prompt: prompt, type: genType, tema: tema, theme: theme };
+  showGeneratedPrompt(prompt, genType);
+  
+  // Remover execução automática
+});
+const skillsAccordion = setupAccordion('skillsToggle', 'skillsBody');
+
+// Tutorial da aba "Resolução de exercícios": acordeão simples, sem o
+// comportamento de "clicar em qualquer lugar do card expande" do
+// setupAccordion (aqui o card tem outros botões clicáveis ao lado).
+(function(){
+  const t = document.getElementById('exerciseTutorialToggle');
+  const b = document.getElementById('exerciseTutorialBody');
+  const fullscreen = document.getElementById('exerciseHowtoFullscreen');
+  const backBtn = document.getElementById('exerciseHowtoBack');
+  if(!t || !b) return;
+  function isMobile(){ return window.matchMedia('(max-width:600px)').matches; }
+  t.addEventListener('click', function(){
+    // No mobile, "Como funciona?" abre um modal em tela cheia (mais
+    // fácil de ler no celular) em vez do acordeão comum do desktop.
+    if(isMobile() && fullscreen){
+      fullscreen.hidden = false;
+      return;
+    }
+    const expanded = t.getAttribute('aria-expanded') === 'true';
+    t.setAttribute('aria-expanded', String(!expanded));
+    b.classList.toggle('open', !expanded);
+  });
+  if(backBtn && fullscreen){
+    backBtn.addEventListener('click', function(){ fullscreen.hidden = true; });
+  }
+})();
+
+// ---------- Assistente por etapas do Gerador (mobile) ----------
+// Fora do mobile essas classes não têm efeito visual (ver CSS), então
+// chamar isso em qualquer largura de tela é inofensivo.
+(function(){
+  const steps = document.querySelectorAll('#genCardRoot .wizard-step');
+  const dots = document.querySelectorAll('#genWizardProgress .dot');
+  if(!steps.length) return;
+  window.wizardGoToStep = function(n){
+    steps.forEach(function(el){ el.classList.toggle('step-active', Number(el.dataset.step) === n); });
+    dots.forEach(function(d){ d.classList.toggle('active', Number(d.dataset.step) === n); });
+  };
+  document.querySelectorAll('#genCardRoot [data-wizard-goto]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      window.wizardGoToStep(Number(btn.getAttribute('data-wizard-goto')));
+    });
+  });
+  // Ao clicar em "Gerar PROMPT", alem da geracao normal (handler ja
+  // existente em outro lugar do script), avanca para a etapa de
+  // resultado — sem interferir na logica de geracao em si.
+  const btnGen = document.getElementById('btnGenerate');
+  if(btnGen) btnGen.addEventListener('click', function(){ window.wizardGoToStep(3); });
+})();
+
+// ---------- Bottom sheet: Prompts, Temas e Skills (mobile) ----------
+(function(){
+  const trigger = document.getElementById('temasSkillsSheetTrigger');
+  const sheet = document.getElementById('temasSkillsSheet');
+  const backdrop = document.getElementById('temasSkillsSheetBackdrop');
+  const closeBtn = document.getElementById('temasSkillsSheetClose');
+  if(!trigger || !sheet || !backdrop) return;
+
+  function openSheet(){
+    sheet.classList.add('sheet-open');
+    backdrop.classList.add('sheet-open');
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', onEscape);
+  }
+  function closeSheet(){
+    sheet.classList.remove('sheet-open');
+    backdrop.classList.remove('sheet-open');
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', onEscape);
+  }
+  function onEscape(e){ if(e.key === 'Escape') closeSheet(); }
+
+  trigger.addEventListener('click', openSheet);
+  backdrop.addEventListener('click', closeSheet);
+  if(closeBtn) closeBtn.addEventListener('click', closeSheet);
+})();
+
+// ---------- Dropdown "LLMs" (mobile) ----------
+(function(){
+  const toggle = document.getElementById('llmDropdownToggle');
+  const menu = document.getElementById('llmDropdownMenu');
+  const backdrop = document.getElementById('llmModalBackdrop');
+  if(!toggle || !menu) return;
+  function isMobile(){ return window.matchMedia('(max-width:600px)').matches; }
+  function openMenu(){
+    menu.classList.add('open');
+    if(backdrop) backdrop.classList.add('open');
+    toggle.setAttribute('aria-expanded', 'true');
+    if(isMobile()) document.body.style.overflow = 'hidden';
+  }
+  function closeMenu(){
+    menu.classList.remove('open');
+    if(backdrop) backdrop.classList.remove('open');
+    toggle.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+  toggle.addEventListener('click', function(){
+    if(menu.classList.contains('open')) closeMenu(); else openMenu();
+  });
+  if(backdrop) backdrop.addEventListener('click', closeMenu);
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && menu.classList.contains('open')) closeMenu();
+  });
+})();
+
+// ---------- Seletor de Tema em tela cheia (mobile) ----------
+// O <select id="genTheme"> continua sendo a fonte da verdade (é nele
+// que o resto do script lê/escreve o tema escolhido). Isto aqui só
+// espelha as mesmas opções numa lista em tela cheia e, ao escolher,
+// grava de volta no select real via .value — igual ao que o código já
+// fazia em useThemeInGenerator.
+function syncGenThemeDisplay(){
+  const select = document.getElementById('genTheme');
+  const trigger = document.getElementById('genThemeTrigger');
+  if(!select || !trigger) return;
+  const opt = select.options[select.selectedIndex];
+  trigger.textContent = (opt && opt.value) ? opt.textContent : 'Selecionar tema';
+}
+(function(){
+  const select = document.getElementById('genTheme');
+  const trigger = document.getElementById('genThemeTrigger');
+  const fullscreen = document.getElementById('genThemeFullscreen');
+  const listEl = document.getElementById('genThemeFullscreenList');
+  const backBtn = document.getElementById('genThemeFullscreenBack');
+  if(!select || !trigger || !fullscreen || !listEl || !backBtn) return;
+
+  function openFullscreen(){
+    listEl.innerHTML = '';
+    Array.prototype.forEach.call(select.options, function(opt){
+      if(!opt.value) return;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = opt.textContent;
+      if(opt.value === select.value) btn.classList.add('selected');
+      btn.addEventListener('click', function(){
+        select.value = opt.value;
+        syncGenThemeDisplay();
+        closeFullscreen();
+      });
+      listEl.appendChild(btn);
+    });
+    fullscreen.hidden = false;
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', onEscape);
+  }
+  function closeFullscreen(){
+    fullscreen.hidden = true;
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', onEscape);
+  }
+  function onEscape(e){ if(e.key === 'Escape') closeFullscreen(); }
+
+  trigger.addEventListener('click', openFullscreen);
+  backBtn.addEventListener('click', closeFullscreen);
+  syncGenThemeDisplay();
+})();
+
+function copyText(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text);
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+}
+document.querySelectorAll('[data-copy]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    const id = btn.getAttribute('data-copy');
+    const val = document.getElementById(id).value;
+    copyText(val);
+    const original = btn.textContent;
+    btn.textContent = 'Copiado!';
+    setTimeout(function(){ btn.textContent = original; }, 1500);
+  });
+});
+
+// Abre o ChatGPT em nova aba com o prompt já preenchido via ?q=.
+// O Gemini não suporta esse tipo de preenchimento por URL (só o link fixo acima).
+document.querySelectorAll('[data-open-chatgpt]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    const id = btn.getAttribute('data-open-chatgpt');
+    const val = document.getElementById(id).value.trim();
+    if(!val){ alert('Preencha o prompt antes de abrir no ChatGPT.'); return; }
+    const url = 'https://chatgpt.com/?q=' + encodeURIComponent(val);
+    window.open(url, '_blank', 'noopener');
+  });
+});
+
+document.querySelectorAll('[data-open-claude]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    const id = btn.getAttribute('data-open-claude');
+    const val = document.getElementById(id).value.trim();
+    if(!val){ alert('Preencha o prompt antes de abrir no Claude.'); return; }
+    const url = 'https://claude.ai/new?q=' + encodeURIComponent(val);
+    window.open(url, '_blank', 'noopener');
+  });
+});
+
+// ================= AUTH / MFA GATE =================
+
+async function logAccess(nome){
+  try{
+    await sb.from('access_logs').insert({ nome: nome, event: 'login', user_agent: navigator.userAgent });
+  }catch(e){ console.error('Erro ao registrar acesso:', e); }
+}
+
+async function ensureSharedSession(){
+  const { data: sessionData } = await sb.auth.getSession();
+  if(!sessionData || !sessionData.session){
+    const { error } = await sb.auth.signInWithPassword({ email: SHARED_EMAIL, password: SHARED_PASSWORD });
+    if(error) throw error;
+  }
+}
+
+async function getVerifiedFactors(){
+  const { data, error } = await sb.auth.mfa.listFactors();
+  if(error){ console.error('Erro ao listar fatores MFA:', error); return []; }
+  return (data && data.totp || []).filter(function(f){ return f.status === 'verified'; });
+}
+
+// ---- Confirmação dupla + TOTP para ações destrutivas (ex.: excluir tema) ----
+function openDeleteTotpModal(factors){
+  return new Promise(function(resolve){
+    const modal = document.getElementById('deleteTotpModal');
+    const codeInput = document.getElementById('deleteTotpCode');
+    const confirmBtn = document.getElementById('deleteTotpConfirm');
+    const closeBtn = document.getElementById('deleteTotpClose');
+    const statusEl = document.getElementById('deleteTotpStatus');
+
+    codeInput.value = '';
+    statusEl.textContent = '';
+    statusEl.className = 'admin-status';
+    confirmBtn.disabled = false;
+    modal.hidden = false;
+    codeInput.focus();
+
+    function cleanup(result){
+      modal.hidden = true;
+      confirmBtn.removeEventListener('click', onConfirm);
+      closeBtn.removeEventListener('click', onClose);
+      modal.removeEventListener('click', onOverlayClick);
+      document.removeEventListener('keydown', onKeydown);
+      resolve(result);
+    }
+
+    async function onConfirm(){
+      const code = codeInput.value.trim();
+      if(!/^\d{6}$/.test(code)){ statusEl.textContent = 'Digite o código de 6 dígitos.'; statusEl.className = 'admin-status err'; return; }
+      confirmBtn.disabled = true;
+      statusEl.textContent = 'Verificando...';
+      statusEl.className = 'admin-status';
+
+      let ok = false;
+      for(let i = 0; i < factors.length; i++){
+        const f = factors[i];
+        try{
+          const { data: chData, error: chErr } = await sb.auth.mfa.challenge({ factorId: f.id });
+          if(chErr) continue;
+          const { error: vErr } = await sb.auth.mfa.verify({ factorId: f.id, challengeId: chData.id, code: code });
+          if(vErr) continue;
+          ok = true;
+          break;
+        }catch(e){ /* tenta o próximo fator */ }
+      }
+
+      if(!ok){
+        statusEl.textContent = 'Código inválido, tente novamente.';
+        statusEl.className = 'admin-status err';
+        confirmBtn.disabled = false;
+        return;
+      }
+      cleanup(true);
+    }
+    function onClose(){ cleanup(false); }
+    function onOverlayClick(e){ if(e.target === modal) cleanup(false); }
+    function onKeydown(e){ if(e.key === 'Escape') cleanup(false); }
+
+    confirmBtn.addEventListener('click', onConfirm);
+    closeBtn.addEventListener('click', onClose);
+    modal.addEventListener('click', onOverlayClick);
+    document.addEventListener('keydown', onKeydown);
+  });
+}
+
+// Confirmação dupla e, se o TOTP estiver ativo, exige o código antes de liberar
+// a ação destrutiva. Se o TOTP não estiver ativo, avisa que é preciso ativá-lo
+// e não deixa prosseguir. Retorna true só quando pode excluir de fato.
+async function confirmDestructiveAction(message){
+  if(!confirm(message)) return false;
+  if(!confirm('Tem certeza mesmo? Essa ação não pode ser desfeita.')) return false;
+
+  if(!isLoginRequired()){
+    alert('Para excluir é necessário ativar o login por TOTP (autenticador) nas configurações do painel.');
+    return false;
+  }
+
+  const factors = await getVerifiedFactors();
+  if(!factors.length){
+    alert('Nenhum autenticador TOTP verificado. Ative o TOTP nas configurações do painel antes de excluir.');
+    return false;
+  }
+
+  return await openDeleteTotpModal(factors);
+}
+
+function renderLoginLoading(msg){
+  document.getElementById('loginCard').innerHTML = '<p class="admin-desc">' + escapeHtml(msg || 'Carregando...') + '</p>';
+}
+
+function renderFirstEnrollPanel(){
+  const card = document.getElementById('loginCard');
+  card.innerHTML =
+    '<h1>Primeiro acesso</h1>' +
+    '<p class="admin-desc">Cadastre seu autenticador para entrar no painel.</p>' +
+    '<div class="admin-field full">' +
+      '<label for="loginNome">Seu nome</label>' +
+      '<input type="text" id="loginNome" placeholder="Ex: Maria">' +
+    '</div>' +
+    '<button class="abtn" id="btnGerarQr" type="button" style="margin-top:12px; width:100%; justify-content:center;">Gerar QR Code</button>' +
+    '<div id="loginEnrollArea"></div>' +
+    '<div class="admin-status" id="loginStatus"></div>';
+
+  document.getElementById('btnGerarQr').addEventListener('click', async function(){
+    const nome = document.getElementById('loginNome').value.trim();
+    const statusEl = document.getElementById('loginStatus');
+    if(!nome){ statusEl.textContent = 'Digite seu nome.'; statusEl.className = 'admin-status err'; return; }
+    this.disabled = true;
+    statusEl.textContent = 'Gerando QR Code...';
+    statusEl.className = 'admin-status';
+    try{
+      const { data, error } = await sb.auth.mfa.enroll({ factorType: 'totp', friendlyName: nome });
+      if(error) throw error;
+      const factorId = data.id;
+      const area = document.getElementById('loginEnrollArea');
+      area.innerHTML =
+        '<div class="login-qr-box">' + data.totp.qr_code + '</div>' +
+        '<p class="admin-desc">Não conseguiu escanear? Digite manualmente este código no seu app autenticador:</p>' +
+        '<code class="login-secret">' + escapeHtml(data.totp.secret) + '</code>' +
+        '<div class="admin-field full">' +
+          '<label for="loginCode">Código de 6 dígitos</label>' +
+          '<input type="text" id="loginCode" class="login-code-input" maxlength="6" inputmode="numeric" placeholder="000000">' +
+        '</div>' +
+        '<button class="abtn" id="btnConfirmarEnroll" type="button" style="margin-top:10px; width:100%; justify-content:center;">Confirmar</button>';
+      statusEl.textContent = '';
+      document.getElementById('btnConfirmarEnroll').addEventListener('click', async function(){
+        const code = document.getElementById('loginCode').value.trim();
+        if(!/^\d{6}$/.test(code)){ statusEl.textContent = 'Digite o código de 6 dígitos.'; statusEl.className = 'admin-status err'; return; }
+        this.disabled = true;
+        statusEl.textContent = 'Verificando...';
+        statusEl.className = 'admin-status';
+        try{
+          const { data: chData, error: chErr } = await sb.auth.mfa.challenge({ factorId: factorId });
+          if(chErr) throw chErr;
+          const { error: vErr } = await sb.auth.mfa.verify({ factorId: factorId, challengeId: chData.id, code: code });
+          if(vErr) throw vErr;
+          await onAal2Reached(nome);
+        }catch(err){
+          statusEl.textContent = 'Código inválido, tente novamente.';
+          statusEl.className = 'admin-status err';
+          this.disabled = false;
+        }
+      });
+    }catch(err){
+      statusEl.textContent = 'Erro ao gerar QR Code: ' + err.message;
+      statusEl.className = 'admin-status err';
+      this.disabled = false;
+    }
+  });
+}
+
+function renderFactorPickerPanel(factors){
+  const card = document.getElementById('loginCard');
+  card.innerHTML =
+    '<h1>Entrar no painel</h1>' +
+    '<p class="admin-desc">Digite o código do seu autenticador.</p>' +
+    '<div class="admin-field full">' +
+      '<label for="loginCode2">Código de 6 dígitos</label>' +
+      '<input type="text" id="loginCode2" class="login-code-input" maxlength="6" inputmode="numeric" placeholder="000000">' +
+    '</div>' +
+    '<button class="abtn" id="btnEntrar" type="button" style="margin-top:12px; width:100%; justify-content:center;">Entrar</button>' +
+    '<div class="admin-status" id="loginStatus"></div>';
+
+  document.getElementById('btnEntrar').addEventListener('click', async function(){
+    const code = document.getElementById('loginCode2').value.trim();
+    const statusEl = document.getElementById('loginStatus');
+    if(!/^\d{6}$/.test(code)){ statusEl.textContent = 'Digite o código de 6 dígitos.'; statusEl.className = 'admin-status err'; return; }
+    this.disabled = true;
+    statusEl.textContent = 'Verificando...';
+    statusEl.className = 'admin-status';
+
+    let matchedName = null;
+    for(let i = 0; i < factors.length; i++){
+      const f = factors[i];
+      try{
+        const { data: chData, error: chErr } = await sb.auth.mfa.challenge({ factorId: f.id });
+        if(chErr) continue;
+        const { error: vErr } = await sb.auth.mfa.verify({ factorId: f.id, challengeId: chData.id, code: code });
+        if(vErr) continue;
+        matchedName = f.friendly_name || f.friendlyName || '(sem nome)';
+        break;
+      }catch(e){ /* tenta o próximo fator */ }
+    }
+
+    if(!matchedName){
+      statusEl.textContent = 'Código inválido, tente novamente.';
+      statusEl.className = 'admin-status err';
+      this.disabled = false;
+      return;
+    }
+    renderWelcomeThenEnter(matchedName);
+  });
+}
+
+function renderWelcomeThenEnter(nome){
+  const card = document.getElementById('loginCard');
+  card.innerHTML = '<h1 style="text-align:center;">Bem-vindo(a), ' + escapeHtml(nome) + '!</h1>';
+  setTimeout(async function(){
+    await onAal2Reached(nome);
+  }, 1500);
+}
+
+async function onAal2Reached(nome){
+  currentUserNome = nome;
+  await logAccess(nome);
+  try{
+    localStorage.setItem(LS_LOGIN_AT, String(Date.now()));
+    localStorage.setItem(LS_LOGIN_NOME, nome);
+  }catch(e){ console.error('Erro ao salvar sessão local:', e); }
+  document.getElementById('loginOverlay').style.display = 'none';
+  document.getElementById('adminRoot').style.display = '';
+  document.getElementById('clipboardPanelWrap').style.display = 'block';
+  startPanelCountdown();
+  await initAdminApp();
+}
+
+function formatHMS(ms){
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  return h + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+
+async function forceLogoutToLoginFlow(){
+  if(panelCountdownInterval){ clearInterval(panelCountdownInterval); panelCountdownInterval = null; }
+  try{ await sb.auth.signOut(); }catch(e){ console.error('Erro no signOut:', e); }
+  try{
+    localStorage.removeItem(LS_LOGIN_AT);
+    localStorage.removeItem(LS_LOGIN_NOME);
+  }catch(e){}
+  document.getElementById('adminRoot').style.display = 'none';
+  document.getElementById('clipboardPanelWrap').style.display = 'none';
+  hideSessionCountdownWidget();
+  document.getElementById('loginOverlay').style.display = 'flex';
+  await runNormalLoginDecision();
+}
+
+// ---------- top-right widget: settings gear (always, while #adminRoot is visible) +
+// session countdown/logout icon (only while a TOTP session with a TTL is being tracked) ----------
+function ensureTopRightWidget(){
+  let el = document.getElementById('panelTopWidget');
+  if(!el) return null;
+  if(el.innerHTML.trim() !== '') return el;
+  
+  el.innerHTML =
+    '<span id="panelSessionCountdown" aria-label="Tempo restante da sessão" data-tooltip="Tempo restante da sessão" style="font-family:monospace; font-weight:700; color:var(--color-blue); font-size:0.85rem; display:none;"></span>' +
+    '<button class="abtn small" id="btnPanelLogout" type="button" aria-label="Sair do painel" data-tooltip="Sair do painel" style="display:none; padding:6px 8px;">' + ICON_LOGOUT_SVG + '</button>' +
+    '<button class="abtn small" id="btnPanelSettings" type="button" aria-label="Configurações" data-tooltip="Configurações" style="padding:6px 8px;">' + ICON_GEAR_SVG + '</button>';
+
+  document.getElementById('btnPanelLogout').addEventListener('click', function(){
+    forceLogoutToLoginFlow();
+  });
+  document.getElementById('btnPanelSettings').addEventListener('click', function(){
+    renderSettingsHome();
+    document.getElementById('settingsModal').hidden = false;
+  });
+  return el;
+}
+
+// ---------- Resolução de Exercícios ----------
+const EXERCISE_PROMPT_PATH = 'prompts/gerador-resolucoes-sala-de-estudo-prof-rubia-lima.md';
+const EXERCISE_PROMPT_FILENAME = '# Gerador de resoluções_sala_de_estudo_prof_rubia_lima.md';
+let exercisePromptText = '';
+let exercisePromptPromise = null;
+
+function loadExercisePrompt(){
+  if(exercisePromptText) return Promise.resolve(exercisePromptText);
+  if(!exercisePromptPromise){
+    exercisePromptPromise = fetch(EXERCISE_PROMPT_PATH, { cache:'no-cache' })
+      .then(function(response){
+        if(!response.ok) throw new Error('Não foi possível carregar o prompt.');
+        return response.text();
+      })
+      .then(function(text){ exercisePromptText = text; return text; })
+      .catch(function(error){ exercisePromptPromise = null; throw error; });
+  }
+  return exercisePromptPromise;
+}
+
+function setExerciseActionsLoading(isLoading){
+  const actions = document.getElementById('exerciseMainActions');
+  if(!actions) return;
+  actions.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+  ['exerciseChatgpt','exerciseClaude','exerciseGemini','exerciseCopyPrompt'].forEach(function(id){
+    const button = document.getElementById(id);
+    if(button) button.disabled = isLoading;
+  });
+}
+
+async function ensureExercisePrompt(){
+  setExerciseActionsLoading(true);
+  try{
+    return await loadExercisePrompt();
+  }catch(error){
+    if(typeof showProviderToast === 'function') showProviderToast('Não foi possível carregar o prompt de resolução.', 'error');
+    else alert('Não foi possível carregar o prompt de resolução.');
+    throw error;
+  }finally{
+    setExerciseActionsLoading(false);
+  }
+}
+
+// Chamado quando a aba "Resolução de exercícios" é aberta pela primeira vez,
+// pra já deixar o prompt carregado antes do usuário clicar em algum botão.
+let exerciseTabPreloaded = false;
+function activateExerciseTab(){
+  if(exerciseTabPreloaded) return;
+  exerciseTabPreloaded = true;
+  setExerciseActionsLoading(true);
+  loadExercisePrompt()
+    .catch(function(){})
+    .finally(function(){
+      setExerciseActionsLoading(false);
+    });
+}
+
+function closeExerciseServiceModal(returnToMain){
+  document.getElementById('exerciseServiceModal').hidden = true;
+  if(returnToMain){
+    setTimeout(function(){ document.getElementById('exerciseChatgpt').focus(); }, 0);
+  }
+}
+
+async function copyExercisePrompt(button){
+  const prompt = await ensureExercisePrompt();
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    await navigator.clipboard.writeText(prompt);
+  }else{
+    const textarea = document.createElement('textarea');
+    textarea.value = prompt;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+  }
+  if(button){
+    const original = button.textContent;
+    button.textContent = 'Prompt copiado!';
+    setTimeout(function(){ button.textContent = original; }, 1600);
+  }
+  return prompt;
+}
+
+function downloadExercisePrompt(){
+  const link = document.createElement('a');
+  link.href = EXERCISE_PROMPT_PATH;
+  link.download = EXERCISE_PROMPT_FILENAME;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function exerciseAttachmentWarning(serviceName, className, includeDescriptionId){
+  return '<p class="' + (className || 'exercise-warning') + '"' + (includeDescriptionId === false ? '' : ' id="exerciseServiceMessage"') + '>' +
+    'Antes de continuar, <strong>insira os exercícios como anexo no ' + serviceName + '</strong> ou copie e cole os exercícios dentro do campo do prompt.' +
+  '</p>';
+}
+
+function showExercisePrefillModal(service){
+  const isClaude = service === 'claude';
+  const serviceName = isClaude ? 'Claude' : 'ChatGPT';
+  const serviceModal = document.getElementById('exerciseServiceModal');
+  document.getElementById('exerciseServiceTitle').textContent = 'Abrir no ' + serviceName;
+  document.getElementById('exerciseServiceContent').innerHTML =
+    exerciseAttachmentWarning(serviceName, 'exercise-warning', true) +
+    '<div class="exercise-step-actions">' +
+      '<button class="abtn ghost" id="exerciseServiceBack" type="button">Voltar</button>' +
+      '<button class="abtn" id="exerciseServiceOpen" type="button">Abrir ' + serviceName + '</button>' +
+    '</div>';
+  serviceModal.hidden = false;
+  document.getElementById('exerciseServiceBack').addEventListener('click', function(){ closeExerciseServiceModal(true); });
+  document.getElementById('exerciseServiceOpen').addEventListener('click', async function(){
+    try{
+      const prompt = await ensureExercisePrompt();
+      const baseUrl = isClaude ? 'https://claude.ai/new?q=' : 'https://chatgpt.com/?q=';
+      window.open(baseUrl + encodeURIComponent(prompt), '_blank', 'noopener');
+    }catch(error){}
+  });
+  setTimeout(function(){ document.getElementById('exerciseServiceOpen').focus(); }, 0);
+}
+
+function showExerciseGeminiModal(){
+  const serviceModal = document.getElementById('exerciseServiceModal');
+  document.getElementById('exerciseServiceTitle').textContent = 'Abrir no Gemini';
+  document.getElementById('exerciseServiceContent').innerHTML =
+    '<p class="exercise-warning" id="exerciseServiceMessage">Para usar no Gemini, primeiro copie o prompt e depois cole-o no campo de mensagem.</p>' +
+    '<div id="exerciseGeminiConfirmation"></div>' +
+    '<div class="exercise-step-actions">' +
+      '<button class="abtn ghost" id="exerciseServiceBack" type="button">Voltar</button>' +
+      '<button class="abtn secondary" id="exerciseGeminiCopy" type="button">Copiar</button>' +
+      '<button class="abtn" id="exerciseGeminiOpen" type="button" disabled>Abrir Gemini</button>' +
+    '</div>';
+  serviceModal.hidden = false;
+  document.getElementById('exerciseServiceBack').addEventListener('click', function(){ closeExerciseServiceModal(true); });
+  document.getElementById('exerciseGeminiCopy').addEventListener('click', async function(){
+    try{
+      await copyExercisePrompt(this);
+      document.getElementById('exerciseGeminiConfirmation').innerHTML = exerciseAttachmentWarning('Gemini', 'exercise-copy-confirmation', false);
+      document.getElementById('exerciseGeminiOpen').disabled = false;
+      document.getElementById('exerciseGeminiOpen').focus();
+    }catch(error){}
+  });
+  document.getElementById('exerciseGeminiOpen').addEventListener('click', function(){
+    window.open('https://gemini.google.com/app', '_blank', 'noopener');
+  });
+  setTimeout(function(){ document.getElementById('exerciseGeminiCopy').focus(); }, 0);
+}
+
+function setupExerciseModals(){
+  const serviceModal = document.getElementById('exerciseServiceModal');
+  document.getElementById('exerciseServiceClose').addEventListener('click', function(){ closeExerciseServiceModal(true); });
+  serviceModal.addEventListener('click', function(event){ if(event.target === serviceModal) closeExerciseServiceModal(true); });
+  document.getElementById('exerciseChatgpt').addEventListener('click', function(){ showExercisePrefillModal('chatgpt'); });
+  document.getElementById('exerciseClaude').addEventListener('click', function(){ showExercisePrefillModal('claude'); });
+  document.getElementById('exerciseGemini').addEventListener('click', showExerciseGeminiModal);
+  document.getElementById('exerciseCopyPrompt').addEventListener('click', async function(){ try{ await copyExercisePrompt(this); }catch(error){} });
+  document.getElementById('exerciseDownloadPrompt').addEventListener('click', downloadExercisePrompt);
+  document.addEventListener('keydown', function(event){
+    if(event.key !== 'Escape') return;
+    if(!serviceModal.hidden) closeExerciseServiceModal(true);
+  });
+}
+
+// ---------- legendas dos controles por ícone ----------
+function setupUITooltips(){
+  let tooltip = document.getElementById('globalUiTooltip');
+  if(!tooltip){
+    tooltip = document.createElement('div');
+    tooltip.id = 'globalUiTooltip';
+    tooltip.className = 'ui-tooltip above';
+    tooltip.setAttribute('role', 'tooltip');
+    document.body.appendChild(tooltip);
+  }
+
+  let activeTarget = null;
+  let holdTimer = null;
+  let longPressTarget = null;
+  let hideTimer = null;
+
+  function positionTooltip(target){
+    const text = target.getAttribute('data-tooltip');
+    if(!text) return;
+    tooltip.textContent = text;
+    tooltip.classList.remove('above', 'below');
+    tooltip.classList.add('above');
+    tooltip.style.visibility = 'hidden';
+    tooltip.classList.add('is-visible');
+    const targetRect = target.getBoundingClientRect();
+    const tooltipWidth = tooltip.offsetWidth;
+    const tooltipHeight = tooltip.offsetHeight;
+    const centerX = targetRect.left + targetRect.width / 2;
+    const safeX = Math.max(tooltipWidth / 2 + 8, Math.min(window.innerWidth - tooltipWidth / 2 - 8, centerX));
+    const placeBelow = targetRect.top < tooltipHeight + 16;
+    tooltip.classList.toggle('below', placeBelow);
+    tooltip.classList.toggle('above', !placeBelow);
+    tooltip.style.left = safeX + 'px';
+    tooltip.style.top = (placeBelow ? targetRect.bottom : targetRect.top) + 'px';
+    tooltip.style.visibility = '';
+  }
+
+  function showTooltip(target){
+    if(!target || !target.isConnected) return;
+    if(hideTimer){ clearTimeout(hideTimer); hideTimer = null; }
+    activeTarget = target;
+    positionTooltip(target);
+  }
+
+  function hideTooltip(target){
+    if(target && activeTarget !== target) return;
+    tooltip.classList.remove('is-visible');
+    activeTarget = null;
+  }
+
+  document.addEventListener('pointerover', function(event){
+    if(event.pointerType === 'touch') return;
+    const target = event.target.closest && event.target.closest('[data-tooltip]');
+    if(target) showTooltip(target);
+  });
+  document.addEventListener('pointerout', function(event){
+    const target = event.target.closest && event.target.closest('[data-tooltip]');
+    if(target && !target.contains(event.relatedTarget)) hideTooltip(target);
+  });
+  document.addEventListener('focusin', function(event){
+    const target = event.target.closest && event.target.closest('[data-tooltip]');
+    if(target) showTooltip(target);
+  });
+  document.addEventListener('focusout', function(event){
+    const target = event.target.closest && event.target.closest('[data-tooltip]');
+    if(target) hideTooltip(target);
+  });
+  document.addEventListener('pointerdown', function(event){
+    if(event.pointerType !== 'touch') return;
+    const target = event.target.closest && event.target.closest('[data-tooltip]');
+    if(!target) return;
+    longPressTarget = null;
+    holdTimer = setTimeout(function(){
+      longPressTarget = target;
+      showTooltip(target);
+      hideTimer = setTimeout(function(){ hideTooltip(target); }, 1800);
+    }, 550);
+  });
+  ['pointerup','pointercancel'].forEach(function(eventName){
+    document.addEventListener(eventName, function(){
+      if(holdTimer){ clearTimeout(holdTimer); holdTimer = null; }
+    });
+  });
+  document.addEventListener('click', function(event){
+    const target = event.target.closest && event.target.closest('[data-tooltip]');
+    if(target && target === longPressTarget){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      longPressTarget = null;
+    }
+  }, true);
+  window.addEventListener('resize', function(){ if(activeTarget) positionTooltip(activeTarget); });
+  window.addEventListener('scroll', function(){ if(activeTarget) positionTooltip(activeTarget); }, true);
+}
+
+function hideSessionCountdownWidget(){
+  const countdownEl = document.getElementById('panelSessionCountdown');
+  const logoutBtn = document.getElementById('btnPanelLogout');
+  if(countdownEl) countdownEl.style.display = 'none';
+  if(logoutBtn) logoutBtn.style.display = 'none';
+}
+
+function startPanelCountdown(){
+  if(panelCountdownInterval){ clearInterval(panelCountdownInterval); panelCountdownInterval = null; }
+  ensureTopRightWidget();
+  document.getElementById('panelSessionCountdown').style.display = '';
+  document.getElementById('btnPanelLogout').style.display = '';
+  const loginAt = Number(localStorage.getItem(LS_LOGIN_AT)) || Date.now();
+  function tick(){
+    const remaining = SESSION_TTL_MS - (Date.now() - loginAt);
+    const countdownEl = document.getElementById('panelSessionCountdown');
+    if(remaining <= 0){
+      if(countdownEl) countdownEl.textContent = formatHMS(0);
+      clearInterval(panelCountdownInterval);
+      panelCountdownInterval = null;
+      forceLogoutToLoginFlow();
+      return;
+    }
+    if(countdownEl) countdownEl.textContent = formatHMS(remaining);
+  }
+  tick();
+  panelCountdownInterval = setInterval(tick, 1000);
+}
+
+// ---------- "bem-vindo de volta" resume gate (shown in loginOverlay, before entering the panel) ----------
+function renderResumeGatePanel(remainingMs, nome){
+  const card = document.getElementById('loginCard');
+  let gateInterval = null;
+  card.innerHTML =
+    '<h1>Bem-vindo de volta' + (nome ? ', ' + escapeHtml(nome) : '') + '</h1>' +
+    '<p class="admin-desc">Sua sessão anterior ainda está ativa. Você pode continuar sem digitar o código novamente, ou sair.</p>' +
+    '<div style="text-align:center; font-family:monospace; font-size:1.4rem; font-weight:700; color:var(--color-blue); margin:14px 0;" id="resumeGateCountdown"></div>' +
+    '<div class="admin-row" style="justify-content:center;">' +
+      '<button class="abtn" id="btnResumeLogin" type="button" style="flex:1; justify-content:center;">Login</button>' +
+      '<button class="abtn ghost" id="btnResumeLogout" type="button" style="flex:1; justify-content:center;">Logout</button>' +
+    '</div>';
+
+  function tick(){
+    const remaining = SESSION_TTL_MS - (Date.now() - (Number(localStorage.getItem(LS_LOGIN_AT)) || Date.now()));
+    const el = document.getElementById('resumeGateCountdown');
+    if(remaining <= 0){
+      if(gateInterval){ clearInterval(gateInterval); gateInterval = null; }
+      if(el) el.textContent = formatHMS(0);
+      runNormalLoginDecision();
+      return;
+    }
+    if(el) el.textContent = formatHMS(remaining);
+  }
+  tick();
+  gateInterval = setInterval(tick, 1000);
+
+  document.getElementById('btnResumeLogin').addEventListener('click', async function(){
+    if(gateInterval){ clearInterval(gateInterval); gateInterval = null; }
+    const usedNome = nome || 'desconhecido';
+    currentUserNome = usedNome;
+    try{
+      await sb.from('access_logs').insert({ nome: usedNome, event: 'resume', user_agent: navigator.userAgent });
+    }catch(e){ console.error('Erro ao registrar acesso (resume):', e); }
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('adminRoot').style.display = '';
+    document.getElementById('clipboardPanelWrap').style.display = 'block';
+    startPanelCountdown();
+    await initAdminApp();
+  });
+
+  document.getElementById('btnResumeLogout').addEventListener('click', async function(){
+    if(gateInterval){ clearInterval(gateInterval); gateInterval = null; }
+    try{ await sb.auth.signOut(); }catch(e){ console.error('Erro no signOut:', e); }
+    try{
+      localStorage.removeItem(LS_LOGIN_AT);
+      localStorage.removeItem(LS_LOGIN_NOME);
+    }catch(e){}
+    await runNormalLoginDecision();
+  });
+}
+
+// existing (pre-resume) decision logic: list factors → first-enrollment or name+code screen.
+async function runNormalLoginDecision(){
+  renderLoginLoading('Verificando sessão...');
+  await ensureSharedSession();
+  const factors = await getVerifiedFactors();
+  if(!factors.length){
+    renderFirstEnrollPanel();
+  } else {
+    renderFactorPickerPanel(factors);
+  }
+}
+
+async function enterAdminWithoutLogin(){
+  document.getElementById('loginOverlay').style.display = 'none';
+  document.getElementById('adminRoot').style.display = '';
+  document.getElementById('clipboardPanelWrap').style.display = 'block';
+  ensureTopRightWidget();
+  hideSessionCountdownWidget();
+  await initAdminApp();
+}
+
+async function runLoginFlow(){
+  renderLoginLoading('Verificando sessão...');
+  await ensureSharedSession();
+
+  if(!isLoginRequired()){
+    await enterAdminWithoutLogin();
+    return;
+  }
+
+  const { data: sessionData } = await sb.auth.getSession();
+  const { data: aalData } = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+  let loginAt = 0;
+  try{ loginAt = Number(localStorage.getItem(LS_LOGIN_AT)) || 0; }catch(e){}
+  const hasValidSession = !!(sessionData && sessionData.session);
+  const isAal2 = !!(aalData && aalData.currentLevel === 'aal2');
+  const withinTtl = loginAt > 0 && (Date.now() - loginAt) < SESSION_TTL_MS;
+
+  if(hasValidSession && isAal2 && withinTtl){
+    let nome = '';
+    try{ nome = localStorage.getItem(LS_LOGIN_NOME) || ''; }catch(e){}
+    let skipGate = false;
+    try{
+      if(sessionStorage.getItem(SS_SKIP_RESUME_GATE) === '1'){
+        skipGate = true;
+        sessionStorage.removeItem(SS_SKIP_RESUME_GATE);
+      }
+    }catch(e){}
+    if(skipGate){
+      const usedNome = nome || 'desconhecido';
+      currentUserNome = usedNome;
+      try{ await sb.from('access_logs').insert({ nome: usedNome, event: 'resume', user_agent: navigator.userAgent }); }catch(e){ console.error('Erro ao registrar acesso (resume):', e); }
+      document.getElementById('loginOverlay').style.display = 'none';
+      document.getElementById('adminRoot').style.display = '';
+      document.getElementById('clipboardPanelWrap').style.display = 'block';
+      startPanelCountdown();
+      await initAdminApp();
+      return;
+    }
+    renderResumeGatePanel(SESSION_TTL_MS - (Date.now() - loginAt), nome);
+    return;
+  }
+
+  // no resumable session: if a stale/expired session exists, clean it up first.
+  if(hasValidSession && (!isAal2 || !withinTtl)){
+    try{ await sb.auth.signOut(); }catch(e){ console.error('Erro no signOut de sessão expirada:', e); }
+    try{
+      localStorage.removeItem(LS_LOGIN_AT);
+      localStorage.removeItem(LS_LOGIN_NOME);
+    }catch(e){}
+  }
+  await runNormalLoginDecision();
+}
+
+// ---------- Cadastrar novo acesso (modal, aberto a partir de Configurações) ----------
+function setupEnrollModal(){
+  const overlay = document.getElementById('enrollModal');
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) overlay.hidden = true;
+  });
+}
+
+function openEnrollModal(){
+  renderEnrollModalContent();
+  document.getElementById('enrollModal').hidden = false;
+}
+
+function renderEnrollModalContent(){
+  const card = document.getElementById('enrollCard');
+  card.innerHTML =
+    '<div class="admin-top" style="margin-bottom:1rem;">' +
+      '<h1 style="margin:0;">Cadastrar novo acesso</h1>' +
+      '<button class="abtn ghost small" id="btnCloseEnroll" type="button">Fechar</button>' +
+    '</div>' +
+    '<div class="admin-field full">' +
+      '<label for="enrollNome">Nome da pessoa</label>' +
+      '<input type="text" id="enrollNome" placeholder="Ex: João">' +
+    '</div>' +
+    '<button class="abtn" id="btnEnrollGerarQr" type="button" style="margin-top:12px; width:100%; justify-content:center;">Gerar QR Code</button>' +
+    '<div id="enrollArea"></div>' +
+    '<div class="admin-status" id="enrollStatus"></div>';
+
+  document.getElementById('btnCloseEnroll').addEventListener('click', function(){
+    document.getElementById('enrollModal').hidden = true;
+  });
+
+  document.getElementById('btnEnrollGerarQr').addEventListener('click', async function(){
+    const nome = document.getElementById('enrollNome').value.trim();
+    const statusEl = document.getElementById('enrollStatus');
+    if(!nome){ statusEl.textContent = 'Digite o nome da pessoa.'; statusEl.className = 'admin-status err'; return; }
+    this.disabled = true;
+    statusEl.textContent = 'Gerando QR Code...';
+    statusEl.className = 'admin-status';
+    try{
+      const { data, error } = await sb.auth.mfa.enroll({ factorType: 'totp', friendlyName: nome });
+      if(error) throw error;
+      const factorId = data.id;
+      const area = document.getElementById('enrollArea');
+      area.innerHTML =
+        '<div class="login-qr-box">' + data.totp.qr_code + '</div>' +
+        '<p class="admin-desc">Não conseguiu escanear? Digite manualmente este código no app autenticador:</p>' +
+        '<code class="login-secret">' + escapeHtml(data.totp.secret) + '</code>' +
+        '<div class="admin-field full">' +
+          '<label for="enrollCode">Código de 6 dígitos</label>' +
+          '<input type="text" id="enrollCode" class="login-code-input" maxlength="6" inputmode="numeric" placeholder="000000">' +
+        '</div>' +
+        '<button class="abtn" id="btnEnrollConfirmar" type="button" style="margin-top:10px; width:100%; justify-content:center;">Confirmar</button>';
+      statusEl.textContent = '';
+      document.getElementById('btnEnrollConfirmar').addEventListener('click', async function(){
+        const code = document.getElementById('enrollCode').value.trim();
+        if(!/^\d{6}$/.test(code)){ statusEl.textContent = 'Digite o código de 6 dígitos.'; statusEl.className = 'admin-status err'; return; }
+        this.disabled = true;
+        statusEl.textContent = 'Verificando...';
+        statusEl.className = 'admin-status';
+        try{
+          const { data: chData, error: chErr } = await sb.auth.mfa.challenge({ factorId: factorId });
+          if(chErr) throw chErr;
+          const { error: vErr } = await sb.auth.mfa.verify({ factorId: factorId, challengeId: chData.id, code: code });
+          if(vErr) throw vErr;
+          statusEl.textContent = 'Autenticador cadastrado para ' + nome + '!';
+          statusEl.className = 'admin-status ok';
+          setTimeout(function(){ document.getElementById('enrollModal').hidden = true; }, 1500);
+        }catch(err){
+          statusEl.textContent = 'Código inválido, tente novamente.';
+          statusEl.className = 'admin-status err';
+          this.disabled = false;
+        }
+      });
+    }catch(err){
+      statusEl.textContent = 'Erro ao gerar QR Code: ' + err.message;
+      statusEl.className = 'admin-status err';
+      this.disabled = false;
+    }
+  });
+}
+
+// ---------- Configurações (modal com "Ver logs de acesso" / "Configurar acesso") ----------
+function setupSettingsModal(){
+  const overlay = document.getElementById('settingsModal');
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay) overlay.hidden = true;
+  });
+}
+
+function renderSettingsHome(){
+  const card = document.getElementById('settingsCard');
+  card.innerHTML =
+    '<div class="admin-top" style="margin-bottom:1rem;">' +
+      '<h1 style="margin:0;">Configurações</h1>' +
+      '<button class="abtn ghost small" id="btnCloseSettings" type="button">Fechar</button>' +
+    '</div>' +
+    '<div class="admin-row" style="margin-bottom:1rem;">' +
+      '<button class="abtn secondary" id="btnSettingsAccessLog" type="button" style="flex:1; justify-content:center;">Ver logs de acesso</button>' +
+      '<button class="abtn secondary" id="btnSettingsConfigAccess" type="button" style="flex:1; justify-content:center;">Configurar acesso</button>' +
+    '</div>' +
+    '<div style="margin-top:16px; padding-top:16px; border-top:1px solid #eee6d3;">' +
+      '<h3 style="font-size:0.85rem; margin:0 0 10px; color:var(--color-blue); text-transform:uppercase; letter-spacing:0.03em;">Botão GERAR (Ação Padrão)</h3>' +
+      '<div class="admin-field" style="margin-bottom:12px;">' +
+        '<label>Gerar PROMPT</label>' +
+        '<div class="type-toggle" id="cfgTogglePrompt">' +
+          '<button type="button" class="type-toggle-btn" data-val="perguntar">Perguntar</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="chatgpt" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="assets/img/icons/icon_chatgpt.webp" alt="ChatGPT" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> ChatGPT</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="claude" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="assets/img/icons/icon_claude.webp" alt="Claude" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> Claude</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="gemini" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="assets/img/icons/icon_gemini.webp" alt="Gemini" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> Gemini</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="admin-field" style="margin-bottom:12px;">' +
+        '<label>Gerar TEXTO</label>' +
+        '<div class="type-toggle" id="cfgToggleTexto">' +
+          '<button type="button" class="type-toggle-btn" data-val="perguntar">Perguntar</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="chatgpt" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="assets/img/icons/icon_chatgpt.webp" alt="ChatGPT" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> ChatGPT</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="claude" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="assets/img/icons/icon_claude.webp" alt="Claude" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> Claude</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="gemini" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="assets/img/icons/icon_gemini.webp" alt="Gemini" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> Gemini</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="admin-field">' +
+        '<label>Gerar IMAGEM</label>' +
+        '<div class="type-toggle" id="cfgToggleImagem">' +
+          '<button type="button" class="type-toggle-btn" data-val="perguntar">Perguntar</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="chatgpt" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="assets/img/icons/icon_chatgpt.webp" alt="ChatGPT" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> ChatGPT</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="claude" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="assets/img/icons/icon_claude.webp" alt="Claude" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> Claude</button>' +
+          '<button type="button" class="type-toggle-btn" data-val="gemini" style="display:flex; align-items:center; justify-content:center; gap:6px;"><img src="assets/img/icons/icon_gemini.webp" alt="Gemini" style="width:16px; height:16px; object-fit:contain; border-radius:50%;"> Gemini</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div id="settingsBody"></div>';
+
+  document.getElementById('btnCloseSettings').addEventListener('click', function(){
+    document.getElementById('settingsModal').hidden = true;
+  });
+  document.getElementById('btnSettingsAccessLog').addEventListener('click', renderSettingsAccessLogView);
+  document.getElementById('btnSettingsConfigAccess').addEventListener('click', renderSettingsConfigAccessView);
+
+  setupCfgToggle('cfgTogglePrompt', 'cfg_prompt');
+  setupCfgToggle('cfgToggleTexto', 'cfg_texto');
+  setupCfgToggle('cfgToggleImagem', 'cfg_imagem');
+}
+
+function renderSettingsAccessLogView(){
+  const body = document.getElementById('settingsBody');
+  body.innerHTML =
+    '<button class="abtn ghost small" id="btnSettingsBackFromLog" type="button" style="margin-bottom:12px;">&larr; Voltar</button>' +
+    '<div class="history-list" id="settingsAccessLogList" style="max-height:50vh; overflow-y:auto;"></div>';
+  document.getElementById('btnSettingsBackFromLog').addEventListener('click', renderSettingsHome);
+  renderAccessLog('settingsAccessLogList');
+}
+
+async function renderAccessLog(containerId){
+  const listEl = document.getElementById(containerId);
+  if(!listEl) return;
+  listEl.innerHTML = '<div class="history-empty">Carregando...</div>';
+  const { data, error } = await sb.from('access_logs').select('*').order('created_at', { ascending: false }).limit(200);
+  if(error){
+    listEl.innerHTML = '<div class="history-empty">Erro ao carregar histórico de acessos.</div>';
+    return;
+  }
+  if(!data || !data.length){
+    listEl.innerHTML = '<div class="history-empty">Nenhum acesso registrado ainda.</div>';
+    return;
+  }
+  listEl.innerHTML = '';
+  data.forEach(function(row){
+    const d = new Date(row.created_at);
+    const label = d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML =
+      '<div class="history-body">' +
+        '<div class="history-tema">' + escapeHtml(row.nome || '(sem nome)') + '</div>' +
+        '<div class="history-preview">' + escapeHtml(label) + '</div>' +
+      '</div>';
+    listEl.appendChild(item);
+  });
+}
+
+function renderSettingsConfigAccessView(){
+  const body = document.getElementById('settingsBody');
+  const required = isLoginRequired();
+  body.innerHTML =
+    '<button class="abtn ghost small" id="btnSettingsBackFromConfig" type="button" style="margin-bottom:12px;">&larr; Voltar</button>' +
+    '<label class="edit-mode-toggle">' +
+      '<input type="checkbox" id="requireLoginToggle"' + (required ? ' checked' : '') + '>' +
+      'Solicitar login' +
+    '</label>' +
+    '<div class="admin-status" id="requireLoginStatus"></div>' +
+    '<div id="requireLoginEnrollArea"></div>' +
+    '<hr style="border:none; border-top:2px dashed #e5e0d3; margin:16px 0;">' +
+    '<button class="abtn secondary" id="btnSettingsOpenEnroll" type="button">+ Cadastrar novo acesso</button>';
+
+  document.getElementById('btnSettingsBackFromConfig').addEventListener('click', renderSettingsHome);
+  document.getElementById('btnSettingsOpenEnroll').addEventListener('click', function(){
+    openEnrollModal();
+  });
+
+  const toggle = document.getElementById('requireLoginToggle');
+  const statusEl = document.getElementById('requireLoginStatus');
+  const enrollArea = document.getElementById('requireLoginEnrollArea');
+
+  toggle.addEventListener('change', function(){
+    if(toggle.checked){
+      statusEl.textContent = '';
+      statusEl.className = 'admin-status';
+      renderInlineEnrollForToggle(enrollArea, toggle, statusEl);
+    } else {
+      try{ localStorage.setItem(LS_REQUIRE_LOGIN, 'false'); }catch(e){}
+      enrollArea.innerHTML = '';
+      statusEl.textContent = 'Login não será mais solicitado.';
+      statusEl.className = 'admin-status ok';
+    }
+  });
+}
+
+// Reuses the same enroll (QR + confirm) flow used elsewhere, but inline inside the
+// "Configurar acesso" view, and only flips LS_REQUIRE_LOGIN to 'true' on success.
+function renderInlineEnrollForToggle(container, toggleCheckbox, outerStatusEl){
+  container.innerHTML =
+    '<div class="admin-card" style="margin-top:12px; box-shadow:none;">' +
+      '<h2 style="font-size:1rem;">Cadastre seu autenticador antes de ativar</h2>' +
+      '<div class="admin-field full">' +
+        '<label for="reqLoginNome">Seu nome</label>' +
+        '<input type="text" id="reqLoginNome" placeholder="Ex: Maria">' +
+      '</div>' +
+      '<div class="admin-row" style="margin-top:10px;">' +
+        '<button class="abtn" id="btnReqLoginQr" type="button">Gerar QR Code</button>' +
+        '<button class="abtn ghost" id="btnReqLoginCancel" type="button">Cancelar</button>' +
+      '</div>' +
+      '<div id="reqLoginEnrollArea"></div>' +
+      '<div class="admin-status" id="reqLoginStatus"></div>' +
+    '</div>';
+
+  document.getElementById('btnReqLoginCancel').addEventListener('click', function(){
+    toggleCheckbox.checked = false;
+    container.innerHTML = '';
+  });
+
+  document.getElementById('btnReqLoginQr').addEventListener('click', async function(){
+    const nome = document.getElementById('reqLoginNome').value.trim();
+    const statusEl = document.getElementById('reqLoginStatus');
+    if(!nome){ statusEl.textContent = 'Digite seu nome.'; statusEl.className = 'admin-status err'; return; }
+    this.disabled = true;
+    statusEl.textContent = 'Gerando QR Code...';
+    statusEl.className = 'admin-status';
+    try{
+      const { data, error } = await sb.auth.mfa.enroll({ factorType: 'totp', friendlyName: nome });
+      if(error) throw error;
+      const factorId = data.id;
+      const area = document.getElementById('reqLoginEnrollArea');
+      area.innerHTML =
+        '<div class="login-qr-box">' + data.totp.qr_code + '</div>' +
+        '<p class="admin-desc">Não conseguiu escanear? Digite manualmente este código no seu app autenticador:</p>' +
+        '<code class="login-secret">' + escapeHtml(data.totp.secret) + '</code>' +
+        '<div class="admin-field full">' +
+          '<label for="reqLoginCode">Código de 6 dígitos</label>' +
+          '<input type="text" id="reqLoginCode" class="login-code-input" maxlength="6" inputmode="numeric" placeholder="000000">' +
+        '</div>' +
+        '<button class="abtn" id="btnReqLoginConfirmar" type="button" style="margin-top:10px; width:100%; justify-content:center;">Confirmar</button>';
+      statusEl.textContent = '';
+      document.getElementById('btnReqLoginConfirmar').addEventListener('click', async function(){
+        const code = document.getElementById('reqLoginCode').value.trim();
+        if(!/^\d{6}$/.test(code)){ statusEl.textContent = 'Digite o código de 6 dígitos.'; statusEl.className = 'admin-status err'; return; }
+        this.disabled = true;
+        statusEl.textContent = 'Verificando...';
+        statusEl.className = 'admin-status';
+        try{
+          const { data: chData, error: chErr } = await sb.auth.mfa.challenge({ factorId: factorId });
+          if(chErr) throw chErr;
+          const { error: vErr } = await sb.auth.mfa.verify({ factorId: factorId, challengeId: chData.id, code: code });
+          if(vErr) throw vErr;
+          try{ localStorage.setItem(LS_REQUIRE_LOGIN, 'true'); }catch(e){}
+          container.innerHTML = '<div class="admin-status ok">Login será solicitado a partir de agora.</div>';
+        }catch(err){
+          statusEl.textContent = 'Código inválido, tente novamente.';
+          statusEl.className = 'admin-status err';
+          this.disabled = false;
+        }
+      });
+    }catch(err){
+      statusEl.textContent = 'Erro ao gerar QR Code: ' + err.message;
+      statusEl.className = 'admin-status err';
+      this.disabled = false;
+    }
+  });
+}
+
+async function ensureOtimizadorPrompt() {
+  if (localStorage.getItem('otimizador_prompt_added')) return;
+  const { data, error } = await sb.from('themes').select('id').eq('nome', 'Otimizador de prompt');
+  if (error) return;
+  if (!data || data.length === 0) {
+    const newTheme = {
+      id: 'p0_otimizador_' + Date.now(),
+      nome: 'Otimizador de prompt',
+      template_texto: "Atue como um especialista em engenharia de prompts.\n\nVou fornecer um prompt abaixo. Sua tarefa é analisá-lo e produzir uma versão otimizada, mantendo exatamente o objetivo e a intenção original.\n\nAo otimizar:\n\n1. Identifique ambiguidades, contradições, redundâncias ou instruções pouco claras.\n2. Torne as instruções mais específicas, objetivas e difíceis de interpretar incorretamente.\n3. Organize o prompt em uma estrutura lógica e fácil de seguir.\n4. Preserve todos os requisitos importantes do prompt original.\n5. Não invente novos requisitos que alterem o resultado pretendido.\n6. Elimine repetições desnecessárias.\n7. Quando útil, transforme instruções implícitas em regras explícitas.\n8. Defina claramente:\n\n   * objetivo;\n   * contexto;\n   * entradas;\n   * tarefa;\n   * regras;\n   * restrições;\n   * formato de saída esperado.\n9. Antecipe possíveis interpretações erradas do modelo e ajuste o prompt para evitá-las.\n10. Priorize instruções de acordo com sua importância quando houver risco de conflito.\n\nAntes de apresentar a versão final, faça uma análise breve contendo:\n\n* problemas encontrados;\n* ambiguidades;\n* redundâncias;\n* informações que poderiam melhorar o prompt.\n\nDepois apresente:\n\n## Prompt otimizado\n\nEntregue o prompt completo, pronto para copiar e usar.\n\nNão execute a tarefa descrita no prompt. Apenas analise e otimize o prompt.\n\nPROMPT ORIGINAL:\n\n{tema}",
+      template_imagem: "",
+      origem: "padrao"
+    };
+    await sb.from('themes').insert([newTheme]);
+  }
+  localStorage.setItem('otimizador_prompt_added', 'true');
+}
+
+// ---------- init do painel (após aal2) ----------
+async function initAdminApp(){
+  await seedThemesIfEmpty();
+  await ensureOtimizadorPrompt();
+
+  const { data: settingsRow, error: settingsErr } = await sb.from('settings').select('*').eq('id', true).maybeSingle();
+  if(settingsErr) console.error('Erro ao buscar settings:', settingsErr);
+  SETTINGS = settingsRow || {};
+
+  await renderThemeList();
+}
+
+// ---------- Painel de controle: abas (Gerador / Resolução de exercícios / Analytics) ----------
+const ADMIN_TABS = ['gerador', 'cronograma', 'exercicios', 'analytics'];
+
+function setActiveAdminTab(tabName){
+  if(ADMIN_TABS.indexOf(tabName) === -1) tabName = 'gerador';
+
+  ADMIN_TABS.forEach(function(name){
+    const panel = document.getElementById('tabPanel' + name.charAt(0).toUpperCase() + name.slice(1));
+    if(panel) panel.hidden = (name !== tabName);
+  });
+
+  document.querySelectorAll('#adminTabbar .admin-tab-btn').forEach(function(btn){
+    btn.classList.toggle('active', btn.dataset.tab === tabName);
+  });
+
+  if(tabName === 'exercicios') activateExerciseTab();
+  if(tabName === 'analytics') loadGameAnalytics();
+  if(tabName === 'cronograma') activateCronogramaTab();
+}
+
+function setupAdminTabs(){
+  document.querySelectorAll('#adminTabbar .admin-tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(e){
+      const isMobileTabbar = window.matchMedia('(max-width:600px)').matches;
+      if(isMobileTabbar && !e.target.closest('svg')){
+        // Tocou na área azul (texto/fundo do botão), não no ícone:
+        // só revela/esconde o texto, sem trocar de aba.
+        document.getElementById('adminTabbar').classList.toggle('tabbar-revealed');
+        return;
+      }
+      setActiveAdminTab(btn.dataset.tab);
+    });
+  });
+  setActiveAdminTab('gerador');
+}
+
+// ---------- Analytics dos jogos (aba Analytics) ----------
+const GAME_LABELS = { 'jogo-da-velha': 'Jogo da velha', 'forca': 'Forca' };
+
+function renderGameAnalyticsCard(gameKey, rows){
+  const total = rows.length;
+  const finished = rows.filter(function(r){ return !!r.finished_at; }).length;
+  const uniqueVisitors = new Set(rows.map(function(r){ return r.visitor_id; })).size;
+  const rate = total ? Math.round((finished / total) * 100) : 0;
+
+  return '' +
+    '<div class="analytics-card">' +
+      '<h3>' + (GAME_LABELS[gameKey] || gameKey) + '</h3>' +
+      '<div class="analytics-stat-row"><span class="label">Jogadores (únicos)</span><span class="value">' + uniqueVisitors + '</span></div>' +
+      '<div class="analytics-stat-row"><span class="label">Partidas iniciadas</span><span class="value">' + total + '</span></div>' +
+      '<div class="analytics-stat-row"><span class="label">Jogaram até o fim</span><span class="value">' + finished + '</span></div>' +
+      '<div class="analytics-stat-row"><span class="label">Taxa de conclusão</span><span class="value">' + rate + '%</span></div>' +
+    '</div>';
+}
+
+async function loadGameAnalytics(){
+  const status = document.getElementById('gameAnalyticsStatus');
+  const body = document.getElementById('gameAnalyticsBody');
+  if(!body) return;
+  if(status) status.textContent = 'Carregando...';
+
+  const { data, error } = await sb
+    .from('game_sessions')
+    .select('game, visitor_id, finished_at');
+
+  if(error){
+    if(status) status.textContent = 'Não foi possível carregar o analytics.';
+    console.error('Erro ao carregar game_sessions:', error);
+    return;
+  }
+
+  const rows = data || [];
+  const byGame = {};
+  rows.forEach(function(row){
+    if(!byGame[row.game]) byGame[row.game] = [];
+    byGame[row.game].push(row);
+  });
+
+  const games = Object.keys(GAME_LABELS).filter(function(g){ return byGame[g]; })
+    .concat(Object.keys(byGame).filter(function(g){ return !GAME_LABELS[g]; }));
+
+  if(!games.length){
+    body.innerHTML = '';
+    if(status) status.textContent = 'Nenhuma partida registrada ainda.';
+    return;
+  }
+
+  if(status) status.textContent = '';
+  body.innerHTML = games.map(function(g){ return renderGameAnalyticsCard(g, byGame[g]); }).join('');
+}
+
+function setupAnalyticsRefreshButton(){
+  const btn = document.getElementById('btnRefreshAnalytics');
+  if(btn) btn.addEventListener('click', loadGameAnalytics);
+}
+
+// ---------- "Copiados": histórico da área de transferência (Supabase) ----------
+const CLIPBOARD_KEEP_LAST = 20;
+const CLIPBOARD_MAX_AGE_DAYS = 30;
+
+function clipboardDateLabel(ts){
+  const d = new Date(ts);
+  return d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+// Mantém sempre os CLIPBOARD_KEEP_LAST mais recentes; além disso, apaga
+// qualquer item com mais de CLIPBOARD_MAX_AGE_DAYS dias. Roda no front-end
+// (sem cron no Supabase), toda vez que o painel abre ou um item é adicionado.
+async function cleanupClipboardItems(){
+  const { data, error } = await sb
+    .from('clipboard_items')
+    .select('id, created_at')
+    .order('created_at', { ascending: false });
+  if(error){ console.error('Erro ao verificar histórico de Copiados:', error); return; }
+
+  const items = data || [];
+  const stale = items.slice(CLIPBOARD_KEEP_LAST);
+  if(!stale.length) return;
+
+  const cutoff = Date.now() - CLIPBOARD_MAX_AGE_DAYS * 24 * 60 * 60 * 1000;
+  const idsToDelete = stale
+    .filter(function(it){ return new Date(it.created_at).getTime() < cutoff; })
+    .map(function(it){ return it.id; });
+  if(!idsToDelete.length) return;
+
+  const { error: delErr } = await sb.from('clipboard_items').delete().in('id', idsToDelete);
+  if(delErr) console.error('Erro ao limpar histórico de Copiados:', delErr);
+}
+
+const TRASH_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+const CONFIRM_ICON_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+
+function buildClipboardItemRow(it){
+  const row = document.createElement('div');
+  row.className = 'clip-item';
+
+  const delBtn = document.createElement('button');
+  delBtn.className = 'clip-del-btn';
+  delBtn.type = 'button';
+  delBtn.innerHTML = TRASH_ICON_SVG;
+  delBtn.setAttribute('aria-label', 'Excluir');
+  delBtn.setAttribute('data-tooltip', 'Excluir');
+
+  let armed = false;
+  let armTimer = null;
+  function disarm(){
+    armed = false;
+    if(armTimer){ clearTimeout(armTimer); armTimer = null; }
+    delBtn.classList.remove('clip-del-btn--confirm');
+    delBtn.innerHTML = TRASH_ICON_SVG;
+    delBtn.setAttribute('aria-label', 'Excluir');
+    delBtn.setAttribute('data-tooltip', 'Excluir');
+    document.removeEventListener('click', onOutsideClick, true);
+  }
+  function onOutsideClick(e){
+    if(e.target === delBtn) return;
+    disarm();
+  }
+  delBtn.addEventListener('click', async function(e){
+    e.stopPropagation();
+    if(!armed){
+      armed = true;
+      delBtn.classList.add('clip-del-btn--confirm');
+      delBtn.innerHTML = CONFIRM_ICON_SVG;
+      delBtn.setAttribute('aria-label', 'Confirmar exclusão');
+      delBtn.setAttribute('data-tooltip', 'Confirmar exclusão');
+      armTimer = setTimeout(disarm, 3000);
+      document.addEventListener('click', onOutsideClick, true);
+      return;
+    }
+    disarm();
+    row.classList.add('clip-item--removing');
+    row.style.maxHeight = row.scrollHeight + 'px';
+    requestAnimationFrame(function(){
+      row.style.maxHeight = '0px';
+      row.style.opacity = '0';
+    });
+    const { error: delErr } = await sb.from('clipboard_items').delete().eq('id', it.id);
+    if(delErr){ alert('Erro ao excluir: ' + delErr.message); return; }
+    setTimeout(function(){ row.remove(); }, 320);
+  });
+  row.appendChild(delBtn);
+
+  const body = document.createElement('div');
+  body.className = 'history-body';
+  body.innerHTML =
+    '<div class="history-date">' + clipboardDateLabel(it.created_at) + '</div>' +
+    '<div class="history-preview">' + escapeHtml((it.content || '').slice(0, 400)) + ((it.content || '').length > 400 ? '…' : '') + '</div>';
+  row.appendChild(body);
+
+  const actions = document.createElement('div');
+  actions.className = 'history-actions';
+
+  const copyBtn = document.createElement('button');
+  copyBtn.className = 'abtn small secondary';
+  copyBtn.type = 'button';
+  copyBtn.textContent = 'Copiar';
+  copyBtn.addEventListener('click', function(){ copyText(it.content); });
+  actions.appendChild(copyBtn);
+
+  row.appendChild(actions);
+  return row;
+}
+
+async function renderClipboardItems(){
+  const listEl = document.getElementById('clipboardItemsList');
+  await cleanupClipboardItems();
+
+  const { data, error } = await sb
+    .from('clipboard_items')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(CLIPBOARD_KEEP_LAST);
+  if(error){ console.error('Erro ao carregar histórico de Copiados:', error); listEl.innerHTML = '<div class="history-empty">Erro ao carregar.</div>'; return; }
+
+  const items = data || [];
+  listEl.innerHTML = '';
+  if(!items.length){
+    listEl.innerHTML = '<div class="history-empty">Nada colado ainda.</div>';
+    return;
+  }
+
+  items.forEach(function(it){
+    listEl.appendChild(buildClipboardItemRow(it));
+  });
+}
+
+// Insere uma célula nova já animada (desliza para baixo, empurrando a célula
+// abaixo dela), em vez de re-renderizar a lista inteira.
+function prependClipboardItem(it){
+  const listEl = document.getElementById('clipboardItemsList');
+  const empty = listEl.querySelector('.history-empty');
+  if(empty) empty.remove();
+
+  const row = buildClipboardItemRow(it);
+  row.classList.add('clip-item--entering');
+  row.style.maxHeight = '0px';
+  row.style.opacity = '0';
+  row.style.transform = 'translateY(-10px)';
+  listEl.insertBefore(row, listEl.firstChild);
+
+  const targetHeight = row.scrollHeight;
+  requestAnimationFrame(function(){
+    row.style.maxHeight = targetHeight + 'px';
+    row.style.opacity = '1';
+    row.style.transform = 'translateY(0)';
+  });
+  setTimeout(function(){
+    row.style.maxHeight = 'none';
+    row.classList.remove('clip-item--entering');
+  }, 380);
+}
+
+function setupClipboardPanel(){
+  const wrap = document.getElementById('clipboardPanelWrap');
+  const tabBtn = document.getElementById('clipboardTabBtn');
+  const panel = document.getElementById('clipboardPanel');
+  const closeBtn = document.getElementById('clipboardPanelClose');
+  const pasteBtn = document.getElementById('btnPasteClipboard');
+  if(!wrap || !tabBtn || !panel) return;
+
+  function isOpen(){ return panel.classList.contains('clipboard-panel--open'); }
+  function openPanel(){
+    panel.hidden = false;
+    requestAnimationFrame(function(){ panel.classList.add('clipboard-panel--open'); });
+    tabBtn.setAttribute('aria-expanded', 'true');
+    renderClipboardItems();
+  }
+  function closePanel(){
+    panel.classList.remove('clipboard-panel--open');
+    tabBtn.setAttribute('aria-expanded', 'false');
+    setTimeout(function(){ if(!isOpen()) panel.hidden = true; }, 320);
+  }
+
+  tabBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    if(isOpen()) closePanel(); else openPanel();
+  });
+  closeBtn.addEventListener('click', closePanel);
+  document.addEventListener('click', function(e){
+    if(isOpen() && !panel.contains(e.target) && e.target !== tabBtn) closePanel();
+  });
+
+  pasteBtn.addEventListener('click', async function(){
+    if(!navigator.clipboard || !navigator.clipboard.readText){
+      alert('Seu navegador não permite ler a área de transferência automaticamente.');
+      return;
+    }
+    let text = '';
+    try{
+      text = await navigator.clipboard.readText();
+    }catch(e){
+      alert('Não foi possível ler a área de transferência. Permita o acesso quando o navegador pedir.');
+      return;
+    }
+    if(!text || !text.trim()){ alert('A área de transferência está vazia.'); return; }
+
+    const { data, error } = await sb.from('clipboard_items').insert({ content: text }).select().single();
+    if(error){ alert('Erro ao salvar: ' + error.message); return; }
+    prependClipboardItem(data);
+  });
+}
+
+// Painel "Galeria": mesmo comportamento de abrir/fechar do "Copiados".
+// O carregamento das imagens em si (window.loadGallery) é feito pelo
+// admin-gallery.js, carregado à parte.
+function setupGalleryPanel(){
+  const wrap = document.getElementById('clipboardPanelWrap');
+  const tabBtn = document.getElementById('galleryTabBtn');
+  const panel = document.getElementById('galleryPanel');
+  const closeBtn = document.getElementById('galleryPanelClose');
+  if(!wrap || !tabBtn || !panel) return;
+
+  let loaded = false;
+  function isOpen(){ return panel.classList.contains('clipboard-panel--open'); }
+  function openPanel(){
+    panel.hidden = false;
+    requestAnimationFrame(function(){ panel.classList.add('clipboard-panel--open'); });
+    tabBtn.setAttribute('aria-expanded', 'true');
+    if(typeof window.loadGallery === 'function'){
+      window.loadGallery(loaded);
+      loaded = true;
+    }
+  }
+  function closePanel(){
+    panel.classList.remove('clipboard-panel--open');
+    tabBtn.setAttribute('aria-expanded', 'false');
+    setTimeout(function(){ if(!isOpen()) panel.hidden = true; }, 320);
+  }
+
+  tabBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    if(isOpen()) closePanel(); else openPanel();
+  });
+  closeBtn.addEventListener('click', closePanel);
+  document.addEventListener('click', function(e){
+    if(isOpen() && !panel.contains(e.target) && e.target !== tabBtn) closePanel();
+  });
+}
+
+// ================= Cronograma de Posts =================
+// Fluxo: o usuário configura o período/dias/formatos aqui no painel →
+// gera um "prompt-mestre" (com a data de hoje, os feriados de Recife no
+// período e um modelo de saída bem delimitado) → cola esse prompt na IA
+// de preferência → a IA pergunta sobre os feriados e devolve o
+// cronograma inteiro (textos + prompts de imagem) dentro do modelo →
+// o usuário cola a resposta de volta aqui, e o painel reconhece o
+// modelo por código puro (sem IA) e distribui cada post na data certa.
+const CRON_WEEKDAY_SHORT = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+const CRON_WEEKDAY_HEADER = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const CRON_MESES = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const CRON_FORMATO_LABEL = { '1:1': 'Feed quadrado (1:1)', '4:5': 'Feed retangular (4:5)', '9:16': 'Story (9:16)' };
+
+let cronSchedules = [];
+let cronCurrentSchedule = null;
+
+function cronFormatISO(d){
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function cronParseISO(s){
+  const parts = String(s).split('-').map(Number);
+  return new Date(parts[0], parts[1]-1, parts[2]);
+}
+function cronFormatBR(d){
+  return String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear();
+}
+function cronAddDays(d, days){
+  const r = new Date(d);
+  r.setDate(r.getDate() + days);
+  return r;
+}
+function cronToday(){
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+// ---- Data da Páscoa (algoritmo de Gauss) e feriados fixos/móveis do
+// calendário nacional + municipais do Recife, pra sugerir na lista que
+// vai dentro do prompt-mestre. ----
+function cronEaster(year){
+  const a = year % 19, b = Math.floor(year/100), c = year % 100;
+  const d = Math.floor(b/4), e = b % 4, f = Math.floor((b+8)/25);
+  const g = Math.floor((b-f+1)/3), h = (19*a+b-d-g+15) % 30;
+  const i = Math.floor(c/4), k = c % 4, l = (32+2*e+2*i-h-k) % 7;
+  const m = Math.floor((a+11*h+22*l)/451);
+  const month = Math.floor((h+l-7*m+114)/31);
+  const day = ((h+l-7*m+114) % 31) + 1;
+  return new Date(year, month-1, day);
+}
+function cronHolidaysInRange(startDate, endDate){
+  const years = new Set();
+  for(let y = startDate.getFullYear(); y <= endDate.getFullYear(); y++) years.add(y);
+  let holidays = [];
+  years.forEach(function(year){
+    holidays = holidays.concat([
+      { date: new Date(year, 0, 1), nome: 'Confraternização Universal' },
+      { date: new Date(year, 2, 12), nome: 'Aniversário da cidade do Recife (municipal)' },
+      { date: new Date(year, 3, 21), nome: 'Tiradentes' },
+      { date: new Date(year, 4, 1), nome: 'Dia do Trabalho' },
+      { date: new Date(year, 5, 24), nome: 'São João (municipal, Recife)' },
+      { date: new Date(year, 6, 16), nome: 'Nossa Senhora do Carmo, padroeira do Recife (municipal)' },
+      { date: new Date(year, 8, 7), nome: 'Independência do Brasil' },
+      { date: new Date(year, 9, 12), nome: 'Nossa Senhora Aparecida' },
+      { date: new Date(year, 10, 2), nome: 'Finados' },
+      { date: new Date(year, 10, 20), nome: 'Consciência Negra (PE)' },
+      { date: new Date(year, 11, 25), nome: 'Natal' }
+    ]);
+    const easter = cronEaster(year);
+    holidays.push({ date: cronAddDays(easter, -47), nome: 'Carnaval (segunda-feira)' });
+    holidays.push({ date: cronAddDays(easter, -46), nome: 'Carnaval (terça-feira)' });
+    holidays.push({ date: cronAddDays(easter, -2), nome: 'Sexta-feira Santa' });
+    holidays.push({ date: cronAddDays(easter, 60), nome: 'Corpus Christi' });
+  });
+  return holidays.filter(function(h){ return h.date >= startDate && h.date <= endDate; })
+    .sort(function(a,b){ return a.date - b.date; });
+}
+
+// ---- Configurador ----
+function cronSelectedWeekdays(){
+  return Array.from(document.querySelectorAll('#cronWeekdayRow input[type="checkbox"]:checked')).map(function(el){ return Number(el.value); });
+}
+function cronPeriodoSemanas(){
+  const active = document.querySelector('#cronPeriodoToggle .type-toggle-btn.active');
+  const periodo = active ? active.getAttribute('data-periodo') : 'semana';
+  if(periodo === 'semana') return 1;
+  if(periodo === '4semanas') return 4;
+  const n = parseInt(document.getElementById('cronCustomWeeks').value, 10);
+  return (n > 0 && n <= 52) ? n : 1;
+}
+function cronRebuildFormatoPorDia(){
+  const wrap = document.getElementById('cronFormatoPorDia');
+  const personalizar = document.getElementById('cronPersonalizarFormato').checked;
+  wrap.style.display = personalizar ? 'block' : 'none';
+  if(!personalizar) return;
+  const allow45 = document.getElementById('cronAllow45').checked;
+  const dias = cronSelectedWeekdays().sort();
+  const prevValues = {};
+  wrap.querySelectorAll('select[data-weekday]').forEach(function(sel){ prevValues[sel.getAttribute('data-weekday')] = sel.value; });
+  wrap.innerHTML = dias.map(function(w){
+    const opts = ['<option value="1:1">Feed quadrado (1:1)</option>']
+      .concat(allow45 ? ['<option value="4:5">Feed retangular (4:5)</option>'] : [])
+      .concat(['<option value="9:16">Story (9:16)</option>']);
+    const prev = prevValues[w];
+    return '<div class="admin-row" style="align-items:center; margin-top:6px;">' +
+      '<span style="flex:1; font-size:.85rem; font-weight:600; color:var(--color-blue); text-transform:capitalize;">' + CRON_WEEKDAY_SHORT[w] + '</span>' +
+      '<select data-weekday="' + w + '" style="flex:1;">' + opts.join('') + '</select></div>';
+  }).join('');
+  if(dias.length){
+    wrap.querySelectorAll('select[data-weekday]').forEach(function(sel){
+      const w = sel.getAttribute('data-weekday');
+      if(prevValues[w] && sel.querySelector('option[value="' + prevValues[w] + '"]')) sel.value = prevValues[w];
+    });
+  }
+}
+function cronFormatoPorDiaValues(){
+  const values = {};
+  document.querySelectorAll('#cronFormatoPorDia select[data-weekday]').forEach(function(sel){
+    values[sel.getAttribute('data-weekday')] = sel.value;
+  });
+  return values;
+}
+
+// ---- Monta o prompt-mestre a partir da configuração escolhida ----
+function cronBuildMasterPrompt(config){
+  const hoje = cronToday();
+  const start = hoje;
+  const end = cronAddDays(hoje, config.semanas * 7 - 1);
+  const dias = [];
+  for(let d = new Date(start); d <= end; d = cronAddDays(d, 1)){
+    if(config.weekdays.indexOf(d.getDay()) !== -1) dias.push(new Date(d));
+  }
+  const holidays = cronHolidaysInRange(start, end);
+
+  const linhas = [];
+  linhas.push('Você vai me ajudar a montar um cronograma de posts para as redes sociais da "Sala de Estudo" (aulas de reforço escolar/particulares da Profª Rúbia Lima), com foco em pais e responsáveis de alunos do fundamental e médio.');
+  linhas.push('');
+  linhas.push('Hoje é ' + cronFormatBR(hoje) + ' (' + CRON_WEEKDAY_SHORT[hoje.getDay()] + ').');
+  linhas.push('Preciso do cronograma para o período de ' + cronFormatBR(start) + ' a ' + cronFormatBR(end) + ' (' + config.semanas + (config.semanas === 1 ? ' semana' : ' semanas') + ').');
+  linhas.push('');
+
+  if(holidays.length){
+    linhas.push('Nesse período, levantei estes feriados/datas comemorativas em Recife-PE (confira se as datas estão corretas, calendários podem mudar):');
+    holidays.forEach(function(h){ linhas.push('- ' + cronFormatBR(h.date) + ' (' + CRON_WEEKDAY_SHORT[h.date.getDay()] + '): ' + h.nome); });
+    linhas.push('');
+    linhas.push('IMPORTANTE: antes de montar o cronograma final, me pergunte, feriado por feriado (ou data comemorativa), se devo considerá-lo. Se eu responder "sim" para um feriado, você pode criar um post especial sobre ele (ou simplesmente pular aquele dia, usando seu critério) e avisar isso no TITULO daquele post. Se eu responder "não" para um feriado, ignore-o completamente — trate o dia normalmente, como se o feriado não existisse. Só depois dessa conversa comigo é que você gera o cronograma final no formato pedido abaixo.');
+    linhas.push('');
+  } else {
+    linhas.push('Não identifiquei feriados relevantes de Recife-PE nesse período — pode seguir direto para o cronograma.');
+    linhas.push('');
+  }
+
+  linhas.push('Datas do cronograma' + (config.personalizarFormato ? ' (o formato de cada uma já está definido, siga exatamente)' : ' (escolha você o formato de cada uma — 1:1 é o padrão' + (config.allow45 ? ', mas pode usar também 4:5' : '') + ', e use Story (9:16) quando fizer sentido pra variar)') + ':');
+  dias.forEach(function(d){
+    const iso = cronFormatISO(d);
+    const weekdayLabel = CRON_WEEKDAY_SHORT[d.getDay()];
+    if(config.personalizarFormato && config.diasFormato && config.diasFormato[d.getDay()]){
+      linhas.push('- ' + iso + ' (' + weekdayLabel + ') — FORMATO: ' + config.diasFormato[d.getDay()]);
+    } else {
+      linhas.push('- ' + iso + ' (' + weekdayLabel + ')');
+    }
+  });
+  linhas.push('');
+
+  linhas.push('Regras de conteúdo:');
+  linhas.push('- Formato "1:1" e "4:5" são Feed: cada um tem um TEXTO escrito (legenda do post) e uma imagem.');
+  linhas.push('- Formato "9:16" é Story: só tem imagem, sem legenda escrita separada — não inclua a seção TEXTO nesse caso.');
+  linhas.push('- Toda imagem (Feed e Story) deve ter texto embutido nela mesma (uma frase curta e legível, pensada pro visual), então o PROMPT_IMAGEM precisa deixar isso explícito pra quem for gerar a imagem.');
+  linhas.push('- Varie os temas (dicas de estudo, rotina, motivação, bastidores das aulas, depoimentos, chamadas para agendar aula experimental etc.), sempre com tom acolhedor e direto para os pais.');
+  linhas.push('');
+
+  linhas.push('Formato de saída — responda SOMENTE com os blocos abaixo, um por data, sem nenhum texto fora deles (nem comentários antes/depois):');
+  linhas.push('');
+  linhas.push('===POST===');
+  linhas.push('DATA: AAAA-MM-DD');
+  linhas.push('FORMATO: 1:1 ou 4:5 ou 9:16');
+  linhas.push('TITULO: resumo curto (poucas palavras) do assunto do post');
+  linhas.push('TEXTO:');
+  linhas.push('(texto completo do post — só quando FORMATO for 1:1 ou 4:5; se for 9:16, pule direto para PROMPT_IMAGEM sem incluir esta seção)');
+  linhas.push('FIM_TEXTO');
+  linhas.push('PROMPT_IMAGEM:');
+  linhas.push('(prompt completo, em português, pronto para um gerador de imagens)');
+  linhas.push('FIM_PROMPT_IMAGEM');
+  linhas.push('===FIM_POST===');
+  linhas.push('');
+  linhas.push('Repita esse bloco para cada uma das datas listadas acima, na ordem.');
+
+  return { text: linhas.join('\n'), start: cronFormatISO(start), end: cronFormatISO(end), dias: dias.map(cronFormatISO) };
+}
+
+// ---- Importação: reconhece o modelo colado, sem IA (regex simples) ----
+function cronParseImport(raw){
+  const blocks = String(raw || '').split(/===POST===/i).slice(1);
+  const items = [];
+  blocks.forEach(function(block){
+    const body = block.split(/===FIM_POST===/i)[0];
+    const dataMatch = body.match(/DATA:\s*(\d{4}-\d{2}-\d{2})/i);
+    const formatoMatch = body.match(/FORMATO:\s*(1:1|4:5|9:16)/i);
+    const tituloMatch = body.match(/TITULO:\s*(.+)/i);
+    const textoMatch = body.match(/TEXTO:\s*([\s\S]*?)FIM_TEXTO/i);
+    const promptMatch = body.match(/PROMPT_IMAGEM:\s*([\s\S]*?)FIM_PROMPT_IMAGEM/i);
+    if(!dataMatch || !formatoMatch || !promptMatch) return;
+    items.push({
+      data: dataMatch[1],
+      formato: formatoMatch[1],
+      titulo: tituloMatch ? tituloMatch[1].trim() : '',
+      texto: textoMatch ? textoMatch[1].trim() : null,
+      promptImagem: promptMatch[1].trim()
+    });
+  });
+  return items;
+}
+
+// ---- Persistência (Supabase) ----
+async function cronCleanupOld(){
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - 18);
+  try{ await sb.from('post_schedules').delete().lt('created_at', cutoff.toISOString()); }
+  catch(e){ console.error('Erro na limpeza de cronogramas antigos:', e); }
+}
+async function cronLoadSchedulesList(){
+  const { data, error } = await sb.from('post_schedules').select('id,nome,start_date,end_date,status,created_at').order('created_at', { ascending: false });
+  const select = document.getElementById('cronSelect');
+  if(error){ console.error('Erro ao carregar cronogramas:', error); select.innerHTML = '<option value="">Erro ao carregar</option>'; cronSchedules = []; return; }
+  cronSchedules = data || [];
+  select.innerHTML = '';
+  if(!cronSchedules.length){
+    select.innerHTML = '<option value="">Nenhum cronograma ainda</option>';
+    return;
+  }
+  cronSchedules.forEach(function(s){
+    const opt = document.createElement('option');
+    opt.value = s.id;
+    opt.textContent = s.nome + (s.status !== 'importado' ? ' (aguardando importação)' : '');
+    select.appendChild(opt);
+  });
+}
+
+function cronShowConfigCard(){
+  document.getElementById('cronConfigCard').hidden = false;
+  document.getElementById('cronPromptCard').hidden = true;
+  document.getElementById('cronCalendarCard').hidden = true;
+}
+
+async function cronOpenSchedule(id){
+  if(!id){ cronShowConfigCard(); return; }
+  const { data: schedule, error } = await sb.from('post_schedules').select('*').eq('id', id).single();
+  if(error || !schedule){ cronShowConfigCard(); return; }
+  cronCurrentSchedule = schedule;
+  if(schedule.status !== 'importado'){
+    document.getElementById('cronConfigCard').hidden = true;
+    document.getElementById('cronCalendarCard').hidden = true;
+    document.getElementById('cronPromptCard').hidden = false;
+    document.getElementById('cronPromptText').value = (schedule.config && schedule.config.masterPrompt) || '';
+    document.getElementById('cronImportText').value = '';
+    return;
+  }
+  const { data: items } = await sb.from('post_schedule_items').select('*').eq('schedule_id', id).order('post_date', { ascending: true });
+  cronCurrentSchedule.items = items || [];
+  document.getElementById('cronConfigCard').hidden = true;
+  document.getElementById('cronPromptCard').hidden = true;
+  document.getElementById('cronCalendarCard').hidden = false;
+  cronRenderCalendar();
+}
+
+async function activateCronogramaTab(){
+  await cronCleanupOld();
+  await cronLoadSchedulesList();
+  if(cronSchedules.length){
+    document.getElementById('cronSelect').value = cronSchedules[0].id;
+    await cronOpenSchedule(cronSchedules[0].id);
+  } else {
+    cronShowConfigCard();
+  }
+}
+
+// ---- Calendário ----
+function cronRenderCalendar(){
+  const schedule = cronCurrentSchedule;
+  const items = schedule.items || [];
+  const itemsByDate = {};
+  items.forEach(function(it){ itemsByDate[it.post_date] = it; });
+
+  document.getElementById('cronCalendarTitle').textContent = schedule.nome;
+  document.getElementById('cronLegend45').hidden = !items.some(function(it){ return it.formato === '4:5'; });
+
+  const start = cronParseISO(schedule.start_date);
+  const end = cronParseISO(schedule.end_date);
+  const monthsWrap = document.getElementById('cronCalendarMonths');
+  monthsWrap.innerHTML = '';
+
+  const today = cronToday();
+  let cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+  const lastMonth = new Date(end.getFullYear(), end.getMonth(), 1);
+
+  while(cursor <= lastMonth){
+    const year = cursor.getFullYear(), month = cursor.getMonth();
+    const firstWeekday = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const monthEl = document.createElement('div');
+    monthEl.className = 'cron-month';
+    const title = document.createElement('h3');
+    title.className = 'cron-month-title';
+    title.textContent = CRON_MESES[month] + ' de ' + year;
+    monthEl.appendChild(title);
+
+    const grid = document.createElement('div');
+    grid.className = 'cron-month-grid';
+    CRON_WEEKDAY_HEADER.forEach(function(w){
+      const label = document.createElement('div');
+      label.className = 'cron-weekday-label';
+      label.textContent = w;
+      grid.appendChild(label);
+    });
+    for(let i = 0; i < firstWeekday; i++){
+      const empty = document.createElement('div');
+      empty.className = 'cron-day cron-day--empty';
+      grid.appendChild(empty);
+    }
+    for(let day = 1; day <= daysInMonth; day++){
+      const date = new Date(year, month, day);
+      const iso = cronFormatISO(date);
+      const item = itemsByDate[iso];
+      const cell = document.createElement('div');
+      cell.className = 'cron-day';
+      if(date.getTime() === today.getTime()) cell.classList.add('cron-day--today');
+      const num = document.createElement('span');
+      num.textContent = String(day);
+      cell.appendChild(num);
+      if(item){
+        cell.classList.add('cron-day--has-post');
+        const dots = document.createElement('div');
+        dots.className = 'cron-day-dots';
+        const dot = document.createElement('i');
+        dot.className = 'cron-dot ' + (item.formato === '4:5' ? 'cron-dot-4x5' : (item.formato === '9:16' ? 'cron-dot-story' : 'cron-dot-1x1'));
+        dots.appendChild(dot);
+        cell.appendChild(dots);
+        cell.setAttribute('role', 'button');
+        cell.setAttribute('tabindex', '0');
+        cell.addEventListener('click', function(){ cronOpenDayModal(item); });
+        cell.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); cronOpenDayModal(item); } });
+      }
+      grid.appendChild(cell);
+    }
+    monthEl.appendChild(grid);
+    monthsWrap.appendChild(monthEl);
+    cursor = new Date(year, month + 1, 1);
+  }
+}
+
+let cronDayModalItem = null;
+function cronOpenDayModal(item){
+  cronDayModalItem = item;
+  document.getElementById('cronDayModalDate').textContent = cronFormatBR(cronParseISO(item.post_date)) + ' · ' + (CRON_FORMATO_LABEL[item.formato] || item.formato);
+  document.getElementById('cronDayModalTitulo').textContent = item.titulo || '(sem título)';
+  document.getElementById('cronDayModalFormato').textContent = item.texto ? 'Post de Feed: texto + imagem.' : 'Story: só imagem (com texto embutido).';
+  const copyTextoBtn = document.getElementById('cronDayModalCopyTexto');
+  copyTextoBtn.hidden = !item.texto;
+  document.getElementById('cronDayModal').hidden = false;
+}
+function cronCloseDayModal(){
+  document.getElementById('cronDayModal').hidden = true;
+  cronDayModalItem = null;
+}
+
+// ---- Ligações de eventos ----
+function setupCronogramaTab(){
+  const periodoToggle = document.getElementById('cronPeriodoToggle');
+  if(!periodoToggle) return;
+
+  periodoToggle.querySelectorAll('.type-toggle-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      periodoToggle.querySelectorAll('.type-toggle-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('cronCustomWeeksRow').style.display = (btn.getAttribute('data-periodo') === 'custom') ? 'flex' : 'none';
+    });
+  });
+
+  document.querySelectorAll('#cronWeekdayRow input[type="checkbox"]').forEach(function(chk){
+    chk.addEventListener('change', cronRebuildFormatoPorDia);
+  });
+  document.getElementById('cronAllow45').addEventListener('change', cronRebuildFormatoPorDia);
+  document.getElementById('cronPersonalizarFormato').addEventListener('change', cronRebuildFormatoPorDia);
+
+  document.getElementById('btnCronNovo').addEventListener('click', cronShowConfigCard);
+
+  document.getElementById('cronSelect').addEventListener('change', function(){
+    cronOpenSchedule(this.value);
+  });
+
+  document.getElementById('btnCronGerarPrompt').addEventListener('click', async function(){
+    const weekdays = cronSelectedWeekdays();
+    if(!weekdays.length){ alert('Marque pelo menos um dia da semana.'); return; }
+    const config = {
+      semanas: cronPeriodoSemanas(),
+      weekdays: weekdays,
+      allow45: document.getElementById('cronAllow45').checked,
+      personalizarFormato: document.getElementById('cronPersonalizarFormato').checked,
+      diasFormato: document.getElementById('cronPersonalizarFormato').checked ? cronFormatoPorDiaValues() : null
+    };
+    const built = cronBuildMasterPrompt(config);
+    config.masterPrompt = built.text;
+
+    const nome = 'Cronograma ' + cronFormatBR(cronParseISO(built.start)) + ' a ' + cronFormatBR(cronParseISO(built.end));
+    const { data, error } = await sb.from('post_schedules').insert({
+      nome: nome, start_date: built.start, end_date: built.end, config: config, status: 'aguardando_importacao'
+    }).select().single();
+    if(error){ alert('Erro ao salvar cronograma: ' + error.message); return; }
+
+    cronCurrentSchedule = data;
+    await cronLoadSchedulesList();
+    document.getElementById('cronSelect').value = data.id;
+    document.getElementById('cronConfigCard').hidden = true;
+    document.getElementById('cronPromptCard').hidden = false;
+    document.getElementById('cronPromptText').value = built.text;
+    document.getElementById('cronImportText').value = '';
+  });
+
+  document.getElementById('btnCronCopyPrompt').addEventListener('click', function(){
+    copyText(document.getElementById('cronPromptText').value);
+  });
+
+  document.getElementById('btnCronImportar').addEventListener('click', async function(){
+    if(!cronCurrentSchedule){ return; }
+    const raw = document.getElementById('cronImportText').value;
+    const items = cronParseImport(raw);
+    const statusEl = document.getElementById('cronStatus');
+    if(!items.length){
+      statusEl.textContent = 'Não reconheci nenhum post nesse texto. Confira se colou a resposta completa, no formato pedido pelo prompt.';
+      statusEl.className = 'admin-status err';
+      return;
+    }
+    const rows = items.map(function(it){
+      return {
+        schedule_id: cronCurrentSchedule.id,
+        post_date: it.data,
+        formato: it.formato,
+        titulo: it.titulo,
+        texto: it.texto,
+        prompt_imagem: it.promptImagem
+      };
+    });
+    const { error: insertError } = await sb.from('post_schedule_items').insert(rows);
+    if(insertError){ statusEl.textContent = 'Erro ao salvar os posts: ' + insertError.message; statusEl.className = 'admin-status err'; return; }
+
+    const { error: updateError } = await sb.from('post_schedules').update({ status: 'importado', raw_import: raw }).eq('id', cronCurrentSchedule.id);
+    if(updateError){ statusEl.textContent = 'Posts salvos, mas houve um erro ao atualizar o status do cronograma.'; statusEl.className = 'admin-status err'; }
+    else { statusEl.textContent = items.length + ' posts importados!'; statusEl.className = 'admin-status ok'; }
+
+    await cronLoadSchedulesList();
+    document.getElementById('cronSelect').value = cronCurrentSchedule.id;
+    await cronOpenSchedule(cronCurrentSchedule.id);
+  });
+
+  document.getElementById('cronDayModalClose').addEventListener('click', cronCloseDayModal);
+  document.getElementById('cronDayModal').addEventListener('click', function(e){ if(e.target === this) cronCloseDayModal(); });
+  document.addEventListener('keydown', function(e){
+    const modal = document.getElementById('cronDayModal');
+    if(e.key === 'Escape' && modal && !modal.hidden) cronCloseDayModal();
+  });
+  document.getElementById('cronDayModalCopyTexto').addEventListener('click', function(){
+    if(cronDayModalItem && cronDayModalItem.texto) copyText(cronDayModalItem.texto);
+  });
+  document.getElementById('cronDayModalCopyPrompt').addEventListener('click', function(){
+    if(cronDayModalItem) copyText(cronDayModalItem.prompt_imagem);
+  });
+
+  cronRebuildFormatoPorDia();
+}
+
+setupEnrollModal();
+setupSettingsModal();
+setupExerciseModals();
+setupUITooltips();
+setupAdminTabs();
+setupAnalyticsRefreshButton();
+setupClipboardPanel();
+setupGalleryPanel();
+setupCronogramaTab();
+runLoginFlow();
+
+// Registra o service worker do PWA (casco do app instalável). Falha
+// silenciosamente em navegadores sem suporte ou fora de HTTPS/localhost
+// -- o painel continua funcionando normalmente do mesmo jeito.
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('admin-sw.js').catch(function(){});
+  });
+}

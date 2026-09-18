@@ -49,7 +49,7 @@ function temaInfo(tema) {
 // funciona inclusive nos posts que já estão publicados. A ordem importa — o
 // primeiro subtópico que casar vence — e, se nada casar, cai na imagem
 // padrão do tema.
-const NOVIDADES_PASTA_IMG = 'png/novidades/';
+const NOVIDADES_PASTA_IMG = 'assets/img/png/novidades/';
 
 // Comparações de palavra-chave ignoram acento e caixa: "calendario" casa com
 // "calendário". Sem isto, um deslize de acentuação no texto gerado faria a
