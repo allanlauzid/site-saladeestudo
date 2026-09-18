@@ -12,24 +12,38 @@
 --   condicao = "true"            -> sem nenhum filtro: vale pra todas as linhas
 -- =========================================================================
 
--- 1) Tabelas, se o RLS esta ligado, e quais permissoes o PostgREST concede
---    para anon/authenticated (grants sao a primeira barreira, antes do RLS).
+-- 1) A CONSULTA MAIS IMPORTANTE.
+--
+--    rls_ativo = f        -> tabela SEM PROTECAO NENHUMA. E o pior caso, e o
+--                            mais traicoeiro: com o RLS desligado o
+--                            pg_policies nao mostra nada, entao a tabela
+--                            parece limpa na consulta (2) quando na verdade
+--                            esta escancarada.
+--    politicas = 0 com rls_ativo = t -> tabela fechada pra todo mundo
+--                            (so a service role enxerga)
+--    anon_pode com qualquer coisa    -> permissao na raiz pro papel anonimo,
+--                            que e o da chave publicavel que fica no
+--                            codigo-fonte do site. Sem permissao aqui, o
+--                            PostgREST nem chega a avaliar o RLS.
 select
-  t.tablename                                as tabela,
-  c.relrowsecurity                           as rls_ativo,
-  c.relforcerowsecurity                      as rls_forcado,
-  coalesce(string_agg(distinct g.privilege_type || ':' || g.grantee, ', '
-           order by g.privilege_type || ':' || g.grantee), '(nenhum)') as grants
-from pg_tables t
-join pg_class c        on c.relname = t.tablename
-join pg_namespace n    on n.oid = c.relnamespace and n.nspname = t.schemaname
-left join information_schema.role_table_grants g
-       on g.table_schema = t.schemaname
-      and g.table_name   = t.tablename
-      and g.grantee in ('anon','authenticated')
-where t.schemaname = 'public'
-group by t.tablename, c.relrowsecurity, c.relforcerowsecurity
-order by t.tablename;
+  c.relname                                   as tabela,
+  c.relrowsecurity                            as rls_ativo,
+  (select count(*) from pg_policies p
+    where p.schemaname = 'public' and p.tablename = c.relname) as politicas,
+  coalesce((select string_agg(distinct g.privilege_type, ', ' order by g.privilege_type)
+              from information_schema.role_table_grants g
+             where g.table_schema = 'public'
+               and g.table_name = c.relname
+               and g.grantee = 'anon'), '-')  as anon_pode,
+  coalesce((select string_agg(distinct g.privilege_type, ', ' order by g.privilege_type)
+              from information_schema.role_table_grants g
+             where g.table_schema = 'public'
+               and g.table_name = c.relname
+               and g.grantee = 'authenticated'), '-') as logado_pode
+from pg_class c
+join pg_namespace n on n.oid = c.relnamespace
+where n.nspname = 'public' and c.relkind = 'r'
+order by c.relrowsecurity, c.relname;
 
 -- 2) Todas as politicas RLS: quem pode fazer o que, e sob qual condicao.
 select
