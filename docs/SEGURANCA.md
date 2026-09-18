@@ -41,8 +41,8 @@ vazio, nao importa por onde a pessoa entre.
 Tres situacoes diferentes:
 
 - **tabelas do admin** (`themes`, `settings`, `skills`, `access_logs`,
-  `post_schedules`, `post_schedule_items`, `clipboard_items`): `anon` perde
-  toda permissao; `authenticated` so passa com `aal2`.
+  `post_schedules`, `post_schedule_items`, `clipboard_items`, `history`):
+  `anon` perde toda permissao; `authenticated` so passa com `aal2`.
 - **`game_sessions`**: o site publico precisa gravar a partida de quem nem
   esta logado. Passa a gravar por duas funcoes (`registrar_partida` e
   `finalizar_partida`), e o `anon` fica sem permissao nenhuma na tabela. Ler o
@@ -87,3 +87,32 @@ O `game-analytics.js` mandava o campo como `trigger`, mas a coluna se chama
 vazio, entao **nenhuma partida chegou a ser gravada** desde que o analytics
 existe — a aba "Analytics (jogos)" do admin sempre esteve vazia por isso, nao
 por falta de gente jogando. Corrigido junto com a mudanca para as funcoes.
+
+## O que a auditoria de 18/09/2026 mostrou
+
+Resultado da consulta de politicas, por ordem de gravidade:
+
+- `clipboard_items` e `game_sessions`: politicas explicitas para
+  `{anon, authenticated}` com `using (true)`. **Abertas pra qualquer um**,
+  sem login. O historico de "Copiados" era publico na pratica.
+- `gemini_api_keys`, `settings`, `themes`, `history`: `ALL to {public}` com
+  `using (auth.role() = 'authenticated')`. O `anon` cai fora (o `role` dele e
+  `anon`), mas **qualquer sessao logada** le e escreve -- e pra estar logado
+  bastava a senha que estava no fonte do `index.html`. No caso da
+  `gemini_api_keys`, isso significa que as chaves de API la dentro devem ser
+  consideradas vazadas: **trocar todas**.
+- `access_logs`: `INSERT to {public}` -- da pra forjar registro de acesso.
+  Leitura exigia estar logado (mesma senha publica).
+- `history`: nenhum arquivo do site usa. Sobra de versao antiga; foi trancada
+  junto, mas confira o conteudo e considere `drop table`.
+- `skills`, `post_schedules`, `post_schedule_items`: nao apareceram na lista
+  de politicas. Isso e ambiguo e precisa da outra consulta da auditoria (a que
+  mostra `rls_ativo`): ou estao com RLS ligado e zero politicas (fechadas, e
+  as abas correspondentes do admin estariam vazias hoje), ou estao com **RLS
+  desligado**, que e o pior caso -- sem RLS o `pg_policies` nao mostra nada,
+  entao a tabela parece limpa na auditoria quando esta escancarada.
+
+Por causa desse ultimo item o `003` termina com uma rede de seguranca: ele
+percorre todas as tabelas de `public` e avisa em `WARNING` qualquer uma que
+ainda esteja alcancavel pelo `anon` ou com RLS desligado. Se o script terminar
+dizendo "OK: nenhuma tabela alcancavel pelo anonimo", nao sobrou nada.

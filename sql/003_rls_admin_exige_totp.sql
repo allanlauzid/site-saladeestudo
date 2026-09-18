@@ -45,7 +45,13 @@ declare
     'access_logs',
     'post_schedules',
     'post_schedule_items',
-    'clipboard_items'
+    'clipboard_items',
+    -- 'history' apareceu na auditoria de 18/09 e nenhum arquivo do site usa.
+    -- Estava com "ALL to public using (auth.role() = 'authenticated')", ou
+    -- seja: qualquer sessao logada lia e escrevia -- e pra estar logado bastava
+    -- a senha que estava no fonte do index.html. Trancada junto; se for lixo
+    -- de versao antiga, confira o conteudo e depois "drop table".
+    'history'
   ];
   t     text;
   pol   record;
@@ -201,6 +207,43 @@ end $$;
 --    a pagina Novidades funcionar pra quem visita o site. A escrita ja e
 --    so pela service role (GitHub Actions), como esta no 001.
 -- -------------------------------------------------------------------------
+
+-- -------------------------------------------------------------------------
+-- 4. Rede de seguranca: grita se sobrou alguma tabela alcancavel pelo
+--    papel anonimo, ou com o RLS desligado (que e pior: com RLS desligado o
+--    pg_policies nao mostra NADA, entao a tabela parece limpa na auditoria
+--    quando na verdade esta escancarada).
+-- -------------------------------------------------------------------------
+do $$
+declare
+  r record;
+  achou boolean := false;
+begin
+  for r in
+    select c.relname as tabela,
+           c.relrowsecurity as rls,
+           exists (select 1 from information_schema.role_table_grants g
+                    where g.table_schema='public' and g.table_name=c.relname
+                      and g.grantee='anon') as anon_tem_grant
+    from pg_class c
+    join pg_namespace n on n.oid = c.relnamespace
+    where n.nspname='public' and c.relkind='r'
+      and c.relname <> 'novidades'   -- leitura publica de proposito
+    order by c.relname
+  loop
+    if not r.rls then
+      achou := true;
+      raise warning 'ATENCAO: %.rls esta DESLIGADO -- tabela % sem nenhuma protecao', r.tabela, r.tabela;
+    elsif r.anon_tem_grant then
+      achou := true;
+      raise warning 'ATENCAO: o papel anon ainda tem permissao na tabela %', r.tabela;
+    end if;
+  end loop;
+
+  if not achou then
+    raise notice 'OK: nenhuma tabela alcancavel pelo anonimo e nenhuma com RLS desligado';
+  end if;
+end $$;
 
 commit;
 
