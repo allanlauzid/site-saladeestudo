@@ -54,18 +54,20 @@
     var id = makeId();
     var c = getClient();
     if (c) {
-      var row = Object.assign(
-        {
-          id: id,
-          game: game,
-          trigger: trigger,
-          visitor_id: getVisitorId()
-        },
-        extra || {}
-      );
-      c.from('game_sessions')
-        .insert(row)
-        .then(function () {}, function () {});
+      // Escrita por funcao (rpc), nao direto na tabela: o visitante do site
+      // nao tem -- e nao pode ter -- permissao nenhuma em game_sessions, se
+      // nao qualquer um com a chave publicavel leria a base de partidas.
+      // Ver sql/003_rls_admin_exige_totp.sql.
+      //
+      // O parametro p_trigger vai para a coluna trigger_source. Ate 09/2026
+      // este campo era enviado como "trigger", nome que nao existe na tabela,
+      // e o insert falhava calado -- nenhuma partida chegou a ser gravada.
+      c.rpc('registrar_partida', {
+        p_id: id,
+        p_game: game,
+        p_trigger: trigger,
+        p_visitor: getVisitorId()
+      }).then(function () {}, function () {});
     }
     return id;
   }
@@ -74,11 +76,10 @@
     if (!sessionId) return;
     var c = getClient();
     if (!c) return;
-    var update = Object.assign({ finished_at: new Date().toISOString() }, patch || {});
-    c.from('game_sessions')
-      .update(update)
-      .eq('id', sessionId)
-      .then(function () {}, function () {});
+    c.rpc('finalizar_partida', {
+      p_id: sessionId,
+      p_outcome: (patch && patch.outcome) || 'concluido'
+    }).then(function () {}, function () {});
   }
 
   window.GameAnalytics = {
