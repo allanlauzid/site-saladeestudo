@@ -925,10 +925,15 @@ document.getElementById('btnSavePrompt').addEventListener('click', async functio
   if(!currentPromptState || !currentPromptState.theme) return;
   const newPrompt = document.getElementById('genPromptText').value;
   const isText = currentPromptState.type === 'texto';
-  const updateObj = isText ? { texto_base: newPrompt } : { imagem_base: newPrompt };
-  
+  // Esta gravacao apontava para a tabela "skills" com as colunas texto_base /
+  // imagem_base -- nomes de um schema antigo. A tabela skills nao existe mais
+  // no banco (auditoria de 18/09/2026) e os prompts moram em themes, nas
+  // colunas template_texto / template_imagem. Enquanto apontava pro lugar
+  // errado, este botao so mostrava "Erro" e nunca salvava nada.
+  const updateObj = isText ? { template_texto: newPrompt } : { template_imagem: newPrompt };
+
   this.textContent = 'Salvando...';
-  const { error } = await sb.from('skills').update(updateObj).eq('id', currentPromptState.theme.id);
+  const { error } = await sb.from('themes').update(updateObj).eq('id', currentPromptState.theme.id);
   if(!error){
     this.textContent = 'Salvo!';
     if (isText) currentPromptState.theme.templateTexto = newPrompt;

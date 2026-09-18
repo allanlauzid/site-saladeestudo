@@ -41,8 +41,11 @@ declare
   TABELAS_ADMIN text[] := array[
     'themes',
     'settings',
-    'skills',
     'access_logs',
+    -- skills / post_schedules / post_schedule_items NAO EXISTEM no banco
+    -- (auditoria de 18/09/2026). Ficam listadas so por precaucao: se algum dia
+    -- forem criadas, ja entram trancadas. O bloco pula tabela inexistente.
+    'skills',
     'post_schedules',
     'post_schedule_items',
     'clipboard_items',

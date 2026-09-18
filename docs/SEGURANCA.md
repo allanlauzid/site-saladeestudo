@@ -105,14 +105,34 @@ Resultado da consulta de politicas, por ordem de gravidade:
   Leitura exigia estar logado (mesma senha publica).
 - `history`: nenhum arquivo do site usa. Sobra de versao antiga; foi trancada
   junto, mas confira o conteudo e considere `drop table`.
-- `skills`, `post_schedules`, `post_schedule_items`: nao apareceram na lista
-  de politicas. Isso e ambiguo e precisa da outra consulta da auditoria (a que
-  mostra `rls_ativo`): ou estao com RLS ligado e zero politicas (fechadas, e
-  as abas correspondentes do admin estariam vazias hoje), ou estao com **RLS
-  desligado**, que e o pior caso -- sem RLS o `pg_policies` nao mostra nada,
-  entao a tabela parece limpa na auditoria quando esta escancarada.
+- `skills`, `post_schedules`, `post_schedule_items`: **nao existem no banco.**
+  O `admin.js` faz 8 chamadas a essas tres tabelas -- veja "Recursos quebrados"
+  mais abaixo.
 
-Por causa desse ultimo item o `003` termina com uma rede de seguranca: ele
-percorre todas as tabelas de `public` e avisa em `WARNING` qualquer uma que
-ainda esteja alcancavel pelo `anon` ou com RLS desligado. Se o script terminar
-dizendo "OK: nenhuma tabela alcancavel pelo anonimo", nao sobrou nada.
+Boa noticia: as 8 tabelas que existem estao todas com RLS ligado. Nenhuma no
+pior caso (RLS desligado). As permissoes de raiz estao abertas pro `anon` em
+todas, mas onde nao ha politica para o `anon` o RLS barra -- e o caso da
+`novidades`, que tem grant de insert/update/delete pro anonimo e nenhuma
+politica pra essas operacoes.
+
+Mesmo assim o `003` termina com uma rede de seguranca que percorre todas as
+tabelas de `public` e avisa em `WARNING` qualquer uma ainda alcancavel pelo
+`anon` ou com RLS desligado -- serve pra pegar tabela nova criada no painel
+sem politica, que e como esse tipo de buraco aparece.
+
+## Recursos quebrados descobertos na auditoria
+
+Nada disso tem a ver com seguranca; apareceu porque a auditoria listou as
+tabelas que realmente existem.
+
+- **"Salvar PROMPT"** gravava em `skills`, com as colunas `texto_base` /
+  `imagem_base` -- nomes de um schema antigo. A tabela nao existe e os prompts
+  moram em `themes`, nas colunas `template_texto` / `template_imagem`. O botao
+  so mostrava "Erro" e nunca salvava. **Corrigido.**
+- **Cronograma de posts**: 7 chamadas a `post_schedules` e
+  `post_schedule_items`, tabelas que nunca foram criadas. A aba inteira nao
+  funciona. **Nao corrigido** -- precisa decidir se o recurso vai existir (ai
+  eu escrevo a migracao das duas tabelas) ou se sai do painel.
+- **Analytics dos jogos**: o `game-analytics.js` mandava `trigger` em vez de
+  `trigger_source` e o erro era engolido; nenhuma partida foi gravada desde
+  que o recurso existe. **Corrigido.**
