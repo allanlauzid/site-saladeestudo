@@ -122,7 +122,11 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
     /* A mágica da matemática: mantém o botão alinhado com o site em telas grandes, mas o empurra para a esquerda em telas menores para ele não cair fora da seta (respeitando 13vw da borda da tela) */
     padding-right: max(2rem, calc(13vw - max(0px, (100vw - 1200px) / 2)));
 }
-.logo-svg { max-height: 80px; width: auto; position: relative; }
+/* A logo acompanha a espessura da faixa amarela da seta. A seta é uma
+   imagem esticada para a largura da tela: quanto mais estreita a tela,
+   mais fina fica a faixa amarela embaixo da logo. Sem este clamp, a logo
+   passava a encostar (e depois invadir) a faixa azul abaixo de ~820px. */
+.logo-svg { max-height: clamp(26px, 12.5vw - 13px, 80px); width: auto; position: relative; }
 
 /* Navbar Button adjusted for yellow background */
 .btn-nav {
@@ -652,14 +656,30 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
   }
 }
 
+/* A seta tem uma cauda afunilada na ponta esquerda. Como ela é esticada
+   para caber na largura da tela, em telas estreitas essa cauda avança até
+   debaixo da logo e a faixa amarela some ali. Empurrar a cauda para fora
+   da tela mantém a faixa cheia sob a logo — sem mudar o desenho visível. */
+@media (max-width: 1100px) {
+  .navbar-bg {
+    left: -25vw;
+    width: calc(100% + 25vw - 30px);
+  }
+}
+@media (max-width: 1024px) {
+  .navbar-bg {
+    left: -40vw;
+    width: calc(100% + 40vw - 30px);
+  }
+}
+
 /* Ajustes mobile para o cabeçalho: seta, logo e botão */
 @media (max-width: 768px) {
   .navbar-bg {
     height: 300%; /* Deixa a seta amarela mais grossa na proporção */
     top: -100%;
-  }
-  .logo-svg {
-    max-height: 54px; /* Diminui a logo */
+    left: -60vw;
+    width: calc(100% + 60vw - 30px);
   }
   .btn-nav {
     padding: 0.6rem 1rem; /* Diminui o botão */
@@ -673,9 +693,6 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
 @media (max-width: 380px) {
   .nav-container {
     padding-right: max(1rem, calc(10vw - max(0px, (100vw - 1200px) / 2)));
-  }
-  .logo-svg {
-    max-height: 44px;
   }
 }
 
