@@ -129,12 +129,29 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
 .logo-svg { max-height: clamp(26px, 12.5vw - 13px, 80px); width: auto; position: relative; }
 
 /* Navbar Button adjusted for yellow background */
+/* O botão é centralizado na FAIXA AMARELA da seta, não na altura total do
+   cabeçalho (que inclui a sombra azul embaixo). O quanto ele precisa subir
+   muda com a largura da tela, porque a seta é uma imagem esticada e suas
+   bordas são diagonais: em telas largas a inclinação é suave, em telas
+   médias ela é acentuada. Os valores abaixo foram medidos lendo os pixels
+   da faixa amarela na coluna central do botão, de 320px a 1920px.
+   Usa position/top (e não transform) para não conflitar com o transform
+   que o botão já aplica no :hover. */
 .btn-nav {
     background: var(--color-blue);
     color: #FFF;
     border-color: var(--color-blue);
     box-shadow: -4px 4px 0 rgba(0, 0, 0, 0.2);
+    position: relative;
+    top: var(--nav-btn-y, -2px);
 }
+@media (min-width: 1750px) { .btn-nav { --nav-btn-y:  2px; } }
+@media (max-width: 1500px) { .btn-nav { --nav-btn-y: -8px; } }
+@media (max-width: 1300px) { .btn-nav { --nav-btn-y: -9px; } }
+@media (max-width: 1000px) { .btn-nav { --nav-btn-y: -8px; } }
+@media (max-width:  850px) { .btn-nav { --nav-btn-y: -7px; } }
+@media (max-width:  650px) { .btn-nav { --nav-btn-y: -6px; } }
+@media (max-width:  520px) { .btn-nav { --nav-btn-y: -4px; } }
 .btn-nav:hover {
     box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.2);
 }
@@ -693,6 +710,12 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
 @media (max-width: 380px) {
   .nav-container {
     padding-right: max(1rem, calc(10vw - max(0px, (100vw - 1200px) / 2)));
+  }
+  /* Nas telas mais estreitas a faixa amarela fica com ~41px: o botão
+     precisa encolher um pouco para caber inteiro dentro dela. */
+  .btn-nav {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.82rem;
   }
 }
 
