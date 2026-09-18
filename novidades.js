@@ -51,6 +51,13 @@ function temaInfo(tema) {
 // padrão do tema.
 const NOVIDADES_PASTA_IMG = 'png/novidades/';
 
+// Comparações de palavra-chave ignoram acento e caixa: "calendario" casa com
+// "calendário". Sem isto, um deslize de acentuação no texto gerado faria a
+// imagem e as hashtags erradas aparecerem.
+function semAcento(texto) {
+  return String(texto || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 const NOVIDADES_SUBTOPICOS = [
   { img: 'ssa-upe',           termos: ['ssa', 'upe', 'seriad'] },
   { img: 'enem-inscricao',    termos: ['inscri', 'edital', 'isen', 'taxa', 'prazo', 'cronograma'] },
@@ -71,9 +78,9 @@ const NOVIDADES_IMG_PADRAO = {
 };
 
 function imagemDoPost(post) {
-  const texto = ((post.titulo || '') + ' ' + (post.resumo || '')).toLowerCase();
+  const texto = semAcento((post.titulo || '') + ' ' + (post.resumo || ''));
   for (const sub of NOVIDADES_SUBTOPICOS) {
-    if (sub.termos.some((termo) => texto.includes(termo))) {
+    if (sub.termos.some((termo) => texto.includes(semAcento(termo)))) {
       return NOVIDADES_PASTA_IMG + sub.img + '.webp';
     }
   }
@@ -122,14 +129,14 @@ const NOVIDADES_HASHTAG_TEMA = {
 };
 
 function hashtagsDoPost(post) {
-  const texto = ' ' + ((post.titulo || '') + ' ' + (post.resumo || '') + ' ' + (post.corpo || '')).toLowerCase() + ' ';
+  const texto = ' ' + semAcento((post.titulo || '') + ' ' + (post.resumo || '') + ' ' + (post.corpo || '')) + ' ';
   const tags = [];
   const doTema = NOVIDADES_HASHTAG_TEMA[post.tema];
   if (doTema) tags.push(doTema);
   for (const item of NOVIDADES_HASHTAGS) {
     if (tags.length >= 5) break;
     if (tags.indexOf(item.tag) !== -1) continue;
-    if (item.termos.some((termo) => texto.includes(termo))) tags.push(item.tag);
+    if (item.termos.some((termo) => texto.includes(semAcento(termo)))) tags.push(item.tag);
   }
   if (tags.length === 0) tags.push('Novidades');
   return tags;
