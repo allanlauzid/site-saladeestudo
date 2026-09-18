@@ -1,0 +1,11 @@
+# Pastas de trabalho: ficam na máquina, não vão para o repositório.
+# Antes do .nojekyll o GitHub Pages já ignorava pastas iniciadas com "_";
+# agora ele publica tudo, então elas precisam sair do Git mesmo.
+_backups/
+_validation-forca-v27/
+Claude outputs/
+tmp/
+
+# Sistema
+Thumbs.db
+.DS_Store
