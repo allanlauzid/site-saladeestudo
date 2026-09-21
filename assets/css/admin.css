@@ -311,6 +311,7 @@
   .abtn.blue{ background:var(--color-blue); color:#fff; border-color:var(--color-blue); }
   .abtn.ghost{ background:transparent; border-color:#d8d3c4; color:#6b6b6b; }
   .abtn.small{ padding:6px 12px; font-size:0.75rem; }
+  .abtn-icon{ width:16px; height:16px; flex:0 0 16px; }
   .abtn:disabled{ opacity:0.5; cursor:not-allowed; transform:none; box-shadow:none; filter: grayscale(100%); }
   .admin-status{ font-size:0.85rem; margin-top:8px; text-align:center; }
   .admin-status.ok{ color:#0a8a3f; }
@@ -930,4 +931,3 @@
   .tema-field-row{ display:flex; gap:10px; align-items:stretch; flex-wrap:wrap; }
   .tema-field-row .tema-select{ flex:1 1 220px; min-width:0; }
   .tema-field-row .abtn{ flex:0 0 auto; }
-

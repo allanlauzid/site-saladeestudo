@@ -2,6 +2,7 @@
   const BUCKET = 'post-images';
   const FOLDER = 'gallery';
   const MAX_SIZE = 10 * 1024 * 1024;
+  const COPY_ICON = '<svg class="abtn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"></path></svg>';
   let paused = false;
 
   function status(text, type) {
@@ -29,46 +30,53 @@
       : (value / 1024 / 1024).toFixed(1).replace('.0', '') + ' MB';
   }
 
-  function button(label, style, action) {
+  function button(label, style, action, icon) {
     const el = document.createElement('button');
     el.type = 'button';
     el.className = 'abtn ' + style + ' small';
-    el.textContent = label;
+    el.innerHTML = (icon || '') + '<span class="abtn-label"></span>';
+    el.querySelector('.abtn-label').textContent = label;
     el.addEventListener('click', function () { action(el); });
     return el;
   }
 
+  function setButtonLabel(el, text) {
+    const label = el.querySelector('.abtn-label');
+    if (label) label.textContent = text;
+    else el.textContent = text;
+  }
+
   async function copyImage(item, el) {
-    const old = el.textContent;
+    const old = el.querySelector('.abtn-label').textContent;
     el.disabled = true;
     try {
       const response = await fetch(item.url);
       const blob = await response.blob();
       await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-      el.textContent = 'Copiada!';
+      setButtonLabel(el, 'Copiada!');
       status('Imagem copiada para a área de transferência.', 'ok');
     } catch (error) {
       console.error(error);
       status('Não foi possível copiar a imagem.', 'err');
     } finally {
-      setTimeout(function () { el.textContent = old; el.disabled = false; }, 1200);
+      setTimeout(function () { setButtonLabel(el, old); el.disabled = false; }, 1200);
     }
   }
 
   async function copyUrl(item, el) {
-    const old = el.textContent;
+    const old = el.querySelector('.abtn-label').textContent;
     el.disabled = true;
     try {
       const result = await sb.storage.from(BUCKET).createSignedUrl(item.path, 604800);
       if (result.error) throw result.error;
       await navigator.clipboard.writeText(result.data.signedUrl);
-      el.textContent = 'URL copiada!';
+      setButtonLabel(el, 'URL copiada!');
       status('URL copiada. Por segurança, este endereço é válido por 7 dias.', 'ok');
     } catch (error) {
       console.error(error);
       status('Não foi possível copiar a URL da imagem.', 'err');
     } finally {
-      setTimeout(function () { el.textContent = old; el.disabled = false; }, 1200);
+      setTimeout(function () { setButtonLabel(el, old); el.disabled = false; }, 1200);
     }
   }
 
@@ -149,8 +157,8 @@
       const actions = document.createElement('div');
       actions.className = 'gallery-actions';
       actions.append(
-        button('Copiar imagem', 'secondary', function (el) { copyImage(item, el); }),
-        button('Copiar URL', 'secondary', function (el) { copyUrl(item, el); }),
+        button('Copiar imagem', 'secondary', function (el) { copyImage(item, el); }, COPY_ICON),
+        button('Copiar URL', 'secondary', function (el) { copyUrl(item, el); }, COPY_ICON),
         button('Excluir', 'ghost', function (el) { remove(item, el); })
       );
       details.append(heading, meta, actions);

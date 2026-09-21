@@ -879,8 +879,10 @@
                 '<div class="wa-chip-row">' + group.options.map(chipHtml).join('') + '</div>';
             }).join('');
           } else {
-            html += '<div class="wa-chip-row">' + step.options.map(chipHtml).join('') + '</div>';
+            const rowClass = step.key === 'materia' ? ' wa-chip-row--materias' : '';
+            html += '<div class="wa-chip-row' + rowClass + '">' + step.options.map(chipHtml).join('') + '</div>';
           }
+          body.classList.toggle('wa-chat-body--materias', step.key === 'materia');
           body.innerHTML = html;
 
           body.querySelectorAll('.wa-chip').forEach(function(chip){
@@ -897,6 +899,7 @@
 
         function renderFinal(){
           const href = directWaUrl(summaryText());
+          body.classList.remove('wa-chat-body--materias');
           body.innerHTML =
             '<p class="wa-chat-eyebrow">Tudo certo!</p>' +
             '<p class="wa-chat-msg">Perfeito, já anotei tudo. Toque abaixo pra continuar no WhatsApp 👇</p>' +

@@ -1198,6 +1198,13 @@ button, a, .abtn, .btn-nav, [role="button"] {
     font-weight: 600;
     margin: 0 0 clamp(8px, 1.6vh, 18px);
 }
+.wa-chat-body--materias .wa-chat-eyebrow,
+.wa-chat-body--materias .wa-chat-msg {
+    text-align: center;
+}
+.wa-chat-body--materias .wa-chat-eyebrow {
+    margin-inline: 34px;
+}
 .wa-chip-group-title {
     font-family: var(--font-display);
     font-weight: 700;
@@ -1214,6 +1221,10 @@ button, a, .abtn, .btn-nav, [role="button"] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: clamp(5px, 0.85vh, 12px) clamp(8px, 1.2vw, 14px);
     margin-bottom: clamp(4px, 0.6vh, 10px);
+}
+.wa-chip-row--materias {
+    width: 90%;
+    margin-inline: auto;
 }
 .wa-chip {
     padding: clamp(6px, 1vh, 15px) clamp(8px, 1.1vw, 18px);
@@ -1284,6 +1295,7 @@ button, a, .abtn, .btn-nav, [role="button"] {
 .wa-chat-cta:hover { filter: brightness(1.03); }
 @media (max-width: 600px) {
     #wa-chat-popup { width: min(620px, 94vw); }
+    .wa-chip-row--materias { width: 100%; }
     .wa-icon-bubble { width: 81px; height: 81px; }
     .wa-icon-bubble svg { width: 39px; height: 39px; }
 }
