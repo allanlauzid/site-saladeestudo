@@ -330,6 +330,60 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
     margin: 0 auto 1rem;
 }
 
+/* Grupo 6 — cards de disciplinas no mobile: ícone à esquerda, título à
+   direita, e o texto abaixo vira um dropdown (só quando existe texto).
+   No desktop estas classes não mudam nada — o layout original
+   (ícone em cima, título embaixo, texto sempre visível) é mantido. */
+@media (max-width: 768px) {
+    .bento-card-head--mobile-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+        text-align: left;
+    }
+    .bento-card-head--mobile-row .icon-box {
+        margin: 0;
+        flex-shrink: 0;
+    }
+    .bento-card-head--mobile-row h2,
+    .bento-card-head--mobile-row h3 {
+        margin: 0;
+    }
+    .card-small {
+        text-align: left;
+        align-items: stretch;
+    }
+
+    .bento-card-head--toggle {
+        cursor: pointer;
+        user-select: none;
+    }
+    .bento-card-head--toggle::after {
+        content: '';
+        width: 10px;
+        height: 10px;
+        margin-left: auto;
+        flex-shrink: 0;
+        border-right: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        transform: rotate(45deg);
+        transition: transform 0.2s ease;
+    }
+    .bento-card-head--toggle[aria-expanded="true"]::after {
+        transform: rotate(-135deg);
+    }
+
+    .bento-card-body {
+        display: none;
+        overflow: hidden;
+    }
+    .bento-card-body--open {
+        display: block;
+    }
+}
+
 /* Editorial About */
 .about {
     padding: 6rem 0;
@@ -508,6 +562,74 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
     transform: translate(-2px, -2px);
 }
 
+/* ===================================================================
+   Ajustes solicitados (rodapé / conteúdo / layout mobile)
+   =================================================================== */
+
+/* Telefone do rodapé como link clicável para o WhatsApp (desktop e mobile) */
+.footer-phone-link {
+    color: #FFF;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.15s ease;
+}
+.footer-phone-link:hover,
+.footer-phone-link:focus-visible {
+    color: var(--color-yellow);
+}
+
+/* Grupo 3 — impede que o rodapé "vaze" pela direita em telas estreitas:
+   sem min-width:0 num item flex, texto longo pode empurrar o conteúdo
+   para fora do container em vez de encolher/quebrar. */
+.footer-bottom {
+    flex-wrap: wrap;
+    row-gap: 0.75rem;
+    column-gap: 1rem;
+}
+.footer-bottom-left {
+    min-width: 0;
+    max-width: 100%;
+}
+
+@media (max-width: 768px) {
+    /* Grupo 2 — remove o parágrafo de apoio do hero só no mobile */
+    .hero-desc-mobile-hide {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Grupo 1 — CTA "Agende uma conversa..." em no máximo 2 linhas */
+    .footer-cta-text {
+        font-size: 1rem;
+    }
+    /* Grupo 1 — Endereço: junta o rótulo com a rua (some o 1º <br>) e
+       reduz a fonte para não quebrar além do 2º <br> intencional */
+    .footer-address-br1 {
+        display: none;
+    }
+    .footer-address {
+        font-size: 0.95rem !important;
+    }
+    /* Grupo 1 — crédito "© 2026..." sem nenhuma quebra de linha */
+    .footer-copy-text {
+        white-space: nowrap;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .footer-cta-text {
+        font-size: 0.9rem;
+    }
+    .footer-address {
+        font-size: 0.85rem !important;
+    }
+    .footer-copy-text {
+        font-size: 0.62rem;
+    }
+}
+
 /* Mini FAQ no Card SSA & ENEM */
 .card-enem {
     display: flex;
@@ -552,6 +674,69 @@ p { font-size: 1.125rem; color: var(--color-text-muted); }
     .bento-grid { grid-template-columns: 1fr; }
     .card-main, .card-feature, .card-small { grid-column: span 1; }
     .about-grid { grid-template-columns: 1fr; }
+}
+
+/* ===================================================================
+   Grupo 4 — Primeira tela do mobile (hero): tag, título, mascote+tag e
+   botão reorganizados para caberem juntos na tela inicial.
+   =================================================================== */
+@media (max-width: 768px) {
+    .hero {
+        padding: 1.25rem 0 1.5rem;
+    }
+    /* .hero-content vira "display:contents" pra que seus filhos (badge,
+       h1, botão) entrem na MESMA ordenação flex do .hero-grid, junto
+       com o .hero-visual (mascote) — assim dá pra intercalar mascote
+       entre o título e o botão sem mudar a ordem no HTML. */
+    .hero-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .hero-content {
+        display: contents;
+    }
+    .hero .badge {
+        order: 1;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+        white-space: nowrap;
+        font-size: clamp(0.55rem, 3.1vw, 0.78rem);
+        letter-spacing: 0.02em;
+        padding: 0.55rem 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+    .hero h1 {
+        order: 2;
+        font-size: clamp(1.7rem, 7.6vw, 2.5rem);
+        margin-bottom: 0.5rem;
+    }
+    .hero-visual {
+        order: 3;
+        height: clamp(200px, 42vw, 320px);
+        margin: 0;
+    }
+    .hero-content .btn {
+        order: 4;
+        width: 100%;
+        text-align: center;
+    }
+    .img-mascote {
+        width: clamp(130px, 38vw, 200px);
+    }
+    /* Tag "Diagnóstico + Rotina = Confiança": reduzida e presa dentro da
+       largura disponível, pra não ser cortada nas laterais */
+    .card-equation {
+        max-width: 88%;
+        left: 6%;
+        bottom: 8%;
+        font-size: 0.7rem;
+        padding: 0.5rem 0.75rem;
+        gap: 0.3rem;
+        white-space: normal;
+        flex-wrap: wrap;
+    }
 }
 /* ============ SELO KUPIM DIGITAL ============ */
 #kupim-badge-wrap{
@@ -944,8 +1129,24 @@ button, a, .abtn, .btn-nav, [role="button"] {
         drop-shadow(0 -2px 0 #FFFFFF)
         drop-shadow(0 0 10px rgba(255,255,255,0.35));
 }
-@media (max-width: 600px) {
-    #whatsapp-float-btn { left: 76px; width: 156px; height: 156px; margin-top: -78px; }
+/* Grupo 5 — no mobile o celular flutuante fica bem menor (1/3 do
+   tamanho) e descansa no canto inferior direito, não mais centralizado
+   na lateral. */
+@media (max-width: 768px) {
+    #whatsapp-float-btn {
+        width: 60px;
+        height: 60px;
+        left: auto;
+        right: 14px;
+        top: auto;
+        bottom: 14px;
+        margin-top: 0;
+    }
+    #whatsapp-float-btn.wa-btn-docked {
+        right: 14px;
+        left: auto;
+        bottom: 14px;
+    }
 }
 @media (prefers-reduced-motion: reduce) {
     #whatsapp-float-btn { transition: none; }
@@ -1008,8 +1209,9 @@ button, a, .abtn, .btn-nav, [role="button"] {
     transform: translateX(-38%) translateY(0);
     pointer-events: auto;
 }
-@media (max-width: 600px) {
-    #whatsapp-bubble { font-size: 1.56rem; padding: 14px 22px; }
+@media (max-width: 768px) {
+    #whatsapp-bubble { font-size: 0.66rem; padding: 7px 11px; border-radius: 10px; margin-bottom: 6px; }
+    #whatsapp-bubble::after { width: 8px; height: 8px; }
 }
 @media (prefers-reduced-motion: reduce) {
     #whatsapp-bubble { transition: opacity 0.3s ease; }
@@ -1084,6 +1286,11 @@ button, a, .abtn, .btn-nav, [role="button"] {
 @media (prefers-reduced-motion: reduce) {
     .wa-icon-bubble { transition: opacity 0.2s ease; }
     .wa-icon-bubble.wa-icon-open { animation: none; }
+}
+@media (max-width: 768px) {
+    .wa-icon-bubble { width: 31px; height: 31px; }
+    .wa-icon-bubble svg { width: 15px; height: 15px; }
+    .wa-icon-bubble::after { width: 5px; height: 5px; }
 }
 
 /* ============ BALÃO 2: PERGUNTAS RÁPIDAS (à direita) ============ */

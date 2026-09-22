@@ -283,6 +283,59 @@ function escapeHtml(str){
   });
 }
 
+// Avisos e confirmações com a mesma linguagem visual do painel.
+function showAdminToast(message){
+  let region = document.getElementById('adminToastRegion');
+  if(!region){
+    region = document.createElement('div');
+    region.id = 'adminToastRegion';
+    region.className = 'admin-toast-region';
+    region.setAttribute('aria-live', 'polite');
+    document.body.appendChild(region);
+  }
+  const toast = document.createElement('div');
+  toast.className = 'admin-toast';
+  toast.textContent = String(message);
+  region.appendChild(toast);
+  requestAnimationFrame(function(){ toast.classList.add('show'); });
+  setTimeout(function(){
+    toast.classList.remove('show');
+    setTimeout(function(){ toast.remove(); }, 220);
+  }, 4200);
+}
+
+function askAdminConfirmation(message, danger){
+  return new Promise(function(resolve){
+    const overlay = document.createElement('div');
+    overlay.className = 'admin-confirm-overlay';
+    overlay.innerHTML = '<div class="admin-confirm-card" role="alertdialog" aria-modal="true" aria-labelledby="adminConfirmTitle">' +
+      '<span class="admin-confirm-icon" aria-hidden="true">!</span>' +
+      '<h2 id="adminConfirmTitle">Confirmar ação</h2>' +
+      '<p>' + escapeHtml(message) + '</p>' +
+      '<div class="admin-confirm-actions"><button class="abtn secondary" type="button" data-answer="no">Cancelar</button>' +
+      '<button class="abtn' + (danger ? ' danger' : '') + '" type="button" data-answer="yes">Confirmar</button></div></div>';
+    document.body.appendChild(overlay);
+    document.body.classList.add('mobile-overlay-open');
+    function finish(answer){
+      overlay.remove();
+      document.body.classList.remove('mobile-overlay-open');
+      document.removeEventListener('keydown', onKey);
+      resolve(answer);
+    }
+    function onKey(e){ if(e.key === 'Escape') finish(false); }
+    overlay.addEventListener('click', function(e){
+      const answer = e.target.closest('[data-answer]');
+      if(answer) finish(answer.dataset.answer === 'yes');
+      else if(e.target === overlay) finish(false);
+    });
+    document.addEventListener('keydown', onKey);
+    setTimeout(function(){ const cancel = overlay.querySelector('[data-answer="no"]'); if(cancel) cancel.focus(); }, 0);
+  });
+}
+
+window.alert = showAdminToast;
+
+let mobileDraftRestored = false;
 async function renderThemeList(){
   const list = await getThemes();
   const el = document.getElementById('themeList');
@@ -354,6 +407,14 @@ async function renderThemeList(){
   }
   if(prevBaseValue && list.some(function(t){ return t.id === prevBaseValue; })){
     baseSelect.value = prevBaseValue;
+  }
+  if(!mobileDraftRestored){
+    mobileDraftRestored = true;
+    try{
+      const saved = JSON.parse(localStorage.getItem('sde_admin_mobile_draft') || '{}');
+      if(saved.genTheme && list.some(function(t){ return t.id === saved.genTheme; })) genSelect.value = saved.genTheme;
+      if(saved.genType && typeof setGenType === 'function') setGenType(saved.genType);
+    }catch(e){}
   }
   if(typeof syncGenThemeDisplay === 'function') syncGenThemeDisplay();
 
@@ -1554,10 +1615,27 @@ const skillsAccordion = setupAccordion('skillsToggle', 'skillsBody');
 (function(){
   const steps = document.querySelectorAll('#genCardRoot .wizard-step');
   const dots = document.querySelectorAll('#genWizardProgress .dot');
+  const count = document.getElementById('wizardStepCount');
+  const name = document.getElementById('wizardStepName');
+  const back = document.getElementById('wizardMobileBack');
+  const next = document.getElementById('wizardMobileNext');
+  const stepNames = ['Conteúdo e tema', 'Assunto do post', 'Prompt pronto'];
+  let currentStep = 1;
   if(!steps.length) return;
   window.wizardGoToStep = function(n){
+    n = Math.max(1, Math.min(3, Number(n) || 1));
+    currentStep = n;
     steps.forEach(function(el){ el.classList.toggle('step-active', Number(el.dataset.step) === n); });
     dots.forEach(function(d){ d.classList.toggle('active', Number(d.dataset.step) === n); });
+    if(count) count.textContent = 'Etapa ' + n + ' de 3';
+    if(name) name.textContent = stepNames[n - 1];
+    if(back) back.hidden = n === 1;
+    if(next){
+      next.hidden = n === 3;
+      next.textContent = n === 2 ? 'Gerar prompt' : 'Continuar';
+    }
+    try{ localStorage.setItem('sde_admin_wizard_step', String(n)); }catch(e){}
+    if(window.matchMedia('(max-width:600px)').matches) window.scrollTo({ top:0, behavior:'smooth' });
   };
   document.querySelectorAll('#genCardRoot [data-wizard-goto]').forEach(function(btn){
     btn.addEventListener('click', function(){
@@ -1569,6 +1647,14 @@ const skillsAccordion = setupAccordion('skillsToggle', 'skillsBody');
   // resultado — sem interferir na logica de geracao em si.
   const btnGen = document.getElementById('btnGenerate');
   if(btnGen) btnGen.addEventListener('click', function(){ window.wizardGoToStep(3); });
+  if(back) back.addEventListener('click', function(){ window.wizardGoToStep(currentStep - 1); });
+  if(next) next.addEventListener('click', function(){
+    if(currentStep === 1) window.wizardGoToStep(2);
+    else if(currentStep === 2 && btnGen) btnGen.click();
+  });
+  let savedStep = 1;
+  try{ savedStep = Number(localStorage.getItem('sde_admin_wizard_step')) || 1; }catch(e){}
+  window.wizardGoToStep(savedStep);
 })();
 
 // ---------- Bottom sheet: Prompts, Temas e Skills (mobile) ----------
@@ -1582,13 +1668,17 @@ const skillsAccordion = setupAccordion('skillsToggle', 'skillsBody');
   function openSheet(){
     sheet.classList.add('sheet-open');
     backdrop.classList.add('sheet-open');
+    const skillsToggle = document.getElementById('skillsToggle');
+    if(window.matchMedia('(max-width:600px)').matches && skillsToggle && skillsToggle.getAttribute('aria-expanded') !== 'true') skillsToggle.click();
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('mobile-overlay-open');
     document.addEventListener('keydown', onEscape);
   }
   function closeSheet(){
     sheet.classList.remove('sheet-open');
     backdrop.classList.remove('sheet-open');
     document.body.style.overflow = '';
+    document.body.classList.remove('mobile-overlay-open');
     document.removeEventListener('keydown', onEscape);
   }
   function onEscape(e){ if(e.key === 'Escape') closeSheet(); }
@@ -1645,6 +1735,7 @@ function syncGenThemeDisplay(){
   const fullscreen = document.getElementById('genThemeFullscreen');
   const listEl = document.getElementById('genThemeFullscreenList');
   const backBtn = document.getElementById('genThemeFullscreenBack');
+  const search = document.getElementById('genThemeSearch');
   if(!select || !trigger || !fullscreen || !listEl || !backBtn) return;
 
   function openFullscreen(){
@@ -1654,27 +1745,38 @@ function syncGenThemeDisplay(){
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.textContent = opt.textContent;
+      btn.dataset.search = opt.textContent.toLocaleLowerCase('pt-BR');
       if(opt.value === select.value) btn.classList.add('selected');
       btn.addEventListener('click', function(){
         select.value = opt.value;
+        select.dispatchEvent(new Event('change', { bubbles:true }));
         syncGenThemeDisplay();
         closeFullscreen();
       });
       listEl.appendChild(btn);
     });
     fullscreen.hidden = false;
+    if(search){ search.value = ''; setTimeout(function(){ search.focus(); }, 80); }
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('mobile-overlay-open');
     document.addEventListener('keydown', onEscape);
   }
   function closeFullscreen(){
     fullscreen.hidden = true;
     document.body.style.overflow = '';
+    document.body.classList.remove('mobile-overlay-open');
     document.removeEventListener('keydown', onEscape);
   }
   function onEscape(e){ if(e.key === 'Escape') closeFullscreen(); }
 
   trigger.addEventListener('click', openFullscreen);
   backBtn.addEventListener('click', closeFullscreen);
+  if(search) search.addEventListener('input', function(){
+    const query = search.value.trim().toLocaleLowerCase('pt-BR');
+    listEl.querySelectorAll('button').forEach(function(btn){
+      btn.hidden = !!query && btn.dataset.search.indexOf(query) === -1;
+    });
+  });
   syncGenThemeDisplay();
 })();
 
@@ -1813,8 +1915,8 @@ function openDeleteTotpModal(factors){
 // a ação destrutiva. Se o TOTP não estiver ativo, avisa que é preciso ativá-lo
 // e não deixa prosseguir. Retorna true só quando pode excluir de fato.
 async function confirmDestructiveAction(message){
-  if(!confirm(message)) return false;
-  if(!confirm('Tem certeza mesmo? Essa ação não pode ser desfeita.')) return false;
+  if(!await askAdminConfirmation(message, true)) return false;
+  if(!await askAdminConfirmation('Tem certeza mesmo? Essa ação não pode ser desfeita.', true)) return false;
 
   if(!isLoginRequired()){
     alert('Para excluir é necessário ativar o login por TOTP (autenticador) nas configurações do painel.');
@@ -2000,6 +2102,7 @@ function ensureTopRightWidget(){
   document.getElementById('btnPanelSettings').addEventListener('click', function(){
     renderSettingsHome();
     document.getElementById('settingsModal').hidden = false;
+    document.body.classList.add('mobile-overlay-open');
   });
   return el;
 }
@@ -2425,7 +2528,10 @@ async function runLoginFlow(){
 function setupEnrollModal(){
   const overlay = document.getElementById('enrollModal');
   overlay.addEventListener('click', function(e){
-    if(e.target === overlay) overlay.hidden = true;
+    if(e.target === overlay){
+      overlay.hidden = true;
+      document.body.classList.remove('mobile-overlay-open');
+    }
   });
 }
 
@@ -2556,6 +2662,7 @@ function renderSettingsHome(){
 
   document.getElementById('btnCloseSettings').addEventListener('click', function(){
     document.getElementById('settingsModal').hidden = true;
+    document.body.classList.remove('mobile-overlay-open');
   });
   document.getElementById('btnSettingsAccessLog').addEventListener('click', renderSettingsAccessLogView);
   document.getElementById('btnSettingsConfigAccess').addEventListener('click', renderSettingsConfigAccessView);
@@ -2741,7 +2848,7 @@ async function initAdminApp(){
 }
 
 // ---------- Painel de controle: abas (Gerador / Resolução de exercícios / Analytics) ----------
-const ADMIN_TABS = ['gerador', 'cronograma', 'exercicios', 'analytics'];
+const ADMIN_TABS = ['gerador', 'cronograma', 'exercicios', 'biblioteca', 'mais', 'analytics'];
 
 function setActiveAdminTab(tabName){
   if(ADMIN_TABS.indexOf(tabName) === -1) tabName = 'gerador';
@@ -2752,8 +2859,11 @@ function setActiveAdminTab(tabName){
   });
 
   document.querySelectorAll('#adminTabbar .admin-tab-btn').forEach(function(btn){
-    btn.classList.toggle('active', btn.dataset.tab === tabName);
+    const mobileAlias = window.matchMedia('(max-width:600px)').matches && tabName === 'analytics' ? 'mais' : tabName;
+    btn.classList.toggle('active', btn.dataset.tab === mobileAlias);
   });
+
+  try{ localStorage.setItem('sde_admin_active_tab', tabName); }catch(e){}
 
   if(tabName === 'exercicios') activateExerciseTab();
   if(tabName === 'analytics') loadGameAnalytics();
@@ -2762,18 +2872,32 @@ function setActiveAdminTab(tabName){
 
 function setupAdminTabs(){
   document.querySelectorAll('#adminTabbar .admin-tab-btn').forEach(function(btn){
-    btn.addEventListener('click', function(e){
-      const isMobileTabbar = window.matchMedia('(max-width:600px)').matches;
-      if(isMobileTabbar && !e.target.closest('svg')){
-        // Tocou na área azul (texto/fundo do botão), não no ícone:
-        // só revela/esconde o texto, sem trocar de aba.
-        document.getElementById('adminTabbar').classList.toggle('tabbar-revealed');
-        return;
-      }
+    btn.addEventListener('click', function(){
       setActiveAdminTab(btn.dataset.tab);
     });
   });
-  setActiveAdminTab('gerador');
+  const openAnalytics = document.getElementById('mobileOpenAnalytics');
+  const backToMore = document.getElementById('analyticsBackToMore');
+  const openSettings = document.getElementById('mobileOpenSettings');
+  const openThemes = document.getElementById('mobileOpenThemes');
+  if(openAnalytics) openAnalytics.addEventListener('click', function(){ setActiveAdminTab('analytics'); });
+  if(backToMore) backToMore.addEventListener('click', function(){ setActiveAdminTab('mais'); });
+  if(openSettings) openSettings.addEventListener('click', function(){
+    const settings = document.getElementById('btnPanelSettings');
+    if(settings) settings.click();
+  });
+  if(openThemes) openThemes.addEventListener('click', function(){
+    const trigger = document.getElementById('temasSkillsSheetTrigger');
+    if(trigger) trigger.click();
+  });
+  let firstTab = 'gerador';
+  try{ firstTab = localStorage.getItem('sde_admin_active_tab') || 'gerador'; }catch(e){}
+  try{
+    const requestedTab = new URLSearchParams(window.location.search).get('tab');
+    if(requestedTab && ADMIN_TABS.indexOf(requestedTab) !== -1) firstTab = requestedTab;
+  }catch(e){}
+  if(!window.matchMedia('(max-width:600px)').matches && (firstTab === 'biblioteca' || firstTab === 'mais')) firstTab = 'gerador';
+  setActiveAdminTab(firstTab);
 }
 
 // ---------- Analytics dos jogos (aba Analytics) ----------
@@ -3013,6 +3137,8 @@ function setupClipboardPanel(){
     tabBtn.setAttribute('aria-expanded', 'false');
     setTimeout(function(){ if(!isOpen()) panel.hidden = true; }, 320);
   }
+  window.openMobileClipboard = openPanel;
+  window.closeMobileClipboard = closePanel;
 
   tabBtn.addEventListener('click', function(e){
     e.stopPropagation();
@@ -3020,6 +3146,7 @@ function setupClipboardPanel(){
   });
   closeBtn.addEventListener('click', closePanel);
   document.addEventListener('click', function(e){
+    if(panel.closest('#mobileLibraryMount')) return;
     if(isOpen() && !panel.contains(e.target) && e.target !== tabBtn) closePanel();
   });
 
@@ -3069,6 +3196,8 @@ function setupGalleryPanel(){
     tabBtn.setAttribute('aria-expanded', 'false');
     setTimeout(function(){ if(!isOpen()) panel.hidden = true; }, 320);
   }
+  window.openMobileGallery = openPanel;
+  window.closeMobileGallery = closePanel;
 
   tabBtn.addEventListener('click', function(e){
     e.stopPropagation();
@@ -3076,8 +3205,118 @@ function setupGalleryPanel(){
   });
   closeBtn.addEventListener('click', closePanel);
   document.addEventListener('click', function(e){
+    if(panel.closest('#mobileLibraryMount')) return;
     if(isOpen() && !panel.contains(e.target) && e.target !== tabBtn) closePanel();
   });
+}
+
+// ---------- Camada de experiência mobile: biblioteca, rascunho e teclado ----------
+function setupMobileAppExperience(){
+  const mq = window.matchMedia('(max-width:600px)');
+  const wrap = document.getElementById('clipboardPanelWrap');
+  const anchor = document.getElementById('clipboardPanelAnchor');
+  const mount = document.getElementById('mobileLibraryMount');
+  const galleryBtn = document.getElementById('mobileLibraryGallery');
+  const clipboardBtn = document.getElementById('mobileLibraryClipboard');
+  const galleryPanel = document.getElementById('galleryPanel');
+  const clipboardPanel = document.getElementById('clipboardPanel');
+  const movableOverlays = ['temasSkillsSheetBackdrop', 'temasSkillsSheet', 'newSkillModal'].map(function(id){
+    const el = document.getElementById(id);
+    if(!el) return null;
+    const marker = document.createComment(id + '-home');
+    el.parentNode.insertBefore(marker, el);
+    return { el:el, marker:marker };
+  }).filter(Boolean);
+
+  function selectLibraryPane(name){
+    const gallery = name !== 'clipboard';
+    if(galleryBtn){ galleryBtn.classList.toggle('active', gallery); galleryBtn.setAttribute('aria-selected', String(gallery)); }
+    if(clipboardBtn){ clipboardBtn.classList.toggle('active', !gallery); clipboardBtn.setAttribute('aria-selected', String(!gallery)); }
+    if(gallery){
+      if(window.closeMobileClipboard) window.closeMobileClipboard();
+      if(window.openMobileGallery) window.openMobileGallery();
+    }else{
+      if(window.closeMobileGallery) window.closeMobileGallery();
+      if(window.openMobileClipboard) window.openMobileClipboard();
+    }
+  }
+
+  function adaptLayout(){
+    if(!wrap || !anchor || !mount) return;
+    if(mq.matches){
+      if(wrap.parentNode !== mount) mount.appendChild(wrap);
+      movableOverlays.forEach(function(item){ if(item.el.parentNode !== document.body) document.body.appendChild(item.el); });
+      selectLibraryPane('gallery');
+    }else if(wrap.parentNode === mount){
+      anchor.parentNode.insertBefore(wrap, anchor.nextSibling);
+      movableOverlays.forEach(function(item){ item.marker.parentNode.insertBefore(item.el, item.marker.nextSibling); });
+      if(window.closeMobileClipboard) window.closeMobileClipboard();
+      if(window.closeMobileGallery) window.closeMobileGallery();
+    }
+  }
+  if(galleryBtn) galleryBtn.addEventListener('click', function(e){ e.stopPropagation(); selectLibraryPane('gallery'); });
+  if(clipboardBtn) clipboardBtn.addEventListener('click', function(e){ e.stopPropagation(); selectLibraryPane('clipboard'); });
+  if(mq.addEventListener) mq.addEventListener('change', adaptLayout); else mq.addListener(adaptLayout);
+  adaptLayout();
+
+  const fileInput = document.getElementById('galleryFileInput');
+  const fileName = document.getElementById('galleryFileName');
+  if(fileInput && fileName) fileInput.addEventListener('change', function(){
+    const count = fileInput.files ? fileInput.files.length : 0;
+    fileName.textContent = count ? (count === 1 ? fileInput.files[0].name : count + ' imagens selecionadas') : 'Nenhuma imagem escolhida';
+  });
+
+  const weeks = document.getElementById('cronCustomWeeks');
+  if(weeks && !weeks.closest('.mobile-number-control')){
+    const control = document.createElement('div');
+    control.className = 'mobile-number-control';
+    const minus = document.createElement('button');
+    const plus = document.createElement('button');
+    minus.type = plus.type = 'button';
+    minus.textContent = '−'; plus.textContent = '+';
+    minus.setAttribute('aria-label', 'Diminuir número de semanas');
+    plus.setAttribute('aria-label', 'Aumentar número de semanas');
+    weeks.parentNode.insertBefore(control, weeks);
+    control.appendChild(minus); control.appendChild(weeks); control.appendChild(plus);
+    function nudge(delta){
+      const min = Number(weeks.min) || 1;
+      const max = Number(weeks.max) || 26;
+      weeks.value = String(Math.max(min, Math.min(max, (Number(weeks.value) || min) + delta)));
+      weeks.dispatchEvent(new Event('change', { bubbles:true }));
+    }
+    minus.addEventListener('click', function(){ nudge(-1); });
+    plus.addEventListener('click', function(){ nudge(1); });
+  }
+
+  const draftFields = ['genTema', 'genTheme', 'genType', 'genPromptText'];
+  function saveDraft(){
+    const data = {};
+    draftFields.forEach(function(id){ const el = document.getElementById(id); if(el) data[id] = el.value; });
+    try{ localStorage.setItem('sde_admin_mobile_draft', JSON.stringify(data)); }catch(e){}
+  }
+  try{
+    const saved = JSON.parse(localStorage.getItem('sde_admin_mobile_draft') || '{}');
+    ['genTema', 'genPromptText'].forEach(function(id){ const el = document.getElementById(id); if(el && saved[id]) el.value = saved[id]; });
+  }catch(e){}
+  draftFields.forEach(function(id){
+    const el = document.getElementById(id);
+    if(el){ el.addEventListener('input', saveDraft); el.addEventListener('change', saveDraft); }
+  });
+
+  function updateNetwork(){
+    const status = document.getElementById('networkStatus');
+    if(status) status.textContent = navigator.onLine ? 'Online · alterações sincronizadas pela internet' : 'Sem conexão · o painel abrirá, mas os dados online ficam indisponíveis';
+  }
+  window.addEventListener('online', updateNetwork);
+  window.addEventListener('offline', updateNetwork);
+  updateNetwork();
+
+  if(window.visualViewport){
+    function updateKeyboard(){
+      document.body.classList.toggle('keyboard-open', window.innerHeight - window.visualViewport.height > 150);
+    }
+    window.visualViewport.addEventListener('resize', updateKeyboard);
+  }
 }
 
 // ================= Cronograma de Posts =================
@@ -3558,6 +3797,7 @@ setupAdminTabs();
 setupAnalyticsRefreshButton();
 setupClipboardPanel();
 setupGalleryPanel();
+setupMobileAppExperience();
 setupCronogramaTab();
 runLoginFlow();
 

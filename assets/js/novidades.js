@@ -185,7 +185,6 @@ function renderCardTeaser(post) {
       <span class="novidade-media"><img src="${escaparHtml(imagemDoPost(post))}" alt="" loading="lazy"></span>
       <span class="novidade-badge" style="background:${tema.cor}">${escaparHtml(tema.label)}</span>
       <h3>${escaparHtml(post.titulo)}</h3>
-      <p style="margin-top:0.5rem;">${escaparHtml(post.resumo)}</p>
       <span class="novidade-data">${formatarDataNovidade(post.created_at)}</span>
     </a>`;
 }

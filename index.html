@@ -70,7 +70,7 @@
             <div class="hero-content">
                 <span class="badge">Presencial, Domiciliar ou Online</span>
                 <h1>A estratégia exata para o sucesso escolar.</h1>
-                <p>Ajude seu filho a recuperar conteúdos, organizar a rotina e estudar com foco. Professores experientes em todas as disciplinas.</p>
+                <p class="hero-desc-mobile-hide">Ajude seu filho a recuperar conteúdos, organizar a rotina e estudar com foco. Professores experientes em todas as disciplinas.</p>
                 <a href="#contato" class="btn">Conhecer a Sala de Estudo</a>
             </div>
             <div class="hero-visual">
@@ -239,44 +239,57 @@
             <div class="bento-grid">
                 <!-- Card 1 (Main) -->
                 <div class="bento-card card-main">
-                    <div class="icon-box" style="background: transparent; border: 2px solid var(--color-yellow); color: var(--color-yellow);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                    <div class="bento-card-head bento-card-head--mobile-row bento-card-head--toggle" role="button" tabindex="0" aria-expanded="false" onclick="toggleBentoCard(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleBentoCard(this);}">
+                        <div class="icon-box" style="background: transparent; border: 2px solid var(--color-yellow); color: var(--color-yellow);">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                        </div>
+                        <h2>Reforço em Todas as Disciplinas</h2>
                     </div>
-                    <h2>Reforço em Todas as Disciplinas</h2>
-                    <p style="margin-top: 1rem;">Seja em Exatas, Humanas, ou Linguagens, acompanhamos o aluno para não acumular dúvidas. Formamos turmas com alunos do mesmo ano escolar para um estudo mais dinâmico.</p>
+                    <div class="bento-card-body">
+                        <p style="margin-top: 1rem;">Seja em Exatas, Humanas, ou Linguagens, acompanhamos o aluno para não acumular dúvidas. Formamos turmas com alunos do mesmo ano escolar para um estudo mais dinâmico.</p>
+                    </div>
                 </div>
 
                 <!-- Card 2 (Feature) -->
                 <div class="bento-card card-feature">
-                    <div class="icon-box">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <div class="bento-card-head bento-card-head--mobile-row bento-card-head--toggle" role="button" tabindex="0" aria-expanded="false" onclick="toggleBentoCard(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleBentoCard(this);}">
+                        <div class="icon-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        </div>
+                        <h3>Aulas Flexíveis</h3>
                     </div>
-                    <h3>Aulas Flexíveis</h3>
-                    <p style="margin-top: 0.5rem;">Presencial em cabines individuais, Domiciliar ou Online. Você escolhe!</p>
+                    <div class="bento-card-body">
+                        <p style="margin-top: 0.5rem;">Presencial em cabines individuais, Domiciliar ou Online. Você escolhe!</p>
+                    </div>
                 </div>
 
                 <div class="bento-card card-small">
-                    <div class="icon-box">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <div class="bento-card-head bento-card-head--mobile-row">
+                        <div class="icon-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        </div>
+                        <h3>Preparação SSA & ENEM</h3>
                     </div>
-                    <h3>Preparação SSA & ENEM</h3>
                 </div>
 
                 <div class="bento-card card-small">
-                    <div class="icon-box">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <div class="bento-card-head bento-card-head--mobile-row">
+                        <div class="icon-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        </div>
+                        <h3>Tira-Dúvidas Pontual</h3>
                     </div>
-                    <h3>Tira-Dúvidas Pontual</h3>
                 </div>
 
                 <!-- FAQ Matriz ENEM (Abaixo do conjunto) -->
                 <div class="bento-card card-full" style="grid-column: 1 / -1;">
-                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="bento-card-head bento-card-head--toggle" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;" role="button" tabindex="0" aria-expanded="false" onclick="toggleBentoCard(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleBentoCard(this);}">
                         <div class="icon-box" style="margin-bottom: 0;">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
                         </div>
                         <h3 style="margin-bottom: 0;">Matriz de Disciplinas do ENEM</h3>
                     </div>
+                    <div class="bento-card-body">
                     <div class="mini-faq">
                         <div class="mini-faq-item">
                             <div class="mini-faq-q" role="button" tabindex="0" aria-expanded="false" onclick="toggleMiniFaq(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleMiniFaq(this);}">Linguagens e suas Tecnologias <span>+</span></div>
@@ -295,6 +308,7 @@
                             <div class="mini-faq-a">História, Geografia, Filosofia e Sociologia.</div>
                         </div>
                     </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -307,7 +321,7 @@
             </div>
             <div class="about-text">
                 <p>Sou a <strong>Profª Rubia Lima</strong>, proprietária e professora responsável pelo Reforço Escolar Sala de Estudo.</p>
-                <p>O sucesso escolar verdadeiro vai muito além de uma única matéria. É por isso que oferecemos suporte especializado e professores experientes em <strong>todas as disciplinas</strong>. Nossa missão é guiar o aluno para que ele compreenda a lógica de cada conteúdo, deixando a decoreba de lado para finalmente aprender a pensar e resolver problemas com segurança.</p>
+                <p>Nossa missão é guiar o aluno para que ele compreenda a lógica de cada conteúdo, deixando a decoreba de lado para finalmente aprender a pensar e resolver problemas com segurança.</p>
                 <p>Seja bem-vindo a um ambiente projetado para resultados.</p>
             </div>
         </div>
@@ -354,14 +368,14 @@
                 <div class="contact-grid">
                     <div class="contact-info">
                         <h2>Pronto para ver a diferença?</h2>
-                        <p>Agende uma conversa rápida no WhatsApp para marcarmos as aulas.</p>
+                        <p class="footer-cta-text">Agende uma conversa rápida no WhatsApp para marcarmos as aulas.</p>
                         <div style="margin: 1.5rem 0;">
                             <a href="https://wa.me/5581999824123" class="btn" style="background:#25D366; color:#FFF; border-color:#25D366; box-shadow: -4px 4px 0 #128C7E;">Falar no WhatsApp</a>
                         </div>
                         
                         <div style="margin-top: 1rem;">
-                            <p style="margin-bottom: 0.5rem; font-size: 1.1rem;"><strong>Endereço:</strong><br>Rua Antenor Navarro, 81 - Sala 108<br>Galeria Estação Jaqueira, Recife - PE</p>
-                            <p style="font-size: 1.1rem;"><strong>Telefone:</strong> (81) 99982-4123</p>
+                            <p class="footer-address" style="margin-bottom: 0.5rem; font-size: 1.1rem;"><strong>Endereço:</strong> <br class="footer-address-br1">Rua Antenor Navarro, 81 - Sala 108<br>Galeria Estação Jaqueira, Recife - PE</p>
+                            <p style="font-size: 1.1rem;"><strong>Telefone:</strong> <a href="https://wa.me/5581999824123" target="_blank" rel="noopener" class="footer-phone-link">(81) 99982-4123</a></p>
                         </div>
                     </div>
 
@@ -374,7 +388,7 @@
 
                 <div class="footer-bottom">
                     <div class="footer-bottom-left">
-                        <span>&copy; 2026 Sala de Estudo - Profª Rubia Lima</span>
+                        <span class="footer-copy-text">&copy; 2026 Sala de Estudo - Profª Rubia Lima</span>
                         <div class="admin-gate" id="adminGate">
                             <a href="admin.html" class="admin-link" id="adminLink">ADMIN</a>
                             <div class="admin-totp-reveal" id="adminTotpReveal">
@@ -413,6 +427,16 @@
             const answer = element.parentElement.querySelector('.faq-a');
             const isOpen = answer.style.display === 'block';
             answer.style.display = isOpen ? 'none' : 'block';
+            element.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+        }
+        // Cards de disciplinas (mobile): ícone + título viram um botão que
+        // abre/fecha o conteúdo abaixo (só tem efeito visual no mobile —
+        // no desktop o conteúdo já fica sempre visível via CSS).
+        function toggleBentoCard(element) {
+            const body = element.nextElementSibling;
+            if (!body || !body.classList.contains('bento-card-body')) return;
+            const isOpen = body.classList.contains('bento-card-body--open');
+            body.classList.toggle('bento-card-body--open', !isOpen);
             element.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
         }
     </script>
@@ -919,6 +943,20 @@
         // no celular, então uma classe CSS sozinha não consegue movê-lo:
         // o encaixe no canto é feito com estilo inline e desfeito depois.
         let dockSaved = null;
+        const reduceMotionAssist = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // Move o celular flutuando até o ponto final (nunca "teleporta"):
+        // com GSAP, anima left/top suavemente; sem GSAP (ou com
+        // reduced-motion), aplica direto, sem quebrar a função.
+        function floatTo(left, top){
+          if(window.gsap && !reduceMotionAssist){
+            gsap.to(btn, { left: left, top: top, duration: 0.6, ease: 'power2.inOut', overwrite: 'auto' });
+          } else {
+            btn.style.left = left + 'px';
+            btn.style.top = top + 'px';
+          }
+        }
+        // Retorna a posição-alvo (pra quem chamou poder calcular onde o
+        // balão vai ficar sem esperar a animação de flutuar terminar).
         function setDock(on){
           if(on){
             if(!dockSaved){
@@ -926,16 +964,25 @@
             }
             btn.classList.add('wa-btn-docked');
             btn.style.marginTop = '0px';
-            btn.style.left = '10px';
-            btn.style.top = Math.max(10, window.innerHeight - btn.offsetHeight - 10) + 'px';
+            const isMobileCorner = window.matchMedia('(max-width: 768px)').matches;
+            const left = isMobileCorner
+              ? Math.max(10, window.innerWidth - btn.offsetWidth - 14)
+              : 10;
+            const top = Math.max(10, window.innerHeight - btn.offsetHeight - 10);
+            floatTo(left, top);
+            return { left: left, top: top, width: btn.offsetWidth, height: btn.offsetHeight };
           } else {
             btn.classList.remove('wa-btn-docked');
             if(dockSaved){
-              btn.style.top = dockSaved.top;
-              btn.style.left = dockSaved.left;
+              const left = parseFloat(dockSaved.left);
+              const top = parseFloat(dockSaved.top);
               btn.style.marginTop = dockSaved.marginTop;
+              if(!isNaN(left) && !isNaN(top)){
+                floatTo(left, top);
+              }
               dockSaved = null;
             }
+            return null;
           }
         }
 
@@ -965,9 +1012,13 @@
             docked = true;
             // Telas estreitas: o celular está no meio da tela e o balão
             // não cabe em nenhum lado sem cobri-lo. Encostamos o celular
-            // no canto inferior e o balão fala de cima dele.
-            setDock(true);
-            rect = btn.getBoundingClientRect();
+            // no canto inferior e o balão fala de cima dele. O celular
+            // ainda está flutuando até lá (floatTo), então usamos a
+            // posição-alvo já calculada em vez de esperar a animação.
+            const target = setDock(true);
+            rect = target
+              ? new DOMRect(target.left, target.top, target.width, target.height)
+              : btn.getBoundingClientRect();
             side = bestSide(rect, popupWidth, popupHeight, vw, vh, margin, gap) || 'above';
           }
 

@@ -3,7 +3,7 @@
 // rápido e funcionar como app instalável. Tudo que é dado (Supabase,
 // APIs, imagens da galeria hospedadas) sempre vai direto pra rede —
 // nunca fica em cache, pra nunca mostrar conteúdo desatualizado.
-const CACHE_NAME = 'sde-admin-shell-v2'; // v2: arquivos foram para assets/
+const CACHE_NAME = 'sde-admin-shell-v3'; // v3: navegação e controles mobile no estilo app
 const SHELL_FILES = [
   'admin.html',
   'assets/css/styles.css',

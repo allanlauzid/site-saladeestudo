@@ -561,6 +561,7 @@
   var mobileLandscapeIntroTimer = null;
   var mobileFullscreenOwned = false;
   var landscapeRequestToken = 0;
+  var landscapeSceneFitActive = false;
   var floatingPieceStates = [];
   var activeRound = null;
   var floatingAnimations = [];
@@ -978,7 +979,88 @@
     if (!isExitControlEvent(event)) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    resetHangmanAnimation();
+    showExitConfirmModal();
+  }
+
+  /* Confirmação antes de sair do jogo (clique no X): funciona igual no
+     desktop e no mobile -- so troca "resetHangmanAnimation()" direto por
+     essa pergunta antes. */
+  var exitConfirmModal = null;
+
+  function ensureExitConfirmModal() {
+    if (exitConfirmModal && exitConfirmModal.isConnected) return exitConfirmModal;
+
+    exitConfirmModal = document.createElement('div');
+    exitConfirmModal.id = 'hangman-exit-confirm';
+    exitConfirmModal.setAttribute('role', 'alertdialog');
+    exitConfirmModal.setAttribute('aria-modal', 'true');
+    exitConfirmModal.setAttribute('aria-labelledby', 'hangman-exit-confirm-title');
+    exitConfirmModal.style.cssText = [
+      'display:none',
+      'position:fixed',
+      'inset:0',
+      'z-index:23000',
+      'align-items:center',
+      'justify-content:center',
+      'padding:24px',
+      'background:rgba(17,24,39,.55)',
+      'font-family:Inter,Arial,sans-serif',
+      'text-align:center'
+    ].join(';');
+    exitConfirmModal.innerHTML =
+      '<div style="width:min(92vw,380px);padding:26px 22px 22px;border-radius:20px;background:#fff;border:3px solid #0055d4;box-shadow:0 20px 60px rgba(0,20,60,.35)">' +
+        '<strong id="hangman-exit-confirm-title" style="display:block;font:800 21px/1.2 Outfit,Inter,sans-serif;color:#0055d4;margin-bottom:8px">Sair do jogo?</strong>' +
+        '<span style="display:block;font-size:15px;line-height:1.4;color:#374151;margin-bottom:20px">Se você sair agora, o progresso desta rodada da forca será perdido.</span>' +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">' +
+          '<button type="button" id="hangman-exit-confirm-stay" style="flex:1 1 140px;padding:12px 14px;border-radius:10px;border:2px solid #0055d4;background:#ffd100;color:#0055d4;font:800 15px/1 Outfit,Inter,sans-serif;cursor:pointer">Continuar jogando</button>' +
+          '<button type="button" id="hangman-exit-confirm-leave" style="flex:1 1 140px;padding:12px 14px;border-radius:10px;border:2px solid #dc2626;background:#fff;color:#dc2626;font:800 15px/1 Outfit,Inter,sans-serif;cursor:pointer">Sair do jogo</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(exitConfirmModal);
+
+    exitConfirmModal.querySelector('#hangman-exit-confirm-stay').addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      hideExitConfirmModal();
+    });
+    exitConfirmModal.querySelector('#hangman-exit-confirm-leave').addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      hideExitConfirmModal();
+      resetHangmanAnimation();
+    });
+    // Clicar no fundo escurecido fora do cartão também cancela (continua no jogo).
+    exitConfirmModal.addEventListener('click', function (event) {
+      if (event.target === exitConfirmModal) hideExitConfirmModal();
+    });
+
+    return exitConfirmModal;
+  }
+
+  function showExitConfirmModal() {
+    var modal = ensureExitConfirmModal();
+    modal.style.display = 'flex';
+    if (activeTimeline && !activeTimeline.paused()) {
+      exitConfirmPausedTimeline = true;
+      activeTimeline.pause();
+    }
+    document.addEventListener('keydown', handleExitConfirmEscape, true);
+  }
+
+  var exitConfirmPausedTimeline = false;
+
+  function hideExitConfirmModal() {
+    if (!exitConfirmModal) return;
+    exitConfirmModal.style.display = 'none';
+    if (exitConfirmPausedTimeline && activeTimeline) {
+      activeTimeline.resume();
+    }
+    exitConfirmPausedTimeline = false;
+    document.removeEventListener('keydown', handleExitConfirmEscape, true);
+  }
+
+  function handleExitConfirmEscape(event) {
+    if (event.key === 'Escape') hideExitConfirmModal();
   }
 
   function ensureExitControl() {
@@ -1052,7 +1134,7 @@
     if (!mobileLandscapeActive) return;
     if (mobileLandscapeIntroElapsed && isLandscapeViewport()) return;
     if (event.target && event.target.closest &&
-        event.target.closest('#hangman-exit-control')) return;
+        (event.target.closest('#hangman-exit-control') || event.target.closest('#hangman-exit-confirm'))) return;
     event.preventDefault();
     event.stopPropagation();
   }
@@ -1166,6 +1248,13 @@
     } else if (activeTimeline.paused()) {
       activeTimeline.resume();
     }
+
+    // A cena (forca + boneco) ja tinha sido encaixada nesta orientacao antes
+    // (ex: o celular girou de novo, ou a janela mudou de tamanho) -- refaz o
+    // encaixe pro novo tamanho de tela em vez de deixar a escala antiga.
+    if (landscapeSceneFitActive) {
+      applyLandscapeSceneFit(activeParts);
+    }
   }
 
   function tryOrientationLock() {
@@ -1252,13 +1341,12 @@
     window.removeEventListener('resize', updateMobileLandscapeState);
     window.removeEventListener('orientationchange', updateMobileLandscapeState);
     detachLandscapeBlockers();
-    hideLandscapeOverlay();
+    clearLandscapeSceneFit(activeParts);
 
-    if (landscapeOverlay && landscapeOverlay.parentNode) {
-      landscapeOverlay.parentNode.removeChild(landscapeOverlay);
-      landscapeOverlay = null;
-    }
-
+    // A trava de orientacao/fullscreen e liberada AGORA -- se esperasse o
+    // celular estar fisicamente vertical (abaixo) pra so entao liberar,
+    // nunca aconteceria: a trava impede a orientacao de mudar em primeiro
+    // lugar.
     var orientation = window.screen && window.screen.orientation;
     if (hadMobileLandscapeSession && orientation && typeof orientation.unlock === 'function') {
       try { orientation.unlock(); } catch (error) { /* Sem suporte no navegador. */ }
@@ -1276,6 +1364,43 @@
           }
         } catch (error) { /* A saída pode já ter sido feita pelo usuário. */ }
       }
+    }
+
+    // O jogo terminou (ou foi encerrado) com o celular ainda de lado: pede
+    // pra girar de volta antes de devolver o site normal, em vez de deixar
+    // o layout de retrato aparecer torto numa tela ainda em paisagem.
+    if (hadMobileLandscapeSession && isMobileDevice() && isLandscapeViewport()) {
+      showReturnToPortraitPrompt();
+    } else {
+      hideLandscapeOverlay();
+      if (landscapeOverlay && landscapeOverlay.parentNode) {
+        landscapeOverlay.parentNode.removeChild(landscapeOverlay);
+        landscapeOverlay = null;
+      }
+    }
+  }
+
+  function showReturnToPortraitPrompt() {
+    var overlay = ensureLandscapeOverlay();
+    var title = overlay.querySelector('#hangman-landscape-title');
+    var message = overlay.querySelector('#hangman-landscape-message');
+    if (title) title.textContent = 'Gire de volta';
+    if (message) {
+      message.textContent = 'Volte o celular para a posição vertical para continuar navegando no site.';
+    }
+    overlay.style.display = 'flex';
+    window.addEventListener('resize', handleReturnToPortraitCheck);
+    window.addEventListener('orientationchange', handleReturnToPortraitCheck);
+  }
+
+  function handleReturnToPortraitCheck() {
+    if (isLandscapeViewport()) return;
+    window.removeEventListener('resize', handleReturnToPortraitCheck);
+    window.removeEventListener('orientationchange', handleReturnToPortraitCheck);
+    hideLandscapeOverlay();
+    if (landscapeOverlay && landscapeOverlay.parentNode) {
+      landscapeOverlay.parentNode.removeChild(landscapeOverlay);
+      landscapeOverlay = null;
     }
   }
 
@@ -1999,6 +2124,82 @@
     return pageCamera;
   }
 
+  /* Em celulares girados pra paisagem, a tela fica baixa demais pro
+     enquadramento pensado originalmente pra retrato: a forca, o boneco e o
+     tracejado das letras acabam nascendo fora da faixa vertical visivel
+     (ver historico do bug). Em vez de mexer na "camera" que desloca a
+     pagina inteira -- o que arrastaria junto pedacos de outras secoes do
+     site pra dentro do enquadramento -- este ajuste encolhe e reposiciona
+     só o SVG do mascote (parts.svg), que e o unico elemento que carrega a
+     forca/boneco/tracejado. Assim o resto da pagina (incluindo o fundo
+     quadriculado que já escondia o conteudo) continua exatamente como
+     estava. */
+  function computeLandscapeSceneFit(parts) {
+    if (!parts || !parts.svg) return null;
+    var candidates = [parts.gallows, parts.slots].filter(function (el) {
+      return !!el;
+    });
+    var rects = candidates.map(function (el) {
+      return el.getBoundingClientRect();
+    }).filter(function (r) {
+      return r.width > 0 || r.height > 0;
+    });
+    if (!rects.length) return null;
+
+    var left = Math.min.apply(null, rects.map(function (r) { return r.left; }));
+    var top = Math.min.apply(null, rects.map(function (r) { return r.top; }));
+    var right = Math.max.apply(null, rects.map(function (r) { return r.right; }));
+    var bottom = Math.max.apply(null, rects.map(function (r) { return r.bottom; }));
+    var sceneWidth = right - left;
+    var sceneHeight = bottom - top;
+    if (sceneWidth <= 0 || sceneHeight <= 0) return null;
+
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var marginX = Math.max(16, vw * 0.05);
+    var targetLeft = marginX;
+    var targetRight = vw - marginX;
+    // Reserva a faixa de cima (topico) e deixa o resto pro palco -- o
+    // teclado/dicas ficam por cima (HUD com z-index proprio) e nao
+    // precisam de uma faixa exclusiva.
+    var targetTop = vh * 0.30;
+    var targetBottom = vh * 0.92;
+    var targetWidth = targetRight - targetLeft;
+    var targetHeight = targetBottom - targetTop;
+    if (targetWidth <= 0 || targetHeight <= 0) return null;
+
+    var scale = Math.min(targetWidth / sceneWidth, targetHeight / sceneHeight, 1);
+    var scaledWidth = sceneWidth * scale;
+    var scaledHeight = sceneHeight * scale;
+    var scaledLeft = targetLeft + (targetWidth - scaledWidth) / 2;
+    var scaledTop = targetTop + (targetHeight - scaledHeight) / 2;
+
+    var svgRect = parts.svg.getBoundingClientRect();
+
+    return {
+      scale: scale,
+      tx: scaledLeft - svgRect.left - (left - svgRect.left) * scale,
+      ty: scaledTop - svgRect.top - (top - svgRect.top) * scale
+    };
+  }
+
+  function applyLandscapeSceneFit(parts) {
+    if (!parts || !parts.svg) return;
+    // Mede sempre a partir do estado neutro, senao a proxima medicao ja
+    // consideraria a escala da vez anterior.
+    parts.svg.style.transform = '';
+    var fit = computeLandscapeSceneFit(parts);
+    if (!fit) return;
+    parts.svg.style.transformOrigin = '0 0';
+    parts.svg.style.transform = 'translate(' + fit.tx.toFixed(2) + 'px, ' + fit.ty.toFixed(2) + 'px) scale(' + fit.scale.toFixed(4) + ')';
+    landscapeSceneFitActive = true;
+  }
+
+  function clearLandscapeSceneFit(parts) {
+    if (parts && parts.svg) parts.svg.style.transform = '';
+    landscapeSceneFitActive = false;
+  }
+
   function collectParts() {
     var parts = {
       restCharacter: document.getElementById('rest-character'),
@@ -2415,6 +2616,13 @@
     timeline.addLabel('gallows-reveal', 'walk-complete');
     timeline.call(function () {
       document.dispatchEvent(new CustomEvent('hangman:gallows-revealed'));
+      // Assim que a forca termina de aparecer e a fase de adivinhar comeca,
+      // encaixa a cena na tela caso o jogo esteja girado pra paisagem no
+      // celular -- antes disso o boneco ainda esta andando e a posicao final
+      // nao esta pronta pra medir.
+      if (mobileLandscapeActive && isLandscapeViewport()) {
+        applyLandscapeSceneFit(activeParts);
+      }
     }, null, 'gallows-reveal');
 
     /* O avanço rápido só existe para deixar a caminhada opcional; a partir
@@ -2501,6 +2709,11 @@
     activeParts = parts;
     releaseMobileLandscapeMode();
     removeExitControl();
+    hideExitConfirmModal();
+    if (exitConfirmModal && exitConfirmModal.parentNode) {
+      exitConfirmModal.parentNode.removeChild(exitConfirmModal);
+      exitConfirmModal = null;
+    }
 
     if (activeTimeline) {
       activeTimeline.timeScale(1);

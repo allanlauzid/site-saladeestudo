@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Painel Admin - Sala de Estudo</title>
 <!-- PWA: instalável como app próprio, com seu próprio ícone/tela cheia.
      O botão "Voltar ao site" continua sendo um link normal (mesma
@@ -21,7 +21,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&family=Permanent+Marker&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/styles.css">
 <link rel="stylesheet" href="assets/css/admin-gallery.css">
-<link rel="stylesheet" href="assets/css/admin.css?v=1">
+<link rel="stylesheet" href="assets/css/admin.css?v=6">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -179,9 +179,12 @@
 
     <!-- Indicador de progresso: só aparece no mobile (assistente por etapas). -->
     <div class="wizard-progress" id="genWizardProgress">
-      <span class="dot active" data-step="1"></span>
-      <span class="dot" data-step="2"></span>
-      <span class="dot" data-step="3"></span>
+      <div class="wizard-progress-copy"><strong id="wizardStepCount">Etapa 1 de 3</strong><span id="wizardStepName">Conteúdo e tema</span></div>
+      <div class="wizard-progress-dots" aria-hidden="true">
+        <span class="dot active" data-step="1"></span>
+        <span class="dot" data-step="2"></span>
+        <span class="dot" data-step="3"></span>
+      </div>
     </div>
 
     <!-- ETAPA 1: Tipo de conteúdo + Tema -->
@@ -225,6 +228,11 @@
         <button type="button" class="abtn secondary" id="genThemeFullscreenBack">&#8249; Voltar</button>
       </div>
       <h2 class="theme-fullscreen-title">Selecione um tema</h2>
+      <label class="theme-search-wrap" for="genThemeSearch">
+        <span class="sr-only">Pesquisar tema</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+        <input type="search" id="genThemeSearch" placeholder="Pesquisar tema" autocomplete="off">
+      </label>
       <div class="theme-fullscreen-list" id="genThemeFullscreenList"></div>
     </div>
 
@@ -316,6 +324,11 @@
       </div>
 
       <button class="abtn secondary wizard-tab-btn wizard-tab-left" type="button" data-wizard-goto="2">Voltar</button>
+    </div>
+
+    <div class="wizard-actionbar" id="wizardActionbar" aria-label="Ações da etapa">
+      <button class="abtn secondary" id="wizardMobileBack" type="button">Voltar</button>
+      <button class="abtn" id="wizardMobileNext" type="button">Continuar</button>
     </div>
   </div>
 
@@ -662,6 +675,7 @@
   <!-- ANALYTICS (JOGOS) (aba) -->
   <div class="admin-tab-panel" id="tabPanelAnalytics" hidden>
     <div class="admin-card">
+      <button class="abtn secondary small mobile-back-more" id="analyticsBackToMore" type="button">&#8249; Mais</button>
       <h2>Analytics dos jogos</h2>
       <p class="admin-desc">Estatísticas dos easter eggs (jogo-da-velha e forca) no site público.</p>
       <div class="admin-status" id="gameAnalyticsStatus" aria-live="polite"></div>
@@ -672,35 +686,69 @@
     </div>
   </div>
 
+  <div class="admin-tab-panel mobile-app-panel" id="tabPanelBiblioteca" hidden>
+    <div class="mobile-screen-head">
+      <div><h2>Biblioteca</h2><p>Imagens e conteúdos copiados</p></div>
+    </div>
+    <div class="mobile-segmented" role="tablist" aria-label="Conteúdo da biblioteca">
+      <button class="active" id="mobileLibraryGallery" type="button" role="tab" aria-selected="true">Galeria</button>
+      <button id="mobileLibraryClipboard" type="button" role="tab" aria-selected="false">Copiados</button>
+    </div>
+    <div id="mobileLibraryMount"></div>
+  </div>
+
+  <div class="admin-tab-panel mobile-app-panel" id="tabPanelMais" hidden>
+    <div class="mobile-screen-head"><div><h2>Mais ferramentas</h2><p>Gestão e configurações do painel</p></div></div>
+    <div class="mobile-more-grid">
+      <button type="button" id="mobileOpenThemes"><span class="mobile-more-icon">Aa</span><span><strong>Prompts e temas</strong><small>Criar, editar e organizar skills</small></span><b>&rsaquo;</b></button>
+      <button type="button" id="mobileOpenAnalytics"><span class="mobile-more-icon">↗</span><span><strong>Analytics</strong><small>Desempenho dos jogos</small></span><b>&rsaquo;</b></button>
+      <button type="button" id="mobileOpenSettings"><span class="mobile-more-icon">⚙</span><span><strong>Configurações</strong><small>Acessos e segurança</small></span><b>&rsaquo;</b></button>
+    </div>
+    <p class="network-status" id="networkStatus" role="status" aria-live="polite"></p>
+  </div>
+
   <nav class="admin-tabbar" id="adminTabbar">
     <button class="admin-tab-btn" type="button" data-tab="gerador">
       <span class="admin-tab-btn-content">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l1.6 4.8L18 8l-4.4 1.6L12 14l-1.6-4.4L6 8l4.4-1.2z"/><path d="M19 14l0.8 2.2L22 17l-2.2 0.8L19 20l-0.8-2.2L16 17l2.2-0.8z"/></svg>
-        <span class="admin-tab-label">Gerador de conteúdo</span>
+        <span class="admin-tab-label" data-mobile-label="Criar">Gerador de conteúdo</span>
       </span>
     </button>
     <button class="admin-tab-btn" type="button" data-tab="cronograma">
       <span class="admin-tab-btn-content">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="8" cy="15" r="1.4"/><circle cx="12" cy="15" r="1.4"/><circle cx="16" cy="15" r="1.4"/></svg>
-        <span class="admin-tab-label">Cronograma de Posts</span>
+        <span class="admin-tab-label" data-mobile-label="Cronograma">Cronograma de Posts</span>
       </span>
     </button>
     <button class="admin-tab-btn" type="button" data-tab="exercicios">
       <span class="admin-tab-btn-content">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 11 17 15 12.5"/></svg>
-        <span class="admin-tab-label">Resolução de exercícios</span>
+        <span class="admin-tab-label" data-mobile-label="Exercícios">Resolução de exercícios</span>
       </span>
     </button>
-    <button class="admin-tab-btn" type="button" data-tab="analytics">
+    <button class="admin-tab-btn mobile-nav-only" type="button" data-tab="biblioteca">
+      <span class="admin-tab-btn-content">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 9h18"/></svg>
+        <span class="admin-tab-label">Biblioteca</span>
+      </span>
+    </button>
+    <button class="admin-tab-btn desktop-nav-only" type="button" data-tab="analytics">
       <span class="admin-tab-btn-content">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="20" x2="20" y2="20"/><rect x="5" y="13" width="3" height="7"/><rect x="10.5" y="9" width="3" height="11"/><rect x="16" y="4" width="3" height="16"/></svg>
         <span class="admin-tab-label">Analytics (jogos)</span>
+      </span>
+    </button>
+    <button class="admin-tab-btn mobile-nav-only" type="button" data-tab="mais">
+      <span class="admin-tab-btn-content">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        <span class="admin-tab-label">Mais</span>
       </span>
     </button>
   </nav>
 
 </div>
 
+<span id="clipboardPanelAnchor" hidden></span>
 <div id="clipboardPanelWrap">
   <button class="clipboard-tab" id="clipboardTabBtn" type="button" aria-expanded="false" aria-controls="clipboardPanel">
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
@@ -732,6 +780,7 @@
 
     <div class="gallery-upload">
       <input type="file" id="galleryFileInput" class="gallery-file-input" accept="image/png" multiple>
+      <label class="gallery-file-picker" for="galleryFileInput"><span>Escolher imagens</span><small id="galleryFileName">Nenhuma imagem escolhida</small></label>
       <button class="abtn" id="btnGalleryUpload" type="button" style="width:100%; justify-content:center;">+ Adicionar imagem</button>
     </div>
     <div class="admin-status" id="galleryStatus" aria-live="polite" style="margin:10px 0;"></div>
@@ -744,6 +793,6 @@
      gerador de imagem: cada uma vira window.POST_IMAGE_ASSETS.<chave>. -->
 <script src="assets/js/post-image-assets.js"></script>
 <script src="assets/js/admin-gallery.js"></script>
-<script src="assets/js/admin.js?v=1"></script>
+<script src="assets/js/admin.js?v=6"></script>
 </body>
 </html>

@@ -71,9 +71,17 @@
     return wrapper;
   }
 
-  function shiftPageBy(px) {
+  // No desktop so faz sentido empurrar a pagina de lado (o tabuleiro cabe
+  // na largura). No mobile a tela e estreita, entao alem de tentar de
+  // lado tambem tentamos empurrar pra cima/baixo (a pagina e comprida).
+  var IS_MOBILE_LAYOUT = window.matchMedia('(max-width: 768px)').matches;
+
+  function shiftPageBy(dx, dy) {
     var wrapper = ensurePageShiftWrapper();
-    wrapper.style.transform = px ? 'translateX(' + px + 'px)' : '';
+    var parts = [];
+    if (dx) parts.push('translateX(' + dx + 'px)');
+    if (dy) parts.push('translateY(' + dy + 'px)');
+    wrapper.style.transform = parts.join(' ');
   }
 
   // ---------------------------------------------------------------------
@@ -208,21 +216,20 @@
     return !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
   }
 
-  function boardRectAt(cx, cy, shiftX) {
+  function boardRectAt(cx, cy) {
     var half = BOARD_SIZE / 2 + BOARD_MARGIN;
     return {
       left: cx - half,
       right: cx + half,
       top: cy - half - CLOSE_BTN_TOP_RESERVE, // reserva espaco pro botao de fechar, que fica acima do tabuleiro
       bottom: cy + half,
-      shiftX: shiftX || 0,
     };
   }
 
-  function fitsWithoutOverlap(candidate, contentRects, shiftX) {
+  function fitsWithoutOverlap(candidate, contentRects, shiftX, shiftY) {
     for (var i = 0; i < contentRects.length; i++) {
       var r = contentRects[i];
-      var shifted = { left: r.left + shiftX, right: r.right + shiftX, top: r.top, bottom: r.bottom };
+      var shifted = { left: r.left + shiftX, right: r.right + shiftX, top: r.top + shiftY, bottom: r.bottom + shiftY };
       if (rectsOverlap(candidate, shifted)) return false;
     }
     // tambem nao pode ficar fora da viewport horizontalmente
@@ -230,21 +237,32 @@
     return true;
   }
 
-  // Retorna o deslocamento horizontal minimo (podendo ser 0) necessario
-  // para que o tabuleiro, ancorado em (cx,cy), caiba sem sobrepor conteudo.
+  // Retorna o deslocamento minimo (podendo ser {x:0,y:0}) necessario para
+  // que o tabuleiro, ancorado em (cx,cy), caiba sem sobrepor conteudo.
+  // No desktop so testa o eixo horizontal (like antes). No mobile, se o
+  // horizontal nao encontrar espaco (tela estreita raramente tem sobra
+  // dos lados), tenta empurrar o conteudo pra cima/baixo em vez disso.
   function findShiftForBoard(cx, cy) {
     var contentRects = getContentRects();
-    var candidate = boardRectAt(cx, cy, 0);
+    var candidate = boardRectAt(cx, cy);
 
-    if (fitsWithoutOverlap(candidate, contentRects, 0)) return 0;
+    if (fitsWithoutOverlap(candidate, contentRects, 0, 0)) return { x: 0, y: 0 };
 
     var STEP = 30;
     var MAX = 900;
     for (var d = STEP; d <= MAX; d += STEP) {
-      if (fitsWithoutOverlap(candidate, contentRects, d)) return d;
-      if (fitsWithoutOverlap(candidate, contentRects, -d)) return -d;
+      if (fitsWithoutOverlap(candidate, contentRects, d, 0)) return { x: d, y: 0 };
+      if (fitsWithoutOverlap(candidate, contentRects, -d, 0)) return { x: -d, y: 0 };
     }
-    return 0; // nao achou espaco livre em nenhum lado -- desiste do deslocamento
+
+    if (IS_MOBILE_LAYOUT) {
+      for (var dy = STEP; dy <= MAX; dy += STEP) {
+        if (fitsWithoutOverlap(candidate, contentRects, 0, dy)) return { x: 0, y: dy };
+        if (fitsWithoutOverlap(candidate, contentRects, 0, -dy)) return { x: 0, y: -dy };
+      }
+    }
+
+    return { x: 0, y: 0 }; // nao achou espaco livre em nenhum lado -- desiste do deslocamento
   }
 
   // ---------------------------------------------------------------------
@@ -315,11 +333,11 @@
     clientX = clamped.x;
     clientY = clamped.y;
 
-    var shiftX = findShiftForBoard(clientX, clientY);
-    shiftPageBy(shiftX);
+    var shift = findShiftForBoard(clientX, clientY);
+    shiftPageBy(shift.x, shift.y);
 
     // espera a transicao de deslocamento (se houver) antes de fixar a posicao do tabuleiro
-    var delay = shiftX ? 620 : 0;
+    var delay = (shift.x || shift.y) ? 620 : 0;
     setTimeout(function () {
       renderBoard(clientX, clientY);
     }, delay);
@@ -675,7 +693,7 @@
   function closeGame() {
     var layer = document.getElementById('ticTacToeLayer');
     if (layer && layer.parentNode) layer.parentNode.removeChild(layer);
-    shiftPageBy(0);
+    shiftPageBy(0, 0);
     gameActive = false;
   }
 
