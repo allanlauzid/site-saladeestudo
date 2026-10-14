@@ -19,10 +19,10 @@ const SUPABASE_URL = 'https://fesejrbindspzafiyssm.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_mGEU6ouQVdIt1G97ENAq_w_tX8uknCK';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Shared technical account used as the underlying identity for everyone.
-// Not a secret in itself — the real security boundary is each person's TOTP factor.
+// Conta tecnica compartilhada, usada como identidade base de todo mundo.
+// So o e-mail fica aqui (nao e segredo). A senha NAO fica no codigo: e digitada
+// na tela de login, antes do codigo do autenticador (TOTP).
 const SHARED_EMAIL = 'kupimdigital@gmail.com';
-const SHARED_PASSWORD = 'Supabase91!';
 
 const LS_MODEL_TEXT = 'se_admin_model_text'; // kept for in-memory fallback labels only
 const LS_MODEL_IMAGE = 'se_admin_model_image';
@@ -1018,14 +1018,20 @@ function runExternalExecution(state, provider = 'chatgpt'){
   copyText(state.prompt);
   
   if (provider === 'claude') {
-    window.open('https://claude.ai/new?q=' + encodeURIComponent(state.prompt), '_blank', 'noopener');
-    statusEl.textContent = 'Prompt aberto no Claude (se a caixa estiver vazia, cole usando Ctrl+V).';
+    const ok = openAiWithPrompt('https://claude.ai/new?q=', state.prompt);
+    statusEl.textContent = ok
+      ? 'Prompt copiado e aberto no Claude. Se a caixa estiver vazia, cole com Ctrl+V.'
+      : 'Prompt copiado. O navegador bloqueou a nova aba: libere pop-ups e cole com Ctrl+V.';
   } else if (provider === 'gemini') {
-    window.open('https://gemini.google.com/', '_blank', 'noopener');
-    statusEl.textContent = 'Prompt copiado. Cole na aba do Gemini que foi aberta (Ctrl+V).';
+    const ok = openAiWithPrompt('https://gemini.google.com/', state.prompt);
+    statusEl.textContent = ok
+      ? 'Prompt copiado. Cole na aba do Gemini que foi aberta (Ctrl+V).'
+      : 'Prompt copiado. O navegador bloqueou a nova aba: libere pop-ups e cole com Ctrl+V.';
   } else {
-    window.open('https://chatgpt.com/?q=' + encodeURIComponent(state.prompt), '_blank', 'noopener');
-    statusEl.textContent = 'Prompt aberto no ChatGPT (se a caixa estiver vazia, cole usando Ctrl+V).';
+    const ok = openAiWithPrompt('https://chatgpt.com/?q=', state.prompt);
+    statusEl.textContent = ok
+      ? 'Prompt copiado e aberto no ChatGPT. Se a caixa estiver vazia, cole com Ctrl+V.'
+      : 'Prompt copiado. O navegador bloqueou a nova aba: libere pop-ups e cole com Ctrl+V.';
   }
   
   statusEl.className = 'admin-status ok';
@@ -1716,6 +1722,35 @@ const skillsAccordion = setupAccordion('skillsToggle', 'skillsBody');
   });
 })();
 
+// Links do menu "LLMs": copiam o prompt do gerador e, quando ele cabe na URL,
+// abrem o ChatGPT/Claude ja com o texto. O clique segue o link normal (sem popup).
+(function(){
+  const menu = document.getElementById('llmDropdownMenu');
+  if(!menu) return;
+  menu.querySelectorAll('a[href]').forEach(function(a){
+    const base = a.getAttribute('href');
+    a.addEventListener('click', function(){
+      const area = document.getElementById('genPromptText');
+      const prompt = area ? area.value.trim() : '';
+      if(!prompt) return; // sem prompt: abre o site normalmente
+      try{ copyText(prompt); }catch(e){}
+      const encoded = encodeURIComponent(prompt);
+      if(base.indexOf('chatgpt.com') !== -1 && encoded.length <= AI_URL_PROMPT_MAX){
+        a.href = 'https://chatgpt.com/?q=' + encoded;
+      } else if(base.indexOf('claude.ai') !== -1 && encoded.length <= AI_URL_PROMPT_MAX){
+        a.href = 'https://claude.ai/new?q=' + encoded;
+      } else {
+        a.href = base;
+      }
+      const statusEl = document.getElementById('genStatus');
+      if(statusEl){
+        statusEl.textContent = 'Prompt copiado. Se a caixa da IA estiver vazia, cole com Ctrl+V.';
+        statusEl.className = 'admin-status ok';
+      }
+    });
+  });
+})();
+
 // ---------- Seletor de Tema em tela cheia (mobile) ----------
 // O <select id="genTheme"> continua sendo a fonte da verdade (é nele
 // que o resto do script lê/escreve o tema escolhido). Isto aqui só
@@ -1792,6 +1827,20 @@ function copyText(text){
     document.body.removeChild(ta);
   }
 }
+// Copia o prompt e abre a IA. A copia acontece no mesmo clique (antes de qualquer
+// espera) e serve de reserva: se o ?q= falhar ou o prompt for grande demais
+// para a URL, basta colar com Ctrl+V.
+const AI_URL_PROMPT_MAX = 6000; // tamanho maximo do prompt (ja codificado) na URL
+function openAiWithPrompt(baseUrl, prompt){
+  try{ copyText(prompt); }catch(e){}
+  const encoded = encodeURIComponent(prompt);
+  const url = (baseUrl.indexOf('?q=') !== -1)
+    ? (encoded.length <= AI_URL_PROMPT_MAX ? baseUrl + encoded : baseUrl.replace('?q=', ''))
+    : baseUrl;
+  const w = window.open(url, '_blank');
+  if(w){ try{ w.opener = null; }catch(e){} return true; }
+  return false;
+}
 document.querySelectorAll('[data-copy]').forEach(function(btn){
   btn.addEventListener('click', function(){
     const id = btn.getAttribute('data-copy');
@@ -1810,8 +1859,8 @@ document.querySelectorAll('[data-open-chatgpt]').forEach(function(btn){
     const id = btn.getAttribute('data-open-chatgpt');
     const val = document.getElementById(id).value.trim();
     if(!val){ alert('Preencha o prompt antes de abrir no ChatGPT.'); return; }
-    const url = 'https://chatgpt.com/?q=' + encodeURIComponent(val);
-    window.open(url, '_blank', 'noopener');
+    openAiWithPrompt('https://chatgpt.com/?q=', val);
+    btn.title = 'Prompt copiado. Se a caixa estiver vazia, cole com Ctrl+V.';
   });
 });
 
@@ -1820,8 +1869,8 @@ document.querySelectorAll('[data-open-claude]').forEach(function(btn){
     const id = btn.getAttribute('data-open-claude');
     const val = document.getElementById(id).value.trim();
     if(!val){ alert('Preencha o prompt antes de abrir no Claude.'); return; }
-    const url = 'https://claude.ai/new?q=' + encodeURIComponent(val);
-    window.open(url, '_blank', 'noopener');
+    openAiWithPrompt('https://claude.ai/new?q=', val);
+    btn.title = 'Prompt copiado. Se a caixa estiver vazia, cole com Ctrl+V.';
   });
 });
 
@@ -1833,12 +1882,61 @@ async function logAccess(nome){
   }catch(e){ console.error('Erro ao registrar acesso:', e); }
 }
 
+// Garante que existe uma sessao do Supabase. Se nao existir, pede a senha na tela
+// e so continua (a Promise resolve) depois que o login der certo.
 async function ensureSharedSession(){
   const { data: sessionData } = await sb.auth.getSession();
-  if(!sessionData || !sessionData.session){
-    const { error } = await sb.auth.signInWithPassword({ email: SHARED_EMAIL, password: SHARED_PASSWORD });
-    if(error) throw error;
-  }
+  if(sessionData && sessionData.session) return false;
+  await promptSharedPassword();
+  return true; // acabou de entrar com a senha
+}
+
+function promptSharedPassword(){
+  return new Promise(function(resolve){
+    const card = document.getElementById('loginCard');
+    card.innerHTML =
+      '<h1>Entrar no painel</h1>' +
+      '<p class="admin-desc">Digite a senha de acesso. Em seguida, o código do autenticador.</p>' +
+      '<form id="loginPasswordForm" autocomplete="on">' +
+        '<input type="text" name="username" autocomplete="username" value="' + escapeHtml(SHARED_EMAIL) + '" tabindex="-1" aria-hidden="true" style="position:absolute; left:-9999px; opacity:0; height:0; width:0;">' +
+        '<div class="admin-field full">' +
+          '<label for="loginPassword">Senha</label>' +
+          '<input type="password" id="loginPassword" name="password" autocomplete="current-password" required>' +
+        '</div>' +
+        '<button class="abtn" id="btnPasswordEntrar" type="submit" style="margin-top:12px; width:100%; justify-content:center;">Continuar</button>' +
+      '</form>' +
+      '<div class="admin-status" id="loginStatus"></div>';
+
+    const form = document.getElementById('loginPasswordForm');
+    const input = document.getElementById('loginPassword');
+    const btn = document.getElementById('btnPasswordEntrar');
+    const statusEl = document.getElementById('loginStatus');
+    setTimeout(function(){ input.focus(); }, 0);
+
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+      const password = input.value;
+      if(!password){ statusEl.textContent = 'Digite a senha.'; statusEl.className = 'admin-status err'; return; }
+      btn.disabled = true;
+      statusEl.textContent = 'Verificando...';
+      statusEl.className = 'admin-status';
+      try{
+        const { error } = await sb.auth.signInWithPassword({ email: SHARED_EMAIL, password: password });
+        if(error) throw error;
+        renderLoginLoading();
+        resolve();
+      }catch(err){
+        const offline = err && (err.name === 'AuthRetryableFetchError' || /fetch|network/i.test(String(err.message || '')));
+        statusEl.textContent = offline
+          ? 'Não foi possível conectar ao servidor. Tente de novo.'
+          : 'Senha incorreta.';
+        statusEl.className = 'admin-status err';
+        btn.disabled = false;
+        input.value = '';
+        input.focus();
+      }
+    });
+  });
 }
 
 async function getVerifiedFactors(){
@@ -1932,9 +2030,73 @@ async function confirmDestructiveAction(message){
   return await openDeleteTotpModal(factors);
 }
 
-function renderLoginLoading(msg){
-  document.getElementById('loginCard').innerHTML = '<p class="admin-desc">' + escapeHtml(msg || 'Carregando...') + '</p>';
+// ---- Carregamento do login: anel de 0 a 100% + tempo limite ----
+// A cor da caneta e sorteada como na abertura do site (intro.js).
+const LOGIN_LOAD_TIMEOUT_MS = 10000;
+let loginLoadTimer = null;
+let loginLoadRaf = null;
+let loginLoadFailed = false;
+
+function pickMarkerColor(){
+  const seconds = new Date().getSeconds();
+  if(seconds % 7 === 0) return '#10B981';   // verde (multiplos de 7)
+  if(seconds % 2 !== 0) return '#d1342b';   // vermelho (impares)
+  return '#004EB5';                          // azul (pares)
 }
+
+function setLoginLoaderProgress(p){
+  document.getElementById('loginLoader').style.setProperty('--p', String(p));
+}
+
+function stopLoginLoader(immediate){
+  if(loginLoadTimer){ clearTimeout(loginLoadTimer); loginLoadTimer = null; }
+  if(loginLoadRaf){ cancelAnimationFrame(loginLoadRaf); loginLoadRaf = null; }
+  const loader = document.getElementById('loginLoader');
+  const card = document.getElementById('loginCard');
+  const finish = function(){ if(loginLoadTimer) return; loader.hidden = true; card.hidden = false; };
+  if(immediate){ finish(); return; }
+  setLoginLoaderProgress(100);
+  setTimeout(finish, 250);
+}
+
+function showLoginLoadError(){
+  loginLoadFailed = true;
+  const card = document.getElementById('loginCard');
+  card.innerHTML =
+    '<h1>Não foi possível conectar</h1>' +
+    '<p class="admin-desc">O servidor (Supabase) não respondeu. Se o projeto ficou vários dias sem uso, ele pode estar pausado: restaure em supabase.com/dashboard e tente de novo.</p>' +
+    '<button class="abtn" id="btnLoginRetry" type="button" style="width:100%; justify-content:center;">Tentar de novo</button>';
+  document.getElementById('btnLoginRetry').addEventListener('click', function(){ location.reload(); });
+}
+
+function renderLoginLoading(){
+  const loader = document.getElementById('loginLoader');
+  const card = document.getElementById('loginCard');
+  loginLoadFailed = false;
+  document.documentElement.style.setProperty('--marker-random', pickMarkerColor());
+  card.hidden = true;
+  loader.hidden = false;
+  setLoginLoaderProgress(0);
+  if(loginLoadTimer) clearTimeout(loginLoadTimer);
+  if(loginLoadRaf) cancelAnimationFrame(loginLoadRaf);
+  const start = performance.now();
+  (function tick(now){
+    // sobe suave ate ~90% e espera a resposta real
+    const t = (now || performance.now()) - start;
+    setLoginLoaderProgress(90 * (1 - Math.exp(-t / 2500)));
+    loginLoadRaf = requestAnimationFrame(tick);
+  })();
+  loginLoadTimer = setTimeout(function(){
+    if(document.getElementById('loginOverlay').style.display === 'none') return;
+    showLoginLoadError();
+  }, LOGIN_LOAD_TIMEOUT_MS);
+}
+
+// Quando qualquer tela de login escreve no card, o carregamento acabou.
+new MutationObserver(function(){
+  if(document.getElementById('loginLoader').hidden) return;
+  stopLoginLoader(loginLoadFailed);
+}).observe(document.getElementById('loginCard'), { childList: true });
 
 function renderFirstEnrollPanel(){
   const card = document.getElementById('loginCard');
@@ -2226,7 +2388,16 @@ function showExercisePrefillModal(service){
     try{
       const prompt = await ensureExercisePrompt();
       const baseUrl = isClaude ? 'https://claude.ai/new?q=' : 'https://chatgpt.com/?q=';
-      window.open(baseUrl + encodeURIComponent(prompt), '_blank', 'noopener');
+      const ok = openAiWithPrompt(baseUrl, prompt);
+      const note = document.createElement('p');
+      note.className = 'exercise-copy-confirmation';
+      note.textContent = ok
+        ? 'Prompt copiado. Se a caixa do ' + serviceName + ' estiver vazia, cole com Ctrl+V.'
+        : 'Prompt copiado. O navegador bloqueou a nova aba: libere pop-ups e cole com Ctrl+V.';
+      const content = document.getElementById('exerciseServiceContent');
+      const old = content.querySelector('.exercise-copy-confirmation');
+      if(old) old.remove();
+      content.insertBefore(note, content.querySelector('.exercise-step-actions'));
     }catch(error){}
   });
   setTimeout(function(){ document.getElementById('exerciseServiceOpen').focus(); }, 0);
@@ -2452,7 +2623,7 @@ function renderResumeGatePanel(remainingMs, nome){
 
 // existing (pre-resume) decision logic: list factors → first-enrollment or name+code screen.
 async function runNormalLoginDecision(){
-  renderLoginLoading('Verificando sessão...');
+  renderLoginLoading();
   await ensureSharedSession();
   const factors = await getVerifiedFactors();
   if(!factors.length){
@@ -2472,8 +2643,8 @@ async function enterAdminWithoutLogin(){
 }
 
 async function runLoginFlow(){
-  renderLoginLoading('Verificando sessão...');
-  await ensureSharedSession();
+  renderLoginLoading();
+  const signedInNow = await ensureSharedSession();
 
   if(!isLoginRequired()){
     await enterAdminWithoutLogin();
@@ -2514,7 +2685,9 @@ async function runLoginFlow(){
   }
 
   // no resumable session: if a stale/expired session exists, clean it up first.
-  if(hasValidSession && (!isAal2 || !withinTtl)){
+  // (nao derruba a sessao que acabou de ser aberta com a senha: ela ainda vai
+  // passar pelo codigo do autenticador)
+  if(hasValidSession && !signedInNow && (!isAal2 || !withinTtl)){
     try{ await sb.auth.signOut(); }catch(e){ console.error('Erro no signOut de sessão expirada:', e); }
     try{
       localStorage.removeItem(LS_LOGIN_AT);
@@ -3799,7 +3972,11 @@ setupClipboardPanel();
 setupGalleryPanel();
 setupMobileAppExperience();
 setupCronogramaTab();
-runLoginFlow();
+runLoginFlow().catch(function(err){
+  console.error('Erro no fluxo de login:', err);
+  const overlayVisible = document.getElementById('loginOverlay').style.display !== 'none';
+  if(overlayVisible && !document.getElementById('loginLoader').hidden) showLoginLoadError();
+});
 
 // Registra o service worker do PWA (casco do app instalável). Falha
 // silenciosamente em navegadores sem suporte ou fora de HTTPS/localhost

@@ -21,16 +21,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&family=Permanent+Marker&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/styles.css">
 <link rel="stylesheet" href="assets/css/admin-gallery.css">
-<link rel="stylesheet" href="assets/css/admin.css?v=6">
+<link rel="stylesheet" href="assets/css/admin.css?v=7">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <!-- LOGIN / MFA GATE -->
 <div id="loginOverlay">
-  <div class="login-card" id="loginCard">
-    <p>Carregando...</p>
+  <div class="login-loader" id="loginLoader" role="status" aria-label="Carregando">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <circle class="login-loader-ring" cx="50" cy="50" r="40" pathLength="100"></circle>
+    </svg>
   </div>
+  <div class="login-card" id="loginCard" hidden></div>
 </div>
 
 <!-- CADASTRAR NOVO ACESSO (modal) -->
@@ -793,6 +796,6 @@
      gerador de imagem: cada uma vira window.POST_IMAGE_ASSETS.<chave>. -->
 <script src="assets/js/post-image-assets.js"></script>
 <script src="assets/js/admin-gallery.js"></script>
-<script src="assets/js/admin.js?v=6"></script>
+<script src="assets/js/admin.js?v=8"></script>
 </body>
 </html>
