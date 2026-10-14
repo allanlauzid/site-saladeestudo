@@ -206,9 +206,8 @@ begin
 end $$;
 
 -- -------------------------------------------------------------------------
--- 4. novidades NAO e tocada de proposito: a leitura publica dela e o que faz
---    a pagina Novidades funcionar pra quem visita o site. A escrita ja e
---    so pela service role (GitHub Actions), como esta no 001.
+-- 4. (historico) a tabela novidades era tocada de proposito: a secao Novidades
+--    foi removida do site; a tabela pode ser apagada no Supabase.
 -- -------------------------------------------------------------------------
 
 -- -------------------------------------------------------------------------

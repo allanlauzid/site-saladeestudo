@@ -6,7 +6,6 @@ soltos na raiz; agora tudo que o navegador baixa mora em `assets/`.
 ```
 /                         só o que precisa estar na raiz
   index.html              home
-  novidades.html          página de novidades
   admin.html              painel administrativo (PWA)
   admin-sw.js             service worker do PWA — TEM que ficar na raiz
                           (um service worker só controla a pasta dele pra baixo)
@@ -15,22 +14,22 @@ soltos na raiz; agora tudo que o navegador baixa mora em `assets/`.
   .nojekyll               impede o GitHub Pages de processar o site como Jekyll
 
 assets/
-  css/     styles.css · intro.css · novidades.css · admin.css · admin-gallery.css
-  js/      intro.js · novidades.js
+  css/     styles.css · intro.css · admin.css · admin-gallery.css
+  js/      intro.js
            game-loader.js · game-trigger.js          (sempre carregados)
            game-jogodavelha.js · game-analytics.js
            hangman-animation.js · hangman-gameplay.js · hangman-poses-inline.js
            mascote-pose-data.js                      (só sob demanda — ver abaixo)
            admin.js · admin-gallery.js · post-image-assets.js
   img/
-    png/         imagens do site · png/novidades/ = ilustrações das notícias
+    png/         imagens do site
     svg/         logo, seta do topo, mascote
     icons/       ícones da interface · icons/pwa/ = ícones do app instalável
   data/    hangman-words.json (palavras do jogo da forca)
 
 docs/          documentação e prompts (não vai pro navegador)
 ferramentas/   scripts avulsos de manutenção, usados só na máquina
-scripts/       gerar-novidade.mjs (roda no GitHub Actions)
+scripts/       (vazia: o gerador de novidades foi removido)
 sql/           migrações avulsas
 supabase/      configuração e edge functions do Supabase
 ```
@@ -58,7 +57,6 @@ Se algum arquivo mudar de lugar, lembre de conferir também:
   senão o PWA continua servindo o cache velho)
 - `manifest.webmanifest` → caminhos dos ícones
 - `assets/css/styles.css` → `url('../img/svg/…')` são relativos ao CSS
-- `assets/js/novidades.js` → pasta das ilustrações
 - `assets/js/hangman-animation.js` → `assets/data/hangman-words.json`
 - `assets/js/game-loader.js` → lista dos arquivos dos jogos
 - as meta tags `og:image` / `twitter:image` usam URL absoluta

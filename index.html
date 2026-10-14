@@ -29,7 +29,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&family=Caveat:wght@700&family=Permanent+Marker&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/intro.css">
-    <link rel="stylesheet" href="assets/css/novidades.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/0.6.5/opentype.min.js"></script>
 </head>
 <body>
@@ -326,20 +325,6 @@
             </div>
         </div>
     </section>
-
-    <!-- ============ NOVIDADES (3 posts mais recentes) ============ -->
-    <!-- Preenchida pelo novidades.js a partir da tabela `novidades` do
-         Supabase. Sem posts publicados, a seção se remove sozinha. -->
-    <section class="bento-section novidades-section">
-        <div class="container">
-            <div class="novidades-header">
-                <h2>Novidades</h2>
-                <a href="novidades.html">Ver todas &rarr;</a>
-            </div>
-            <div id="novidades-teaser" class="bento-grid"></div>
-        </div>
-    </section>
-
     <section class="faq">
         <div class="container">
             <div class="faq-header">
@@ -1316,8 +1301,6 @@
 
         const SUPABASE_URL = 'https://fesejrbindspzafiyssm.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_mGEU6ouQVdIt1G97ENAq_w_tX8uknCK';
-        const SHARED_EMAIL = 'kupimdigital@gmail.com';
-        const SHARED_PASSWORD = 'Supabase91!';
 
         let sbClient = null;
         let factorsCache = null;
@@ -1349,12 +1332,11 @@
             return sbClient;
         }
 
-        async function ensureSharedSession(client){
+        // A senha de acesso NAO fica mais no site: sem uma sessao ja aberta,
+        // o botao leva para admin.html, onde se digita senha + codigo.
+        async function hasSharedSession(client){
             const { data } = await client.auth.getSession();
-            if(!data || !data.session){
-                const { error } = await client.auth.signInWithPassword({ email: SHARED_EMAIL, password: SHARED_PASSWORD });
-                if(error) throw error;
-            }
+            return !!(data && data.session);
         }
 
         async function getVerifiedFactors(client){
@@ -1377,7 +1359,11 @@
                         window.location.href = 'admin.html';
                         return;
                     }
-                    await ensureSharedSession(client);
+                    if(!(await hasSharedSession(client))){
+                        checking = false;
+                        window.location.href = 'admin.html';
+                        return;
+                    }
                     const factors = await getVerifiedFactors(client);
                     checking = false;
                     if(!factors.length){
@@ -1437,10 +1423,6 @@
             window.location.href = 'admin.html';
         }
     })();
-    </script>
-    <script src="assets/js/novidades.js"></script>
-    <script>
-      initNovidadesTeaser('novidades-teaser', 3);
     </script>
 </body>
 </html>

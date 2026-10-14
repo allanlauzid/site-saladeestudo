@@ -47,12 +47,12 @@ Tres situacoes diferentes:
   esta logado. Passa a gravar por duas funcoes (`registrar_partida` e
   `finalizar_partida`), e o `anon` fica sem permissao nenhuma na tabela. Ler o
   analytics exige `aal2`.
-- **`novidades`**: nao e tocada. A leitura publica dela e o que faz a pagina
-  Novidades funcionar pra quem visita o site.
+- **`novidades`**: a secao Novidades foi removida do site; a tabela nao e mais
+  usada e pode ser apagada no Supabase.
 
 Verificado numa replica do schema em Postgres 16 antes de entregar: `anon`
 barrado, `aal1` devolve zero linhas, `aal2` le e escreve normalmente,
-Novidades segue publica, e o fluxo do jogo (registrar + finalizar partida)
+o fluxo do jogo (registrar + finalizar partida)
 continua funcionando pelas funcoes.
 
 ### Passo 2 — tirar a senha da pagina (Edge Function)
@@ -74,8 +74,8 @@ servidor (onde da pra limitar tentativas), e a experiencia da Rubia nao muda.
 - **Trocar a senha da conta compartilhada.** Ela esta no historico do Git e
   continua la mesmo depois de sair do arquivo. Enquanto nao for trocada, o
   passo 2 nao termina de verdade.
-- **`gemini_api_keys`**: tabela morta (o `provider-manager.js` que usava isso
-  esta em `ferramentas/desativado/`). O passo 1 fecha o acesso; confira o
+- **`gemini_api_keys`**: tabela morta (o `provider-manager.js` e a edge function
+  `ai-provider-router` que usavam isso foram removidos do repositorio). O passo 1 fecha o acesso; confira o
   conteudo e depois `drop table`.
 - **Politicas do Storage**: a galeria do admin usa um bucket. O passo 0 lista
   as politicas dele — se estiverem abertas pro `anon`, mesmo tratamento.
