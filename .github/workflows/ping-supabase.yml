@@ -1,0 +1,37 @@
+name: Manter o Supabase ativo
+
+# O plano gratuito do Supabase pausa o projeto depois de cerca de 7 dias sem
+# atividade. Este agendamento faz uma consulta leve por dia para evitar isso.
+# Usa só a chave pública (publishable), a mesma que já está no site, então
+# não precisa de nenhum secret novo.
+#
+# Se o projeto já estiver pausado, a consulta falha e este workflow fica
+# vermelho (o GitHub avisa por e-mail): restaure em supabase.com/dashboard.
+
+on:
+  schedule:
+    - cron: "17 11 * * *"   # todo dia às 08:17 (Fortaleza) = 11:17 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Consultar o Supabase
+        env:
+          SUPABASE_URL: https://fesejrbindspzafiyssm.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: sb_publishable_mGEU6ouQVdIt1G97ENAq_w_tX8uknCK
+        run: |
+          code=$(curl -sS -o /dev/null -w "%{http_code}" --retry 3 --retry-delay 10 --max-time 30 \
+            -H "apikey: $SUPABASE_PUBLISHABLE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_PUBLISHABLE_KEY" \
+            "$SUPABASE_URL/rest/v1/settings?select=id&limit=1")
+          echo "Resposta do Supabase: HTTP $code"
+          case "$code" in
+            2*|401|403) echo "Projeto respondendo." ;;
+            *) echo "::error::O Supabase não respondeu como esperado (HTTP $code). O projeto pode estar pausado: restaure em supabase.com/dashboard."; exit 1 ;;
+          esac

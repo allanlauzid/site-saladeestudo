@@ -1,5 +1,5 @@
 :root{
-    --marker-red: var(--color-blue, #004EB5);
+    --marker-random: var(--color-blue, #004EB5);
     --board-bg:#fdfdfb;
     --logo-bg:#1c1c1c;
     --logo-fg:#fdfdfb;
@@ -95,7 +95,7 @@
   }
   .glyph-stroke{
     fill:none;
-    stroke:var(--marker-red);
+    stroke:var(--marker-random);
     transition: fill 220ms ease;
   }
 

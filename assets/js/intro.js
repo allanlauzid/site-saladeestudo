@@ -18,7 +18,7 @@ async function initHandwriting(){
         penColor = '#d1342b'; // Vermelho (ímpares)
     }
     
-    document.documentElement.style.setProperty('--marker-red', penColor);
+    document.documentElement.style.setProperty('--marker-random', penColor);
 
     const buffer = base64ToArrayBuffer(FONT_B64);
     const font = opentype.parse(buffer);
@@ -92,7 +92,7 @@ async function initHandwriting(){
         [{ strokeDashoffset: len }, { strokeDashoffset: 0 }],
         { duration: dur, delay: cumulativeDelay, easing: 'linear', fill: 'forwards' }
       );
-      strokeAnim.onfinish = () => { el.style.fill = 'var(--marker-red)'; };
+      strokeAnim.onfinish = () => { el.style.fill = 'var(--marker-random)'; };
 
       cumulativeDelay += dur * OVERLAP;
     });
